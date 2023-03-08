@@ -1,0 +1,44 @@
+{
+  "name": "selecta",
+  "version": "1.0.0",
+  "description": "",
+  "main": "code.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JdyxZ/Selecta.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JdyxZ/Selecta/issues"
+  },
+  "homepage": "https://github.com/JdyxZ/Selecta#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "connect-flash": "^0.1.1",
+    "ejs": "^3.1.8",
+    "express": "^4.18.2",
+    "express-mysql-session": "^2.1.8",
+    "express-session": "^1.17.3",
+    "fs": "^0.0.1-security",
+    "http": "^0.0.1-security",
+    "morgan": "^1.10.0",
+    "mysql2": "^3.2.0",
+    "npm": "^9.6.0",
+    "passport": "^0.6.0",
+    "passport-discord": "^0.1.4",
+    "passport-facebook": "^3.0.0",
+    "passport-github2": "^0.1.12",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-local": "^1.0.0",
+    "passport-twitch-new": "^0.0.2",
+    "passport-twitter": "^0.1.5",
+    "url": "^0.11.0",
+    "websocket": "^1.0.34"
+  }
+}
