@@ -6,36 +6,35 @@
     <% if (current_view == "error") { %>
 
         <!-- Error CSS -->
-        <link rel="stylesheet" type="text/css" href="css/error.css"/>
+        <link rel="stylesheet" type="text/css" href="routes/css/error.css"/>
         
     <% } %>
 
     <% if (current_view == "signup") { %>
 
         <!-- Signup CSS -->
-        <link rel="stylesheet" type="text/css" href="css/signup.css"/>
+        <link rel="stylesheet" type="text/css" href="routes/css/signup.css"/>
 
     <% } %>
 
     <% if (current_view == "login") { %>
 
         <!-- Login CSS -->
-        <link rel="stylesheet" type="text/css" href="css/login.css"/>
+        <link rel="stylesheet" type="text/css" href="routes/css/login.css"/>
 
     <% } %>
 
     <% if (current_view == "signup" || current_view == "login") { %>
 
         <!-- Auth CSS -->
-        <link rel="stylesheet" type="text/css" href="css/partials/auth.css"/>
-        <link rel="stylesheet" type="text/css" href="css/partials/auth_providers.css"/>
+        <link rel="stylesheet" type="text/css" href="routes/css/partials/auth.css"/>
+        <link rel="stylesheet" type="text/css" href="routes/css/partials/auth_providers.css"/>
 
     <% } %>
 
     <% if (current_view == appRoute) { %>
 
         <!-- App CSS -->
-        <link rel="stylesheet" type="text/css" href="css/canvas.css"/>
-
+        <link rel="stylesheet" type="text/css" href="routes/css/<%=`${appRoute}`%>.css"/>
     <% } %>   
 </head>

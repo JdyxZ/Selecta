@@ -132,7 +132,7 @@ var CLIENT =
         const room = message.content;
 
         // Assign new room
-        SELECTA.current_room = room;
+        CONTROLLER.current_room = room;
 
         // Set room name into the chat
         room_name.innerText = room.name;
@@ -145,7 +145,7 @@ var CLIENT =
         console.table(message.content);
 
         // Assign my user info to my_user
-        SELECTA.my_user = message.content;
+        CONTROLLER.my_user = message.content;
     },
 
     setAssets: function(message)
@@ -167,8 +167,8 @@ var CLIENT =
         const users = message.content;
 
         // Append new users to users
-        users.forEach(user => SELECTA.users_obj[user.id] = user);
-        SELECTA.users_arr = SELECTA.users_arr.concat(users);
+        users.forEach(user => CONTROLLER.users_obj[user.id] = user);
+        CONTROLLER.users_arr = CONTROLLER.users_arr.concat(users);
 
         // Set room people
         setRoomPeople();
@@ -182,7 +182,7 @@ var CLIENT =
 
         // Get data
         const user_id = message.content;
-        const index = SELECTA.users_arr.getObjectIndex({id: user_id});
+        const index = CONTROLLER.users_arr.getObjectIndex({id: user_id});
 
         // Check
         if(index == -1)
@@ -192,8 +192,8 @@ var CLIENT =
         }
 
         // Delete left user from users
-        delete SELECTA.users_obj.user_id;
-        SELECTA.users_arr.splice(index, 1);
+        delete CONTROLLER.users_obj.user_id;
+        CONTROLLER.users_arr.splice(index, 1);
 
         // Set room people
         setRoomPeople();
@@ -210,14 +210,14 @@ var CLIENT =
         const new_target = message.content.target;
 
         // Check
-        if(!SELECTA.users_obj[sender_id])
+        if(!CONTROLLER.users_obj[sender_id])
         {
             console.error(`onTick callback -->The user id ${sender_id} is not registered`);
             return;
         }
 
         // Set user target
-        SELECTA.users_obj[sender_id].target = new_target;
+        CONTROLLER.users_obj[sender_id].target = new_target;
     },
 
     onExit: function(message)
