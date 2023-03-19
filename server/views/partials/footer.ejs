@@ -3,7 +3,7 @@
 
     <!--- Login scripts -->
     <script type="application/javascript" src="./js/ejs.js"></script>
-    <script type="application/javascript" src="./framework.js"></script>
+    <script type="application/javascript" src="./framework/html.js"></script>
     <script type="application/javascript" src="./js/login.js"></script>
     <script type="application/javascript">login.init()</script>
     <script type="application/javascript">
@@ -17,7 +17,7 @@
 
     <!--- Signup scripts -->
     <script type="application/javascript" src="./js/ejs.js"></script>
-    <script type="application/javascript" src="./framework.js"></script>
+    <script type="application/javascript" src="./framework/html.js"></script>
     <script type="application/javascript" src="./js/signup.js"></script>
     <script type="application/javascript">signup.init()</script>
     <script type="application/javascript">
@@ -31,7 +31,8 @@
 <% if (current_view == appRoute) { %>
 
     <!--- App scripts -->
-    <script type="application/javascript" src="framework.js"></script>  
+    <script type="application/javascript" src="./framework/html.js"></script>
+    <script type="application/javascript" src="./framework/javascript.js"></script> 
     <script type="application/javascript" src="view/view.js"></script> 
     <script type="application/javascript" src="controller/controller.js"></script> 
     <script type="application/javascript" src="client.js"></script> 
