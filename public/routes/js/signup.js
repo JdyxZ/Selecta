@@ -1,4 +1,7 @@
-var signup = {
+
+/***************** SIGNUP *****************/
+
+const SIGNUP = {
 
     username: document.get('#username'),
     password: document.get('#password1'),

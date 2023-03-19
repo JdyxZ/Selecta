@@ -11,51 +11,14 @@
 
             <!--- GRID -->
             <div class="grid-layout">
-                 
-                <!--- CANVAS -->
-                <div id="canvas_container">
-                    <canvas id="canvas"></canvas>
-                </div>
 
-                <!--- CHAT -->
-                <div id="chat">
-                    <div class="banner">
-                        <div class="room-name"></div>
-                        <div class="room-people">You</div>
-                    </div>
-                    <div id="conversation">
-                        <div class="fix"></div>
-                    </div>
-
-                    <div class="input"> 
-                        <input id="keyboard-input" placeholder="Start typing some message" type="text"\>
-                    </div>
-                </div>
+                <!--- APP -->
+                <h1> Aquí va la APP </h1>
                 
-                <!--- LOGOUT -->
-                <form action="/logout" id="logout-form">
-                    <button type="submit" id="logout-button"> Logout </button>
-                </form>
             </div>
 
             <!--- TEMPLATES -->
-            <div id="new-user-message-template" class="user-message-layout">
-                <div class="message">
-                    <div class="username"></div>
-                    <div class="fix">
-                        <div class="message-content"></div>
-                        <div class="message-time"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="concurrent-user-message-template" class="message">
-                <div class="fix">
-                    <div class="message-content"></div>
-                    <div class="message-time"></div>
-                </div>
-            </div>
-        </div>
+            
 
         <!--- Footer -->
         <%- include('partials/footer.ejs') %>

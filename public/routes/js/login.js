@@ -1,5 +1,5 @@
 
-var login = {
+const LOGIN = {
 
     username: document.get('#username'),
     password: document.get('#password'),
