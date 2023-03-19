@@ -1,0 +1,40 @@
+
+<% if (current_view == "login") { %>
+
+    <!--- Login scripts -->
+    <script type="application/javascript" src="./js/ejs.js"></script>
+    <script type="application/javascript" src="./framework.js"></script>
+    <script type="application/javascript" src="./js/login.js"></script>
+    <script type="application/javascript">login.init()</script>
+    <script type="application/javascript">
+        document.querySelector("#username").value = '<%-login_username%>';
+        document.querySelector("#password").value = '<%-login_password%>';
+    </script>
+
+<% } %>
+
+<% if (current_view == "signup") { %>
+
+    <!--- Signup scripts -->
+    <script type="application/javascript" src="./js/ejs.js"></script>
+    <script type="application/javascript" src="./framework.js"></script>
+    <script type="application/javascript" src="./js/signup.js"></script>
+    <script type="application/javascript">signup.init()</script>
+    <script type="application/javascript">
+        document.querySelector("#username").value = '<%-signup_username%>';
+        document.querySelector("#password1").value = '<%-signup_password%>';
+        document.querySelector("#password2").value = '<%-signup_password%>';
+    </script>
+
+<% } %>
+
+<% if (current_view == appRoute) { %>
+
+    <!--- App scripts -->
+    <script type="application/javascript" src="framework.js"></script>  
+    <script type="application/javascript" src="view/view.js"></script> 
+    <script type="application/javascript" src="controller/controller.js"></script> 
+    <script type="application/javascript" src="client.js"></script> 
+    <script type="application/javascript" src="js/<%=`${appName.toLowerCase()}`%>.js"></script>
+
+<% } %>

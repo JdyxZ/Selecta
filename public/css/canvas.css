@@ -1,0 +1,241 @@
+/*VARIABLES*/
+:root
+{
+    --screen_height: 864px;
+    --screen_width: 1536px;
+    --user-message: #0f6d73;
+    --people-message: #202c33;
+    --user-name: #26dedb;
+    --people-name: #cfdc3d;
+}
+
+/* GLOBAL SETTINGS */
+* {
+    margin: 0px;
+    padding: 0px;
+    width: auto;
+}
+
+body 
+{
+    font-family: 'Roboto';
+    width: calc(var(--screen_width) * 0.975);
+    height: calc(var(--screen_height) * 0.917);
+    min-width: calc(var(--screen_width) * 0.975);
+    min-height: calc(var(--screen_height) * 0.917);
+    background-color: rgb(44, 52, 49);
+    overflow: auto;
+}
+
+/* APP */
+
+#Jabbon
+{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    place-items:center;
+}
+
+#Jabbon .grid-layout
+{
+    display: grid;
+    height: 100%;
+    width: 100%;
+    padding: 1rem;
+    grid-template-columns: 70% 30%;
+    grid-template-rows: 92% 8%;
+}
+
+/* CANVAS */
+
+#Jabbon #canvas_container
+{
+    grid-row: 1;
+    grid-column: 1;
+    display: flex;
+    place-items: center;
+    justify-content: center;
+}
+
+
+/* CHATS */
+
+#Jabbon #chat
+{
+    grid-row: 1;
+    grid-column: 2;
+    height: 90%;
+}
+
+#Jabbon #conversation
+{
+    display: flex;
+    height: 91%;
+    width:100%;
+    background-image: url("../media/images/wallpaper_chat_5.png");
+    background-size: cover;
+    overflow-y: auto;
+    flex-flow: column nowrap;
+}
+
+
+#Jabbon #conversation > .fix 
+{margin-top: auto;}
+
+#Jabbon #chat .banner
+{
+    height: 5%;
+    width: auto;
+    background-color: #1e2930;
+    padding: 1rem 1.5rem 1rem 1.5rem;
+    margin-top: 2rem;
+}
+
+#Jabbon #chat .room-name
+{
+    font-size: 17px;
+    color: white;
+    margin-bottom: 0.4rem;
+}
+
+#Jabbon #chat .room-people
+{
+   font-size: 14px;
+   color: #707070;
+}
+
+#Jabbon #chat .input
+{
+    display: flex;
+    place-items: center;
+    justify-content: center;
+    height: 7%;
+    width: 100%;
+    background-color: #1e2930;
+}
+
+#Jabbon #chat #keyboard-input
+{
+    background: #111b21;
+    width: 90%;
+    height: 55%;
+    border: none;
+    border-radius: 20px;
+    color: white;
+    padding-left: 2rem;
+}
+
+#Jabbon .user-message-layout
+{
+    width: fit-content;
+    max-width: 55%;
+    margin: 0% auto 0% 5%;
+    padding: 10px;
+    border-radius: 0px 8px 8px 8px;
+}
+
+#Jabbon .user-message-layout .username
+{
+    color: #cfdc3d;
+    margin-bottom: 7px;
+}
+
+#Jabbon .user-message-layout .message
+{
+    grid-column: 2;
+    width: fit-content;
+    background: var(--people-message);
+    margin: 0% 0% 15px 15px;
+    padding: 10px 10px 10px 10px;
+    border-radius: 0px 8px 8px 8px;
+}
+
+#Jabbon .user-message-layout .message .fix
+{
+    display:flex;
+}
+
+#Jabbon .message-content
+{
+    color: white;
+    max-width: fit-content;
+    word-break: break-word;
+}
+
+#Jabbon .message-time
+{
+    color: #c7c7c7;
+    width: fit-content;
+    height: fit-content;
+    font-size: 11px;
+    margin-left: 10px;
+    margin-top: auto;
+    transform: translate(0px, 5px);
+}
+
+/* LOGOUT */
+
+#Jabbon #logout-form
+{
+    grid-row: 2;
+    grid-column: 1/3;
+    display: flex;
+    width:100%;
+    height: fit-content;
+    justify-content:center;
+    padding-top: 1em;
+}
+
+#Jabbon #logout-button
+{
+    font-family: 'Roboto';
+    font-size: 16px;
+    color: white;
+    background-color: #111111;
+    height: 4em;
+    width: 15em;
+    border:none;
+    border-radius: 10px;
+}
+
+#Jabbon #logout-button:hover
+{
+    font-family: 'Roboto';
+    font-size: 16px;
+    color: white;
+    background-color: rgb(87 92 90);
+    height: 4em;
+    width: 15em;
+    border:none;
+    border-radius: 10px;
+}
+
+/* TEMPLATES */
+#new-user-message-template, #concurrent-user-message-template
+{
+    display:none;
+}
+
+/* SCROLLBARS  */
+::-webkit-scrollbar 
+{
+    width: 7px;
+}
+  
+::-webkit-scrollbar-track 
+{
+background-color: #111b21;
+border-radius: 25px;
+}
+
+::-webkit-scrollbar-thumb 
+{
+background-color: #2a3942;
+border-radius: 25px;
+}
+
+::-webkit-scrollbar-thumb:hover
+{
+background-color: #4f545c;
+}

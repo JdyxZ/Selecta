@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+    <!--- Header -->
+    <%- include('partials/header.ejs') %>
+
+    <!--- Body -->
+    <body>
+        <div id="main">
+            <div id="main-grid">
+                <span class="signupspan">
+
+                    <img id="appLogo" src="media/logos/Jabbon Logo Rounded.png"\>
+
+                    <div class="label">Sign up</div>
+
+                    <form action="/signup" method="post" id="signup-form">
+                        <section>
+                            <input id="username" name="name" type="text" autocomplete="username" placeholder="username" required autofocus>
+                        </section>
+
+                        <% if (signup_username_error.length > 0) { %>
+                            <div class="alert"><%= signup_username_error %></div>
+                        <% } %>
+
+                        <section>
+                            <input id="password1" name="password" type="password" autocomplete="password" placeholder="password" required>
+                        </section>
+
+                        <% if (signup_password_error.length > 0) { %>
+                            <div class="alert"><%= signup_password_error %></div>
+                        <% } %>
+
+                        <section>
+                            <input id="password2" type="password" autocomplete="password" placeholder="repeat password" required>
+                        </section>
+
+                        <% if (signup_error.length > 0) { %>
+                            <div class="alert"><%= signup_error %></div>
+                        <% } %>
+                    
+                        <button type="submit">Go!</button>
+                    </form>
+                    
+                    <a id="login-redirect" href="<%=`${server_protocol == 'secure' ? 'https://' : 'http://'}${server_address}:${server_port}${server_prefix}/login`%>">Log in</a>
+
+                    <!--- OAUTH -->
+                    <%- include('partials/oauth.ejs') %>
+
+                </span>
+            </div>
+        </div>
+        
+        <!--- Footer -->
+        <%- include('partials/footer.ejs') %>
+    </body>
+
+</html>
+

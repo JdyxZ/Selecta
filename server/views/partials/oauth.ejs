@@ -1,0 +1,34 @@
+
+<!-- PROCESS ERROR -->
+
+<% if (social_error.length > 0) { %>
+    <div class="alert"><%= social_error %></div>
+<% } %>
+
+<!-- OAUTH PROVIDERS -->
+
+<form action="/auth/google" method="post" id="google-login">
+    <button type="submit" class="oauth-login" id="google-button"></button>
+</form>
+
+<form action="/auth/twitch" method="post" id="twitch-login">
+    <button type="submit" class="oauth-login" id="twitch-button"></button>
+</form>
+
+<form action="/auth/github" method="post" id="github-login">
+    <button type="submit" class="oauth-login" id="github-button"></button>
+</form>
+
+<form action="/auth/discord" method="post" id="discord-login">
+    <button type="submit" class="oauth-login" id="discord-button"></button>
+</form>
+
+<!--
+<form action="/auth/twitter" method="post" id="twitter-login">
+    <button type="submit" class="oauth-login" id="twitter-button"></button>
+</form>
+-->
+
+<form action="/auth/facebook" method="post" id="facebook-login">
+    <button type="submit" class="oauth-login" id="facebook-button"></button>
+</form> 

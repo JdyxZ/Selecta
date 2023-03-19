@@ -1,0 +1,66 @@
+/*VARIABLES*/
+:root
+{
+    --screen_height: 864px;
+    --screen_width: 1536px;
+    --user-message: #0f6d73;
+    --people-message: #202c33;
+    --user-name: #26dedb;
+    --people-name: #cfdc3d;
+}
+
+/* GLOBAL SETTINGS */
+* {
+    margin: 0px;
+    padding: 0px;
+    width: auto;
+}
+
+body 
+{
+    font-family: 'Roboto';
+    width: calc(var(--screen_width) * 0.975);
+    height: calc(var(--screen_height) * 0.917);
+    min-width: calc(var(--screen_width) * 0.975);
+    min-height: calc(var(--screen_height) * 0.917);
+    background-color: rgb(44, 52, 49);
+    overflow: auto;
+}
+
+/* APP */
+
+#Selecta
+{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    place-items:center;
+}
+
+#Selecta .grid-layout
+{
+
+}
+
+/* SCROLLBARS  */
+::-webkit-scrollbar 
+{
+    width: 7px;
+}
+  
+::-webkit-scrollbar-track 
+{
+background-color: #111b21;
+border-radius: 25px;
+}
+
+::-webkit-scrollbar-thumb 
+{
+background-color: #2a3942;
+border-radius: 25px;
+}
+
+::-webkit-scrollbar-thumb:hover
+{
+background-color: #4f545c;
+}

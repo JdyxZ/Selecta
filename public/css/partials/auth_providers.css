@@ -1,0 +1,62 @@
+/* OAUTH LOGIN CSS */
+
+.oauth-login
+{
+    transition: all 0.5s ease;
+    width: 80%;
+    height: 3.5em;
+    border-radius: 10px;
+    border: none;
+    margin-bottom: 1.5em;
+    background-position: center; 
+    background-repeat: no-repeat;
+}
+
+.oauth-login:hover
+{
+    transition: all 0.5s ease;
+    box-shadow: 10px 10px 10px #555555;
+
+}
+
+#google-button
+{
+    background-color: #e9e9e9;
+    background-image: url("../../media/logos/google.png");
+    background-size: 20%;
+}
+
+#twitch-button
+{
+    background-color: #7a26b2;
+    background-image: url("../../media/logos/twitch.png");
+    background-size: 20%;
+}
+
+#github-button
+{
+    background-color: #191919;
+    background-image: url("../../media/logos/github.png");
+    background-size: 8%;
+}
+
+#discord-button
+{
+    background-color: #000000;
+    background-image: url("../../media/logos/discord.png");
+    background-size: 25%;
+}
+
+#twitter-button
+{
+    background-color: #1d9bf0;
+    background-image: url("../../media/logos/twitter.png");
+    background-size: 8%;
+}
+
+#facebook-button
+{
+    background-color: #212a7e;
+    background-image: url("../../media/logos/facebook.png");
+    background-size: 20%;
+}

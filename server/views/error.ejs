@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <!--- Header -->
+    <%- include('partials/header.ejs') %>
+
+    <!--- Body -->
+    <body>
+        <div class="wrapper">
+            <div id="main">
+                <h1> Error 404: Page not found </h1>
+                <p>Available resources</p>
+
+                <div id="links">
+                    <a href="<%=`${server_protocol == 'secure' ? 'https://' : 'http://'}${server_address}:${server_port}${server_prefix}/signup`%>">Sign up</a>
+                    <a href="<%=`${server_protocol == 'secure' ? 'https://' : 'http://'}${server_address}:${server_port}${server_prefix}/login`%>">Log in</a>
+                    <a href="<%=`${server_protocol == 'secure' ? 'https://' : 'http://'}${server_address}:${server_port}${server_prefix}/${appRoute}`%>"><%= appName %></a>
+                </div>
+
+                <p>Session status</p>
+
+                <% if (session_status == true) { %>
+                    <span class="active">Active -> <%= session_user %></div>
+                <% } else { %>
+                    <span class="inactive">Inactive -> Try to log in or sign up first!</div>
+                <% } %>
+
+            </div>
+        </div>
+    </body>
+</html>

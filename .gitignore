@@ -1,0 +1,5 @@
+# Ignore server config directory
+server/config/
+server/config/server_settings.js
+server/config/oauth_credentials.js
+server/config/database_credentials.js

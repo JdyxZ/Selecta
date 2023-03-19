@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+    <!--- Header -->
+    <%- include('partials/header.ejs') %>
+
+    <!--- Body -->
+    <body>
+        <div id="main">
+            <div id="main-grid">
+                <span class="loginspan">
+
+                    <img id="appLogo" src="media/logos/Jabbon Logo Rounded.png"\>
+
+                    <div class="label">Log in</div>
+
+                    <form action="/login" method="post" id="login-form">
+                        <section>
+                            <input id="username" name="name" type="text" autocomplete="username" placeholder="username" required autofocus>
+                        </section>
+    
+                        <section>
+                            <input id="password" name="password" type="password" autocomplete="password" placeholder="password" required>
+                        </section>
+    
+                        <% if (login_user_error.length > 0) { %>
+                            <div class="alert"><%= login_user_error %></div>
+                        <% } %>
+    
+                        <% if (login_error.length > 0) { %>
+                            <div class="alert"><%= login_error %></div>
+                        <% } %>
+                        
+                        <button type="submit">Go!</button>
+                    </form>
+
+                    <a id="signup-redirect" href="<%=`${server_protocol == 'secure' ? 'https://' : 'http://'}${server_address}:${server_port}${server_prefix}/signup`%>">Sign up</a>
+                   
+                    <!--- OAUTH -->
+                    <%- include('partials/oauth.ejs') %>
+                    
+                </span>                
+            </div>
+        </div>
+        
+        <!--- Footer -->
+        <%- include('partials/footer.ejs') %>
+    </body>
+
+
+</html>
