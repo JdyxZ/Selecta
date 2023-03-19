@@ -1,4 +1,6 @@
 
+/***************** LOGIN *****************/
+
 const LOGIN = {
 
     username: document.get('#username'),
