@@ -19,9 +19,7 @@ CREATE TABLE IF NOT EXISTS selecta_users (
 
 CREATE TABLE IF NOT EXISTS selecta_user_assets (
     id INT NOT NULL AUTO_INCREMENT,
-    mesh VARCHAR(255) DEFAULT NULL,
-    texture VARCHAR(255) DEFAULT NULL,
-    skeleton VARCHAR(255) DEFAULT NULL,
+    asset JSON,
     animations JSON,
 
     PRIMARY KEY (id)
@@ -29,10 +27,7 @@ CREATE TABLE IF NOT EXISTS selecta_user_assets (
 
 CREATE TABLE IF NOT EXISTS selecta_object_assets (
     id INT NOT NULL AUTO_INCREMENT,
-    type VARCHAR(255) DEFAULT NULL,
-    mesh VARCHAR(255) DEFAULT NULL,
-    texture VARCHAR(255) DEFAULT NULL,
-    bounding_box JSON,
+    asset JSON,
 
     PRIMARY KEY (id)
 );
@@ -51,7 +46,11 @@ CREATE TABLE IF NOT EXISTS selecta_rooms (
 -- CREATE ASSETS
 
 -- TODO
+INSERT IGNORE INTO selecta_user_assets(id, asset, animations)
+VALUES(1, '{folder:girl2, mesh:girl2.WBIN, texture:girl2.png, scale:0.3}' , '{animation1:idle.skanim, animation2:walking.skanim, animation3:macarena.skanim, animation4:dance2.skanim}')
 
+INSERT IGNORE INTO selecta_object_assets(id, asset)
+VALUES(1, '{object:disco_room.gltf, scaling:80, position:[0,-.01,0]}')
 -- CREATE ROOMS
 INSERT IGNORE INTO selecta_rooms (id, name, objects, exits, people, defaultPosition)
 VALUES (1, 'Studio 54', '{}', '{}', '{}', '{}'); -- TODO

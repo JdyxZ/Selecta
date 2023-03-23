@@ -136,6 +136,7 @@ var CLIENT =
 
         // Set room name into the chat
         room_name.innerText = room.name;
+
     },
 
     setMyUser: function(message)
@@ -146,6 +147,7 @@ var CLIENT =
 
         // Assign my user info to my_user
         CONTROLLER.my_user = message.content;
+
     },
 
     setAssets: function(message)
@@ -154,6 +156,9 @@ var CLIENT =
         console.log("New ASSETS message received\n");
         console.table(message.content);
 
+        const objects = message.content.objects;
+        
+        const avatars = message.contebt.avatars;
         // TODO
     },
 
