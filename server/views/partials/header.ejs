@@ -1,40 +1,41 @@
 <head>
     <meta charset="UTF-8">
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
+    <link rel="shortcut icon" href="media/selecta/SelectaIcon.png" type="image/x-icon">
     <title><%=appName%></title>
 
     <% if (current_view == "error") { %>
 
         <!-- Error CSS -->
-        <link rel="stylesheet" type="text/css" href="routes/css/error.css"/>
+        <link rel="stylesheet" type="text/css" href="views/css/error.css"/>
         
     <% } %>
 
     <% if (current_view == "signup") { %>
 
         <!-- Signup CSS -->
-        <link rel="stylesheet" type="text/css" href="routes/css/signup.css"/>
+        <link rel="stylesheet" type="text/css" href="views/css/signup.css"/>
 
     <% } %>
 
     <% if (current_view == "login") { %>
 
         <!-- Login CSS -->
-        <link rel="stylesheet" type="text/css" href="routes/css/login.css"/>
+        <link rel="stylesheet" type="text/css" href="views/css/login.css"/>
 
     <% } %>
 
     <% if (current_view == "signup" || current_view == "login") { %>
 
         <!-- Auth CSS -->
-        <link rel="stylesheet" type="text/css" href="routes/css/partials/auth.css"/>
-        <link rel="stylesheet" type="text/css" href="routes/css/partials/auth_providers.css"/>
+        <link rel="stylesheet" type="text/css" href="views/css/partials/auth.css"/>
+        <link rel="stylesheet" type="text/css" href="views/css/partials/auth_providers.css"/>
 
     <% } %>
 
     <% if (current_view == appRoute) { %>
 
         <!-- App CSS -->
-        <link rel="stylesheet" type="text/css" href="routes/css/<%=`${appRoute}`%>.css"/>
+        <link rel="stylesheet" type="text/css" href="views/css/<%=`${appRoute}`%>.css"/>
     <% } %>   
 </head>

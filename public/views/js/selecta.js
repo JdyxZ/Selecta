@@ -15,6 +15,9 @@ const SELECTA =
         // Set CSS variables
         document.documentElement.style.setProperty('--screen_width', available_width + "px");
         document.documentElement.style.setProperty('--screen_height', available_height + "px");
+
+        // Init other resources
+        CLIENT.init();
     }
 
     // TODO...

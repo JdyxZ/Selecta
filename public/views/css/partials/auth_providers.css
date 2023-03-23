@@ -22,41 +22,41 @@
 #google-button
 {
     background-color: #e9e9e9;
-    background-image: url("../../media/logos/google.png");
+    background-image: url("../../../media/logos/google.png");
     background-size: 20%;
 }
 
 #twitch-button
 {
     background-color: #7a26b2;
-    background-image: url("../../media/logos/twitch.png");
+    background-image: url("../../../media/logos/twitch.png");
     background-size: 20%;
 }
 
 #github-button
 {
     background-color: #191919;
-    background-image: url("../../media/logos/github.png");
+    background-image: url("../../../media/logos/github.png");
     background-size: 8%;
 }
 
 #discord-button
 {
     background-color: #000000;
-    background-image: url("../../media/logos/discord.png");
+    background-image: url("../../../media/logos/discord.png");
     background-size: 25%;
 }
 
 #twitter-button
 {
     background-color: #1d9bf0;
-    background-image: url("../../media/logos/twitter.png");
+    background-image: url("../../../media/logos/twitter.png");
     background-size: 8%;
 }
 
 #facebook-button
 {
     background-color: #212a7e;
-    background-image: url("../../media/logos/facebook.png");
+    background-image: url("../../../media/logos/facebook.png");
     background-size: 20%;
 }
