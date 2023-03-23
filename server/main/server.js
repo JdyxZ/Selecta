@@ -1,6 +1,6 @@
 // Module imports
 const {User, Room, WORLD, Message} = require("../model/model.js");
-const {getTime, isNumber, isString, isArray} = require("../../public/framework.js");
+const {getTime, isNumber, isString, isArray} = require("../../public/framework/javascript.js");
 const DATABASE = require("../database/database.js");
 
 /***************** SERVER *****************/

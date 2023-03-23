@@ -2,7 +2,7 @@
 
 const SERVER = require("../main/server.js");
 const SERVER_SETTINGS = require("../config/server_settings.js");
-require("../../public/framework.js");
+require("../../public/framework/javascript.js");
 
 var LOCKER =
 {

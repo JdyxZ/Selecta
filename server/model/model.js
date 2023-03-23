@@ -1,6 +1,6 @@
 /********************************** MODEL **********************************/
 
-const {getTime, isNumber, isString, isArray} = require("../../public/framework.js");
+const {getTime, isNumber, isString, isArray} = require("../../public/framework/javascript.js");
 
 /***************** SUGGESTION *****************/
 
@@ -29,14 +29,14 @@ User.prototype.toJSON = function()
 {
     const user_json =
     {
-        this.id,
-        this.name,
-        this.model,
-        this.asset,
-        this.room,
-        this.suggestion,
-        this.votes,
-        this.skip
+        id: this.id,
+        name: this.name,
+        model: this.model,
+        asset: this.asset,
+        room: this.room,
+        suggestion: this.suggestion,
+        votes: this.votes,
+        skip: this.skip
     }
 
     // Output JSON
@@ -48,9 +48,9 @@ User.prototype.toJSONSimplified = function()
     // Make a copy of the properties that we want to share
     const user_json =
     {
-        this.id,
-        this.asset,
-        this.dance
+        id: this.id,
+        asset: this.asset,
+        dance: this.dance
     }
 
     // Output JSON
@@ -99,15 +99,15 @@ Room.prototype.toJSON = function()
 {
     const room_json =
     {
-        this.id,
-        this.name,
-        this.objects,
-        this.people,
-        this.exits,
-        this.default_position,
-        this.suggestions,
-        this.skip_counter,
-        this.current_song,
+        id: this.id,
+        name: this.name,
+        objects: this.objects,
+        people: this.people,
+        exits: this.exits,
+        default_position: this.default_position,
+        suggestions: this.suggestions,
+        skip_counter: this.skip_counter,
+        current_song: this.current_song,
     }
 
     // Output JSON
@@ -254,7 +254,7 @@ var WORLD = {
     getDefaultRoom: function(id)
     {
         return this.rooms[1];
-    }
+    },
 
     addUser: function(user)
     {
@@ -345,5 +345,5 @@ function Message(sender, type, content, time)
 
 if(typeof(window) == "undefined")
 {
-    module.exports = { WORLD, Room, User, FACING_RIGHT, FACING_FRONT, FACING_LEFT, FACING_BACK, Message};
+    module.exports = { WORLD, Room, User, Message};
 }

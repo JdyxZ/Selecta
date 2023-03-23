@@ -10,7 +10,7 @@ const SERVER = require("../main/server.js");
 const DATABASE = require("../database/database.js");
 const LOCKER = require("../utils/locker.js");
 const SERVER_SETTINGS = require("../config/server_settings.js");
-require("../../public/framework.js");
+require("../../public/framework/javascript.js");
 
 // Util routes
 router.get('/get_world', function(req, res){ // Model info

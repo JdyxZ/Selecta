@@ -4,7 +4,7 @@
 const mysql = require('mysql2/promise');
 const {USER_CREDENTIALS, DATABASE_CREDENTIALS} = require('../config/database_credentials.js');
 const fs = require('fs/promises');
-const {isObject, isNumber} = require("../../public/framework.js");
+const {isObject, isNumber} = require("../../public/framework/javascript.js");
 
 var DATABASE = {
 
