@@ -78,7 +78,7 @@ function Room(data)
     this.objects = data == undefined ? [] : data.objects || [];
     this.people = data == undefined ? [] : data.people || []; 
     this.exits = data == undefined ? [] : data.exits || [];
-    this.default_position = data == undefined ? null : data.default_position || null;
+    this.default_model = data == undefined ? null : data.default_model || null;
     this.suggestions = {};
     this.skip_counter = 0;
     this.current_song = null;
@@ -104,7 +104,7 @@ Room.prototype.toJSON = function()
         objects: this.objects,
         people: this.people,
         exits: this.exits,
-        default_position: this.default_position,
+        default_model: this.default_model,
         suggestions: this.suggestions,
         skip_counter: this.skip_counter,
         current_song: this.current_song,
@@ -189,7 +189,7 @@ var WORLD = {
         {
             room.exits = room.exits.values();
             room.people = room.people.values();
-            // TODO: Convert default_position to matrix of values
+            // TODO: Convert default_model to matrix of values
             
             return room
         });
@@ -253,7 +253,7 @@ var WORLD = {
 
     getDefaultRoom: function(id)
     {
-        return this.rooms[1];
+        return this.rooms[0];
     },
 
     addUser: function(user)

@@ -26,6 +26,6 @@ const MODEL =
     // Scene data
     scene: null,
     renderer: null,
-    camera: null,
+    camera: null
     
 }

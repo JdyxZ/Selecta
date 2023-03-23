@@ -1,6 +1,6 @@
 /***************** CONTROLLER *****************/
 
-var CONTROLLER = 
+const CONTROLLER = 
 {
 
     // TODO

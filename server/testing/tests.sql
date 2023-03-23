@@ -34,9 +34,7 @@ CREATE TABLE IF NOT EXISTS selecta_users (
 
 CREATE TABLE IF NOT EXISTS selecta_user_assets (
     id INT NOT NULL AUTO_INCREMENT,
-    mesh VARCHAR(255) DEFAULT NULL,
-    texture VARCHAR(255) DEFAULT NULL,
-    skeleton VARCHAR(255) DEFAULT NULL,
+    asset JSON,
     animations JSON,
 
     PRIMARY KEY (id)
@@ -44,10 +42,7 @@ CREATE TABLE IF NOT EXISTS selecta_user_assets (
 
 CREATE TABLE IF NOT EXISTS selecta_object_assets (
     id INT NOT NULL AUTO_INCREMENT,
-    type VARCHAR(255) DEFAULT NULL,
-    mesh VARCHAR(255) DEFAULT NULL,
-    texture VARCHAR(255) DEFAULT NULL,
-    bounding_box JSON,
+    asset JSON,
 
     PRIMARY KEY (id)
 );
@@ -67,19 +62,8 @@ CREATE TABLE IF NOT EXISTS selecta_rooms (
 
 USE Selecta_DB;
 
-INSERT IGNORE INTO selecta_users (id, name, password, position, avatar, room)
-VALUES (1, 'javi', 'Cacahuete', 0, 'media/images/char2.png', 1);
-
-INSERT IGNORE INTO selecta_users (id, name, password, position, avatar, room)
-VALUES (2, 'eric', 'Avocado', 0, 'media/images/char2.png', 1);
-
-USE Selecta_DB;
-
-INSERT IGNORE INTO selecta_rooms (id, name, background, exits, people, range_left, range_right)
-VALUES (1, 'Camping', 'media/images/background.png', '{"exit1": [-1,-260,2,1]}', '{}', -260, 200);
-
-INSERT IGNORE INTO selecta_rooms (id, name, background, exits, people, range_left, range_right)
-VALUES (2, 'Forest', 'media/images/forest.png', '{"exit1": [1,200,1,1]}', '{}', -300, 240);
+INSERT IGNORE INTO selecta_object_assets(id, asset)
+VALUES(1, '{"object": "disco_room.gltf", "scaling": 80, "position": [0,-0.01,0]}');
 
 -- UPDATE USERS
 
@@ -105,6 +89,11 @@ TABLE selecta_users;
 TABLE selecta_rooms;
 TABLE selecta_sessions;
 
+USE Selecta_DB;
+
+TABLE selecta_user_assets;
+TABLE selecta_object_assets;
+
 -- TABLE DELETE CONTENT
 
 USE Selecta_DB;
@@ -115,7 +104,17 @@ USE Selecta_DB;
 
 DELETE FROM selecta_users;
 
+USE Selecta_DB;
+
 DELETE FROM selecta_rooms;
+
+USE Selecta_DB;
+
+DELETE FROM selecta_user_assets;
+
+USE Selecta_DB;
+
+DELETE FROM selecta_object_assets;
 
 -- TABLE DROP
 

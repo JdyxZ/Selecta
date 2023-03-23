@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS selecta_user_assets (
 CREATE TABLE IF NOT EXISTS selecta_object_assets (
     id INT NOT NULL AUTO_INCREMENT,
     asset JSON,
+    model JSON,
 
     PRIMARY KEY (id)
 );
@@ -44,16 +45,15 @@ CREATE TABLE IF NOT EXISTS selecta_rooms (
 );
 
 -- CREATE ASSETS
-
--- TODO
 INSERT IGNORE INTO selecta_user_assets(id, asset, animations)
-VALUES(1, '{folder:girl2, mesh:girl2.WBIN, texture:girl2.png, scale:0.3}' , '{animation1:idle.skanim, animation2:walking.skanim, animation3:macarena.skanim, animation4:dance2.skanim}')
+VALUES(1, '{"folder": "girl2", "mesh": "girl2.WBIN", "texture": "girl2.png", "scale": 0.3}' , '{"animation1": "idle.skanim", "animation2": "walking.skanim", "animation3": "macarena.skanim", "animation4": "dance2.skanim"}');
 
-INSERT IGNORE INTO selecta_object_assets(id, asset)
-VALUES(1, '{object:disco_room.gltf, scaling:80, position:[0,-.01,0]}')
+INSERT IGNORE INTO selecta_object_assets(id, asset, model)
+VALUES(1, '{"object": "disco_room.gltf"}', '{"model": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}');
+
 -- CREATE ROOMS
 INSERT IGNORE INTO selecta_rooms (id, name, objects, exits, people, defaultPosition)
-VALUES (1, 'Studio 54', '{}', '{}', '{}', '{}'); -- TODO
+VALUES (1, 'Studio 54', '{}', '{}', '{}', '{}'); 
 
 INSERT IGNORE INTO selecta_rooms (id, name, objects, exits, people, defaultPosition) 
-VALUES (2, 'Shadon', '{}', '{}', '{}', '{}'); -- TODO
+VALUES (2, 'Shadon', '{}', '{}', '{}', '{}'); 

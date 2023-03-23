@@ -46,7 +46,7 @@ const LOCAL_VERIFICATION =
             social : {},
             name : name,
             password: hashed_password,
-            position: room.default_position,
+            model: room.default_model,
             asset: 1,
             room : room.id,
         };
@@ -205,7 +205,7 @@ const SOCIAL_VERIFICATION =
             {
                 social: social,
                 avatar : "media/images/char1.png",
-                position: room.default_position,
+                model: room.default_model,
                 asset: 1,
                 room : room.id,
             };

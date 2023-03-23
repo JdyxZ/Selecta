@@ -2,9 +2,9 @@
 <% if (current_view == "login") { %>
 
     <!--- Login scripts -->
-    <script type="application/javascript" src="routes/js/ejs.js"></script>
+    <script type="application/javascript" src="views/js/ejs.js"></script>
     <script type="application/javascript" src="framework/html.js"></script>
-    <script type="application/javascript" src="routes/js/login.js"></script>
+    <script type="application/javascript" src="views/js/login.js"></script>
     <script type="application/javascript">LOGIN.init()</script>
     <script type="application/javascript">
         document.querySelector("#username").value = '<%-login_username%>';
@@ -16,9 +16,9 @@
 <% if (current_view == "signup") { %>
 
     <!--- Signup scripts -->
-    <script type="application/javascript" src="routes/js/ejs.js"></script>
+    <script type="application/javascript" src="views/js/ejs.js"></script>
     <script type="application/javascript" src="framework/html.js"></script>
-    <script type="application/javascript" src="routes/js/signup.js"></script>
+    <script type="application/javascript" src="views/js/signup.js"></script>
     <script type="application/javascript">SIGNUP.init()</script>
     <script type="application/javascript">
         document.querySelector("#username").value = '<%-signup_username%>';
@@ -31,13 +31,14 @@
 <% if (current_view == appRoute) { %>
 
     <!--- App scripts -->
-    <script type="application/javascript" src="routes/js/ejs.js"></script>
+    <script type="application/javascript" src="views/js/ejs.js"></script>
     <script type="application/javascript" src="framework/html.js"></script>
     <script type="application/javascript" src="framework/javascript.js"></script> 
-    <script type="application/javascript" src="view/view.js"></script> 
-    <script type="application/javascript" src="controller/controller.js"></script> 
+    <script type="application/javascript" src="mvc/model.js"></script> 
+    <script type="application/javascript" src="mvc/view.js"></script> 
+    <script type="application/javascript" src="mvc/controller.js"></script> 
     <script type="application/javascript" src="client.js"></script> 
-    <script type="application/javascript" src="routes/js/<%=`${appRoute}`%>.js"></script>
+    <script type="application/javascript" src="views/js/<%=`${appRoute}`%>.js"></script>
     <script type="application/javascript">SELECTA.init()</script>
 
 <% } %>
