@@ -22,4 +22,10 @@ const MODEL =
     next_song: null, 
     playback_time: null, // Playback time of the current song
     skipping_time: null // Song time when the skip action should be performed
+
+    // Scene data
+    scene: null,
+    renderer: null,
+    camera: null,
+    
 }

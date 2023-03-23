@@ -42,36 +42,32 @@ var DATABASE = {
         try
         {
             // Destructure json
-            const {social, name, password, model, avatar, room, position} = user_json; 
-
-            CREATE TABLE IF NOT EXISTS selecta_users (
-                id INT NOT NULL AUTO_INCREMENT,
-                social JSON,
-                name VARCHAR(255) UNIQUE DEFAULT NULL,
-                password VARCHAR(255) DEFAULT NULL,
-                model JSON, 
-                asset INT,
-                room INT,
-            
-                -- DEFINE FOREIGN KEYS FOR ASSET AND ROOM
-            
-                PRIMARY KEY (id)
-            );
+            const {social, name, password, model, asset, room} = user_json; 
 
             // Throw errors
-            if(!isObject(social)) throw "You must send a valid social object";
-            if(avatar === "" || avatar === null || avatar === undefined) throw "You must send an valid avatar";
+            if(!isObject(social)) throw "You must send a valid social";
+            if(!isObject(model)) throw "You must send an valid model";
+            if(!isObject(asset)) throw "You must send a valid asset";
             if(room === "" || room === null || room === undefined) throw "You must send a valid room";
-            if(position === "" || position === null || position === undefined) throw "You must send a valid position";
 
             // Declare result
             let result;
             
             // Local user push
-            if(name != undefined && password != undefined) result = await this.pool.query(`INSERT INTO ${this.users} SET social = ?, name = ?, password = ?, avatar = ?, room = ?, position = ? ;`, [JSON.stringify(social), name, password, avatar, room, position]);
+            if(name != undefined && password != undefined) result = await this.pool.query
+            (
+                `INSERT INTO ${this.users} 
+                SET social = ?, name = ?, password = ?, model = ?, asset = ?, room = ? ;`, 
+                [JSON.stringify(social), name, password, model, asset, room]
+            );
             
             // Social user push
-            else result = await this.pool.query(`INSERT INTO ${this.users} SET social = ?, avatar = ?, room = ?, position = ? ;`, [JSON.stringify(social), avatar, room, position]);
+            else result = await this.pool.query
+            (
+                `INSERT INTO ${this.users} 
+                SET social = ?, model = ?, asset = ?, room = ? ;`, 
+                [JSON.stringify(social), model, asset, room]
+            );
             
             // Output
             return ["OK", result];
@@ -113,7 +109,12 @@ var DATABASE = {
             if(!isObject(social)) throw "You must send a valid ID";
             
             // Query
-            const result = await this.pool.query(`SELECT * FROM jabbon_users WHERE JSON_EXTRACT(social, '$.id') = ? AND JSON_EXTRACT(social, '$.provider') = ?;`, [social.id, social.provider]);
+            const result = await this.pool.query
+            (
+                `SELECT * FROM jabbon_users WHERE JSON_EXTRACT(social, '$.id') = ? 
+                AND JSON_EXTRACT(social, '$.provider') = ?;`, 
+                [social.id, social.provider]
+            );
 
             // Output
             return ["OK", result];
@@ -187,7 +188,12 @@ var DATABASE = {
             if(room === "" || room === null || room === undefined) throw "You must send a valid room";
 
             // Query
-            const result = await this.pool.query(`UPDATE ${this.users} SET room_name = ?, position = ? WHERE name = ? ;`, [room, position, name]);
+            const result = await this.pool.query
+            (
+                `UPDATE ${this.users} 
+                SET room_name = ?, position = ? WHERE name = ? ;`,
+                [room, position, name]
+            );
 
             // Output
             return ["OK", result];
@@ -257,7 +263,12 @@ var DATABASE = {
             }, []);
 
             // Query
-            const result = await this.pool.query(`INSERT INTO ${this.users} (id, position, room) VALUES ? ON DUPLICATE KEY UPDATE id = VALUES(id), position = VALUES(position), room = VALUES(room);`, [values]);
+            const result = await this.pool.query
+            (
+                `INSERT INTO ${this.users} (id, position, room) VALUES ? 
+                ON DUPLICATE KEY UPDATE id = VALUES(id), position = VALUES(position), room = VALUES(room);`, 
+                [values]
+            );
             
             // Output
             return ["OK", result];
@@ -322,7 +333,12 @@ var DATABASE = {
             }, []);
 
             // Query            
-            const result = await this.pool.query(`INSERT INTO ${this.rooms} (id, people) VALUES ? ON DUPLICATE KEY UPDATE people = VALUES(people);`, [values]);
+            const result = await this.pool.query
+            (
+                `INSERT INTO ${this.rooms} (id, people) VALUES ? 
+                ON DUPLICATE KEY UPDATE people = VALUES(people);`, 
+                [values]
+            );
 
             // Output
             return ["OK", result];
