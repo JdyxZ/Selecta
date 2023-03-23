@@ -2,5 +2,5 @@
 
 const VIEW = 
 {
-    // TODO
+    // TODO: Aquí va el rendeer loop
 }
