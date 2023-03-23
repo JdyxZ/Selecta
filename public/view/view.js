@@ -1,6 +1,6 @@
-//VIEW
+/***************** VIEW *****************/
 
-var VIEW = 
+const VIEW = 
 {
     // TODO
 }

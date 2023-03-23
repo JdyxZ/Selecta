@@ -41,10 +41,22 @@ var DATABASE = {
     {
         try
         {
-            // TODO: Adapt code
-
             // Destructure json
-            const {social, name, password, avatar, room, position} = user_json; 
+            const {social, name, password, model, avatar, room, position} = user_json; 
+
+            CREATE TABLE IF NOT EXISTS selecta_users (
+                id INT NOT NULL AUTO_INCREMENT,
+                social JSON,
+                name VARCHAR(255) UNIQUE DEFAULT NULL,
+                password VARCHAR(255) DEFAULT NULL,
+                model JSON, 
+                asset INT,
+                room INT,
+            
+                -- DEFINE FOREIGN KEYS FOR ASSET AND ROOM
+            
+                PRIMARY KEY (id)
+            );
 
             // Throw errors
             if(!isObject(social)) throw "You must send a valid social object";
