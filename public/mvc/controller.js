@@ -62,14 +62,14 @@ const CONTROLLER =
     onTick: function(sender_id,new_target)
     {
         // Check
-        if(!CONTROLLER.users_obj[sender_id])
+        if(!MODEL.users_obj[sender_id])
         {
             console.error(`onTick callback -->The user id ${sender_id} is not registered`);
             return;
         }
 
         // Set user target
-        CONTROLLER.users_obj[sender_id].target = new_target;
+        MODEL.users_obj[sender_id].target = new_target;
     },
 
     loadAnimations: function ( animations , path)
