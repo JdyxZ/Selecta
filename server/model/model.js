@@ -17,7 +17,7 @@ function User(data)
 {   
     this.id = data == undefined ? -1 : data.id || -1;
     this.name = data == undefined ? "unnamed" : (data.name != undefined ? data.name : data.social.name || "unamed");
-    this.model = data == undefined ? null : data.model || null;
+    this.model = data == undefined ? [] : data.model || [];
     this.asset = data == undefined ? 0 : data.asset || 0; 
     this.room = data == undefined ? 1 : data.room || 1;
     this.suggestion = {};
@@ -61,12 +61,16 @@ User.prototype.toJSONSimplified = function()
 
 function userAsset(data)
 {
-    // TODO
+    this.id = data == undefined ? -1 : data.id || -1;
+    this.asset = data == undefined ? {} : data.asset || {};
+    this.animations = data == undefined ? [] : data.animations || [];
 }
 
 function objectAsset(data)
 {
-    // TODO
+    this.id = data == undefined ? -1 : data.id || -1;
+    this.asset = data == undefined ? {} : data.asset || {};
+    this.model = data == undefined ? [] : data.model || [];
 }
 
 /***************** ROOM *****************/
@@ -78,7 +82,7 @@ function Room(data)
     this.objects = data == undefined ? [] : data.objects || [];
     this.people = data == undefined ? [] : data.people || []; 
     this.exits = data == undefined ? [] : data.exits || [];
-    this.default_model = data == undefined ? null : data.default_model || null;
+    this.default_model = data == undefined ? [] : data.default_model || [];
     this.suggestions = {};
     this.skip_counter = 0;
     this.current_song = null;
@@ -180,8 +184,7 @@ var WORLD = {
         // Map user properties to proper structures
         users_array.map( user => 
         {
-            // TODO: Convert position to matrix of values
-            // Observación!!!!: Deberíamos utilizar las clase Matrix de la librería esa que comentó Agenjo
+            user.model = user.model.values();
         });
 
         // Map room properties to proper structures
@@ -189,15 +192,19 @@ var WORLD = {
         {
             room.exits = room.exits.values();
             room.people = room.people.values();
-            // TODO: Convert default_model to matrix of values
-            
-            return room
+            room.default_model = room.default_model.values();
+        });
+
+        // Map user assets properties to proper structures
+        user_assets_array.map( user_asset => 
+        {
+            user_asset.animations = user_asset.animations.values();
         });
 
         // Map object asset properties to proper structures
         object_assets_array.map( object_asset => 
         {
-            // TODO: Convert bounding_box to matrix of values
+            object_asset.model = object_asset.model.values();
         });
     
         const world_json =
