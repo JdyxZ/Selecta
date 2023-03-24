@@ -177,22 +177,21 @@ var DATABASE = {
     {
         try 
         {
-            // TODO: Adapt code
-
             // Get user meaningful properties 
-            const { name, position, room } = user_json; 
+            const { name, model, asset, room} = user_json; 
 
             // Throw errors
-            if(name === "" || name === null || name === undefined) throw "You must send a valid name";
-            if(position === "" || position === null || position === undefined) throw "You must send a valid position";
-            if(room === "" || room === null || room === undefined) throw "You must send a valid room";
+            if(!isString(name) || name === "") throw "You must send a valid name";
+            if(!isObject(model)) throw "You must send a valid model";
+            if(!isNumber(asset)) throw "You must send a valid asset";
+            if(!isNumber(room)) throw "You must send a valid room";
 
             // Query
             const result = await this.pool.query
             (
                 `UPDATE ${this.users} 
-                SET room_name = ?, position = ? WHERE name = ? ;`,
-                [room, position, name]
+                SET model = ?, asset = ?, room = ? WHERE name = ? ;`,
+                [JSON.stringify(model), asset, room]
             );
 
             // Output
@@ -254,19 +253,17 @@ var DATABASE = {
     {
         try
         {
-            // TODO: Adapt code
-
             // Wrap values into an array
             const values = users.values().reduce((values, user) => {
-                values.push([user.id, user.position, user.room]);
+                values.push([user.id, JSON.stringify(user.model), user.asset, user.room]);
                 return values;
             }, []);
 
             // Query
             const result = await this.pool.query
             (
-                `INSERT INTO ${this.users} (id, position, room) VALUES ? 
-                ON DUPLICATE KEY UPDATE id = VALUES(id), position = VALUES(position), room = VALUES(room);`, 
+                `INSERT INTO ${this.users} (id, model, asset, room) VALUES ? 
+                ON DUPLICATE KEY UPDATE id = VALUES(id), model = VALUES(model), asset = VALUES(asset), room = VALUES(room);`, 
                 [values]
             );
             
@@ -323,20 +320,19 @@ var DATABASE = {
     {
         try
         {
-            // TODO: Adapt code
-
             // Wrap values into an array
             const values = rooms.values().reduce((values, room) => {
+                const objects_json = JSON.stringify({model: room.objects});
                 const people_json = JSON.stringify(room.people.toObject("user"));
-                values.push([room.id, people_json]);
+                values.push([room.id, objects_json, people_json]);
                 return values;
             }, []);
 
             // Query            
             const result = await this.pool.query
             (
-                `INSERT INTO ${this.rooms} (id, people) VALUES ? 
-                ON DUPLICATE KEY UPDATE people = VALUES(people);`, 
+                `INSERT INTO ${this.rooms} (id, objects, people) VALUES ? 
+                ON DUPLICATE KEY UPDATE id = VALUES(id), objects = VALUES(objects), people = VALUES(people);`, 
                 [values]
             );
 
