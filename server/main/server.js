@@ -1,6 +1,6 @@
 // Module imports
-const {User, Room, WORLD, Message} = require("../model/model.js");
-const {getTime, isNumber, isString, isArray} = require("../../public/framework/javascript.js");
+const {User, Room, WORLD, Message, Suggestion, Song} = require("../model/model.js");
+const {getTime, isNumber, isString, isArray, isObject} = require("../../public/framework/javascript.js");
 const DATABASE = require("../database/database.js");
 
 /***************** SERVER *****************/
@@ -25,14 +25,19 @@ var SERVER =
         {
             console.log(model);
             process.exit();
+            return;
         }            
-        else
-        {
-            WORLD.init(model.rooms, model.users, model.user_assets, model.object_assets);
-            console.log("\n*********** MODEL INFO *********** \n");
-            console.log(`World data successfully loaded!`);
-            console.log(`Number of rooms ${WORLD.num_rooms}`);
-        } 
+   
+        // Init model
+        WORLD.init(model.rooms, model.users, model.user_assets, model.object_assets);
+
+        // Start room playback
+        this.initPlayback();
+
+        // Status prints
+        console.log("\n*********** MODEL INFO *********** \n");
+        console.log(`World data successfully loaded!`);
+        console.log(`Number of rooms ${WORLD.num_rooms}`);
     },
 
     // Ready callback
@@ -75,8 +80,9 @@ var SERVER =
             // If there is no send time, append one
             if(message.time == null) message.time = getTime();
 
-            // Eventually, message has passed all checkings and is ready to be sent!
-            this.routeMessage(message);
+            // Eventually, message has passed general checkings and is ready to be routed!
+            const status = this.routeMessage(message);
+            if (status != "OK") throw status;
         } 
         // Catch errors
         catch (error) 
@@ -107,8 +113,8 @@ var SERVER =
         connection.user_id = user_id;
         this.clients[user_id] = connection; 
         
-        // Send data about the new user
-        this.onNewUserToRoom(user_id);   
+        // Send data to new user and people of the room
+        this.onNewUserToRoom(user_id);
 
         // Log
         console.log(`EVENT --> User ${user.name} has joined`);
@@ -119,7 +125,7 @@ var SERVER =
         // Get user data
         const user_id = connection.user_id;
         const user = WORLD.getUser(user_id);
-        
+
         // Delete the connection
         delete this.clients[user_id];
         
@@ -170,23 +176,17 @@ var SERVER =
         switch(message.type)
         {
             case "TICK":
-                this.onTick(message);
-                break;
+                return this.onTick(message);
             case "SUGGEST":
-                this.onSuggest(message);
-                break;
+                return this.onSuggest(message);
             case "VOTE":
-                this.onVote(message);
-                break;
+                return this.onVote(message);
             case "SKIP":
-                this.onSkip(message);
-                break;
+                return this.onSkip(message);
             case "SONG_READY":
-                this.onSongReady(message);
-                break;
+                return this.onSongReady(message);
             case "EXIT":
-                this.onExit(message);
-                break;
+                return this.onExit(message);
         }
     },
 
@@ -202,12 +202,20 @@ var SERVER =
         // Log
         console.log(`EVENT --> User ${user.name} has sent a TICK message`);
 
+        // Do some checkings
+        if(content.model == undefined && content.animation == undefined) return "TICK_WRONG_CONTENT";
+        if(content.model && !isArray(content.model)) return "TICK_WRONG_MODEL_TYPE";
+        if(content.animation && !isString(content.animation)) return "TICK_WRONG_ANIMATION_TYPE";
+
         // Update the WORLD state
-        // TODO: Actualizamos posición, rotación y escala con la matriz que nos llega del usuario
-        // TODO: Actualizamos la animación del usuario
+        if(content.model != undefined) user.model = content.model;  
+        if(content.animation != undefined) user.animation = content.animation;      
     
         // Send the message to all the people in the room except the user
         this.sendRoomMessage(message, user.room, user.id);
+
+        // Output status
+        return "OK";
     },
 
     onSuggest: function(message)
@@ -219,15 +227,39 @@ var SERVER =
         // Get user data
         const user = WORLD.getUser(sender_id);
         const user_room = WORLD.getRoom(user.room);
+
+        // Get suggestion IDs
+        const old_songID = user.suggestion.songID;
+        const new_songID = content;
+
+        // Get suggestion
+        const suggestion = user_room.getSuggestion(new_songID);
         
         // Log
         console.log(`EVENT --> User ${user.name} has sent a SUGGEST message`);
 
-        // TODO: Update suggestions property from the room of the user
-        // TODO: Update suggestion property from the user instance
+        // TODO: Check
+        // - Whether the ID is valid with the Youtube API
+        // - Suggestion is within song_duration_range     
+        // - The suggestion is a music type video
+
+        // Do some checkings
+        if(!isString(new_songID)) return "SUGGEST_WRONG_SONGID";  
+        if(suggestion != undefined && suggestion.userID != sender_id) return "SUGGEST_SONG_ALREADY_SUGGESTED";
+
+        // Update the WORLD state
+        if(old_songID == undefined)
+            WORLD.addSuggestion(user.room, sender_id, new_songID);
+        else if(new_songID == old_songID)
+            WORLD.removeSuggestion(user.room, old_songID);
+        else
+            WORLD.updateSuggestion(user.room, old_songID, new_songID);
 
         // Redirect the message to the active room users
         this.sendRoomMessage(message, user.room, sender_id);
+
+        // Output status
+        return "OK";
     },
 
     onVote: function(message)
@@ -240,14 +272,47 @@ var SERVER =
         const user = WORLD.getUser(sender_id);
         const user_room = WORLD.getRoom(user.room);
 
+        // Get vote content
+        const songID = content;
+
+        // Get suggestion
+        const suggestion = user_room.getSuggestion(songID);
+
         // Log
         console.log(`EVENT --> User ${user.name} has sent a VOTE message`);
 
-        // TODO: Update the voteCounter property of the suggestions property from the room of the user (WARNING: Creo que no es necesario puesto que las sugerencias se guardan por referencia. Por ende, solo habría que hacer lo de abajo)
-        // TODO: Update the voteCounter property of the suggestion property from the user instance
+        // Do some checkings
+        if(!isString(songID)) return "VOTE_WRONG_SONGID"; // TODO: Check with Youtube API    
+        if(suggestion == undefined) return "VOTE_SONG_DOES_NOT_BELONG_TO_THE_ROOM";   
+        if(suggestion.userID == sender_id) return "VOTE_SONG_BELONGS_TO_THE_USER";
+
+        // Set aux var
+        const already_voted = songID in user.votes;
+
+        // Update the WORLD state
+        if(already_voted)
+        {
+            user.votes.remove(songID);
+            user_room.suggestions[songID].vote_counter--;
+        }    
+        else
+        {
+            user.votes = [...user.votes, songID];
+            user_room.suggestions[songID].vote_counter++;
+        }
+
+        // Build response message
+        const response =
+        {
+            songID,
+            action: already_voted ? "remove" : "add"
+        }
 
         // Redirect the message to the active room users
-        this.sendRoomMessage(message, user.room, sender_id);
+        this.sendRoomMessage(response, user.room, sender_id);
+
+        // Output status
+        return "OK"
     },
 
     onSkip: function(message)
@@ -263,11 +328,30 @@ var SERVER =
         // Log
         console.log(`EVENT --> User ${user.name} has sent a SKIP message`);
 
-        // TODO: Update skipCounter property from the room of the user
-        // TODO: Check if the skipCounter has reached a 70% of majority. If so, start the skipping procedure and proceed properly
+        // Do some checkings
+        if(user_room.skipping) return "SKIP_SONG_IS_SKIPPING";        
+
+        // Update WORLD state
+        if(user.skip)
+        {
+            user.skip = false;
+            user_room.skip_counter--;
+        }
+        else
+        {
+            user.skip = true;
+            user_room.skip_counter++;
+        }
 
         // Redirect the message to the active room users
         this.sendRoomMessage(message, user.room, sender_id);
+
+        // Check skip counter
+        if(user_room.skip_counter / user_room.num_people > WORLD.skipping_threshold)
+            this.skipSong(user.room);
+
+        // Output status
+        return "OK";
     },
 
     onSongReady: function(message)
@@ -278,12 +362,17 @@ var SERVER =
 
         // Get user data
         const user = WORLD.getUser(sender_id);
+        const user_room = WORLD.getRoom(user.room);
 
         // Log
         console.log(`EVENT --> User ${user.name} has sent a SONG_READY message`);
 
-        // TODO: Send the user a private message with the song playback settings info
-        // this.sendPrivateMessage(message, sender_id);
+        // Send to the user a private message with the song playback settings info
+        const playback_message = new Message("system", "PLAY_SONG", {current_song: user_room.current_song, playback_time: user_room.playback_time}, getTime());
+        this.sendPrivateMessage(playback_message, sender_id);
+
+        // Output status
+        return "OK";
     },
 
     onExit: function(message)
@@ -296,26 +385,14 @@ var SERVER =
         const user = WORLD.getUser(sender_id);
 
         // Get room data
-        // const exit = content.exit[1];
-        exit = 0;
-        var next_room = WORLD.getRoom(exit);
-        var previous_room = WORLD.getRoom(content.room);
+        const previous_room = WORLD.getRoom(user.room);
+        const next_room = WORLD.getRoom(exit);
 
         // Log
         console.log(`EVENT --> User ${user.name} has sent an EXIT message`);      
 
-        // TODO: Check and adapt this code to the new app (check the flow diagram).
-
-        // Update server data from users
-        user.room = new_room.id;
-        user.position = room.range[0];
-        user.target = user.position;
-
-        // Remove the user from last room
-        previous_room.people.remove(sender_id);
-
-        // Add user to new room 
-        next_room.people.push(user.id);
+        // TODO (check the flow diagram).
+        // OBSERVACIÓN: Importante utilizar la funcion WORLD.removeUserfromRoom()
 
         // Update user and new room clients info
         this.onNewUserToRoom(user.id);
@@ -324,6 +401,137 @@ var SERVER =
         message = new Message("system", "USER_LEFT", user_id, getTime());   
         this.sendRoomMessage(message, previous_room, sender_id);     
 
+    },
+
+    /***************** SERVER ACTIONS *****************/
+
+    chooseNextSong: function(roomID)
+    {
+        // Get room data
+        const room = WORLD.getRoom(roomID); 
+        const MVS = room.getMostVotedSuggestions(); // Most Voted Suggestion
+
+        // Declare next songID
+        let next_songID = null;
+
+        // Consider different case scenarios
+        if(room.num_people.length == 0) 
+            return;
+        else if(MVS.length == 0)           
+            next_songID = "QubialaSteve123"; // TODO: Select a song from the default playlist
+        else if(MVS.length == 1) 
+            next_songID = MVS[0];
+        else
+            next_songID = MVS.pickRandom();
+
+        // TODO: Get song data with Youtube API
+        const next_song = new Song(next_songID, 120);        
+
+        // Build and FETCH_SONG message
+        const message = new Message("system", "FETCH_SONG", JSON.stringify({song: next_song}), getTime());
+        this.sendRoomMessage(message, roomID, []);
+
+        // Remove suggestion
+        WORLD.removeSuggestion(roomID, next_song);
+
+        // Update room data
+        room.skip_counter = 0;
+        room.skipping = true;
+
+        // Update user data
+        room.people.forEach(user => {
+            user.skip = false;
+        })      
+
+        // Set next song
+        room.next_song = next_song;
+
+        // Output
+        return next_song
+    },
+
+    skipSong: function(roomID)
+    {
+        // Clear current song timers
+        clearTimeout(WORLD.timers.chooseNextSong);
+        clearTimeout(WORLD.timers.playSong);
+
+        // Choose next song
+        const next_song = this.chooseNextSong(roomID);
+
+        // Play song after some loading seconds
+        WORLD.timers.playSong = setTimeout(() => {
+            this.playSong(roomID, next_song)
+        }, WORLD.loading_duration);
+    },
+
+    checkSong(song)
+    {
+        // Checkings
+        if(song.constructor.name != "Song") 
+        {
+            console.log(`ERROR ---> Invalid value for the song ${song}`);
+            return "ERROR";
+        }
+        if(!isString(song.ID)) // TODO: Check with Youtube API that song.ID is valid
+        {
+            console.log(`ERROR ---> Invalid song ID ${song.ID}`);
+            return "ERROR";
+        }
+        if(!isNumber(song.duration) || outOfRange(song.duration, song_duration_range))
+        {
+            console.log(`ERROR ---> Invalid song duration ${song.duration}`);
+            return "ERROR";
+        }
+
+        // TODO...
+    },
+
+    playSong: function(roomID, song)
+    {
+        // Get room
+        const room = WORLD.getRoom(roomID);
+
+        // Check room
+        if(room.people.length == 0)
+        {
+            console.log(`ERROR ---> There is no people in the room ${room.name} and therefore it is not possible to play a song`);
+            return;
+        } 
+        
+        // Check song
+        const result = this.checkSong(song);
+        if (result == "ERROR") return;
+
+        // Update room playback settings
+        room.current_song = song;
+        room.next_song = null;
+        room.skipping = false;
+
+        // Set timers
+        WORLD.timers.chooseNextSong = setTimeout(() => {
+            this.chooseNextSong(roomID)
+        }, current_song.duration - WORLD.loading_duration);
+
+        WORLD.timers.playSong = setTimeout(() => {
+            this.playSong(roomID, room.next_song)
+        }, current_song.duration);
+        
+        // Update playback time
+        room.playback_time = 0.0;
+        setInterval(() => {room.playback_time += WORLD.playback_update_frequency / 100}, WORLD.playback_update_frequency);
+    },
+
+    initPlayback: function()
+    {
+        for (const roomID in WORLD.rooms)
+        {
+            // TODO: Pick a random song from default playlist and get song data from Youtube API
+            let song = new Song("QubialaSteve123", 120);
+
+            // Play song
+            this.playSong(roomID, song)
+        }
     },
 
     /***************** MESSAGE DELIVERY *****************/
@@ -417,7 +625,10 @@ var SERVER =
         message = new Message("system", "USER_JOIN", [user.toJSON()], getTime());
         this.sendRoomMessage(message, user.room, user.id);      
 
-        // TODO: Send to the new user all app assets
+        // Send to the new user all the app assets
+        message = new Message("system", "ASSETS", JSON.stringify({user_assets: WORLD.user_assets, object_assets: WORLD.object_assets}), getTime());
+        this.sendPrivateMessage(message, user.id);
+
     },
 
     filterActiveUsers(users_id)

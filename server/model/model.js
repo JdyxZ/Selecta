@@ -2,15 +2,6 @@
 
 const {getTime, isNumber, isString, isArray} = require("../../public/framework/javascript.js");
 
-/***************** SUGGESTION *****************/
-
-function Suggestion(songID, userID, vote_counter)
-{
-    this.songID = songID;
-    this.userID = userID;
-    this.vote_counter = vote_counter;
-}
-
 /***************** USER *****************/
 
 function User(data)
@@ -20,6 +11,7 @@ function User(data)
     this.model = data == undefined ? [] : data.model || [];
     this.asset = data == undefined ? 0 : data.asset || 0; 
     this.room = data == undefined ? 1 : data.room || 1;
+    this.animation = "idle";
     this.suggestion = {};
     this.votes = [];
     this.skip = false;
@@ -29,14 +21,15 @@ User.prototype.toJSON = function()
 {
     const user_json =
     {
-        id: this.id,
-        name: this.name,
-        model: this.model,
-        asset: this.asset,
-        room: this.room,
-        suggestion: this.suggestion,
-        votes: this.votes,
-        skip: this.skip
+        id,
+        name,
+        model,
+        asset,
+        room,
+        animation,
+        suggestion,
+        votes,
+        skip
     }
 
     // Output JSON
@@ -48,9 +41,10 @@ User.prototype.toJSONSimplified = function()
     // Make a copy of the properties that we want to share
     const user_json =
     {
-        id: this.id,
-        asset: this.asset,
-        dance: this.dance
+        id,
+        model,
+        asset,
+        dance
     }
 
     // Output JSON
@@ -85,33 +79,43 @@ function Room(data)
     this.default_model = data == undefined ? [] : data.default_model || [];
     this.suggestions = {};
     this.skip_counter = 0;
-    this.current_song = null;
+    this.skipping = false;
+    this.current_song = {};
+    this.next_song = {};
+    this.playback_time = 0;
+    this.num_people = 0;
 }
 
 Room.prototype.addUser = function(user)
 {
     this.people.push( user.id );
+    this.num_people++;
     user.room = this.id;
 }
 
 Room.prototype.removeUser = function(user)
 {
     delete this.people[user.id];
+    this.num_people--;
 }
 
 Room.prototype.toJSON = function()
 {
     const room_json =
     {
-        id: this.id,
-        name: this.name,
-        objects: this.objects,
-        people: this.people,
-        exits: this.exits,
-        default_model: this.default_model,
-        suggestions: this.suggestions,
-        skip_counter: this.skip_counter,
-        current_song: this.current_song,
+        id,
+        name,
+        objects,
+        people,
+        exits,
+        default_model,
+        suggestions,
+        skip_counter,
+        skipping,
+        current_song,
+        next_song,
+        playback_time,
+        num_people
     }
 
     // Output JSON
@@ -166,9 +170,55 @@ Room.prototype.getUsers = function(users_id)
     return user_room.people.clone().remove(users_id);
 }
 
+Room.prototype.getSuggestion = function(suggestionID)
+{
+    return this.suggestions[suggestionID];
+}
+
+Room.prototype.getSortedSuggestions = function()
+{
+    this.suggestions.values().sort((a, b) => {
+        return b.vote_counter - a.vote_counter
+    });
+}
+
+Room.prototype.getMostVotedSuggestions = function()
+{
+    let max = -1;
+    let max_list = [];
+
+    for(const suggestionID in this.suggestions)
+    {
+        if (this.suggestions.hasOwnProperty(suggestionID)) 
+        {                    
+            // Get current suggestion
+            const current_suggestion = this.suggestions[suggestionID];          
+            if(current_suggestion.vote_counter >= max)
+            {
+                max_list = [...max_list, current_suggestion];
+            }
+        }
+    }
+
+    return max_list;
+}
+
 /***************** WORLD *****************/
 
 var WORLD = {
+
+    // Macros
+    song_duration_range: [60, 600], // [s, s]
+    playback_update_frequency: 100, // [ms]
+    loading_duration: 5, // [s]
+    skipping_threshold: 0.7, // [%]
+
+    // Timers
+    timers: 
+    {
+        "chooseNextSong" : null,
+        "playSong" : null
+    },
 
     // Objects
     rooms: {},
@@ -297,10 +347,74 @@ var WORLD = {
         room.addUser(user);
     },
 
+    removeUserfromRoom: function(user_id, room_id)
+    {
+        const user = this.getUser(user_id);
+        const room = this.getRoom(room_id);
+        room.removeUser(user);
+    },
+
+    addSuggestion: function(room_id, user_id, song_id)
+    {
+        // Build suggestion instance
+        const suggestion = new Suggestion(song_id, user_id, 0);
+
+        // Get room and user
+        const room = this.getRoom(room_id);
+        const user = this.getUser(user_id);
+
+        // Add
+        user.suggestion = suggestion;
+        room.suggestions[songID] = suggestion;
+    },
+
+    removeSuggestion: function(room_id, song_id)
+    {
+        // Get room and user
+        const room = this.getRoom(room_id);
+        const user = this.getUser(this.room.getSuggestion(song_id).userID);
+
+        // Remove
+        delete room.suggestions[song_id];
+        delete user.suggestion;
+        user.suggestion = {};
+
+        // Remove votes for the deleted suggestion
+        this.removeSuggestionVotes(room_id, song_id);
+
+    },
+
+    updateSuggestion: function(room_id, old_songID, new_songID)
+    {
+        // Get room and suggestion
+        const room = this.getRoom(room_id);
+        const suggestion = room.getSuggestion(old_songID);
+
+        // Update
+        suggestion.songID = new_songID;
+
+        // Remove votes for the updated suggestion
+        this.removeSuggestionVotes(room_id, new_songID);
+    },
+
+    removeSuggestionVotes(room_id, songID)
+    {
+        // Get room and suggestion
+        const room = this.getRoom(room_id);
+        const suggestion = room.getSuggestion(songID);
+
+        // Reset counter
+        suggestion.vote_counter = 0;
+
+        // Remove votes
+        room.people.forEach(user => {
+            user.votes.remove(songID);
+        })
+    },
+
     fromJSON: function(world_json)
     {
         // Create rooms
-        
         world_json.rooms.forEach(room_json => {
             this.createRoom(room_json);
         }); 
@@ -342,6 +456,7 @@ var WORLD = {
 }
 
 /***************** MESSAGE *****************/
+
 function Message(sender, type, content, time)
 {
     this.sender = sender || ""; //ID
@@ -350,7 +465,24 @@ function Message(sender, type, content, time)
     this.time = time || getTime();
 }
 
+/***************** SUGGESTION *****************/
+
+function Suggestion(songID, userID, vote_counter)
+{
+    this.songID = songID;
+    this.userID = userID;
+    this.vote_counter = vote_counter;
+}
+
+/***************** SONG *****************/
+
+function Song(ID, duration)
+{
+    this.ID = ID;
+    this.duration = duration;
+}
+
 if(typeof(window) == "undefined")
 {
-    module.exports = { WORLD, Room, User, Message};
+    module.exports = { WORLD, Room, User, Message, Suggestion, Song};
 }

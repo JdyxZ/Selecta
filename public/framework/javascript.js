@@ -45,22 +45,6 @@ Date.prototype.getDate2 = function()
 
 /***************** ARRAY *****************/
 
-Array.prototype.remove = function(elements)
-{
-	// Checkings
-	if (isNumber(elements) || isString(elements)) elements = elements.toArray();
-
-	// Filter
-	elements.forEach( element =>
-	{
-		const index = this.indexOf(element);
-		if(index != -1) this.splice(index, 1);
-	});
-
-	// Output
-	return this;
-};
-
 Array.prototype.getObject = function(constraint)
 {
 	// Check that constraint is an object
@@ -175,11 +159,6 @@ Array.prototype.getObjectsIndexes = function(constraint)
 	return [];
 };
 
-Array.prototype.clone = function()
-{
-	return this.concat();
-};
-
 Array.prototype.toObject = function(prefix)
 {
 	return this.reduce((obj, element, index) => {
@@ -187,6 +166,37 @@ Array.prototype.toObject = function(prefix)
 		return obj;
 	}, {})
 };
+
+Array.prototype.remove = function(elements)
+{
+	// Checkings
+	if (isNumber(elements) || isString(elements)) elements = elements.toArray();
+
+	// Filter
+	elements.forEach( element =>
+	{
+		const index = this.indexOf(element);
+		if(index != -1) this.splice(index, 1);
+	});
+
+	// Output
+	return this;
+};
+
+Array.prototype.clone = function()
+{
+	return this.concat();
+};
+
+Array.prototype.isEmpty = function()
+{
+	return this.length == 0;
+};
+
+Array.prototype.pickRandom = function()
+{
+	return this[Math.floor(Math.random() * this.length)];
+}
 
 /***************** OBJECT *****************/
 
@@ -268,35 +278,40 @@ function getKeyFromValue(arr, value)
 	
 };
 
+function outOfRange(value, range)
+{
+	return value < range[0] || value > range[1];
+};
+
 function isNumber(x)
 {
 	return typeof(x) === 'number';
-}
+};
 
 function isString(x)
 {
 	return typeof(x) === 'string';
-}
+};
 
 function isBoolean(x)
 {
 	return typeof(x) === 'boolean';
-}
+};
 
 function isArray(x)
 {
 	return Array.isArray(x);
-}
+};
 
 function isFunction(x)
 {
 	return typeof x === "function";
-}
+};
 
 function isObject(x)
 {
 	return typeof x === 'object' && x !== null && !isArray(x);
-}
+};
 
 /*
 

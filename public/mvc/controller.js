@@ -90,7 +90,7 @@ const CONTROLLER =
             // Create the material for the avatar
             var mat = new RD.Material({
                 textures: {
-                color: avatar.folder+"/"+avatar.texture }
+                color: avatar.folder + "/" + avatar.texture }
                 });
             
             mat.register(avatar.folder);
