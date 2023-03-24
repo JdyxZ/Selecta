@@ -47,8 +47,8 @@ var DATABASE = {
             // Throw errors
             if(!isObject(social)) throw "You must send a valid social";
             if(!isObject(model)) throw "You must send an valid model";
-            if(!isObject(asset)) throw "You must send a valid asset";
-            if(room === "" || room === null || room === undefined) throw "You must send a valid room";
+            if(!isNumber(asset)) throw "You must send a valid asset";
+            if(!isNumber(room)) throw "You must send a valid room";
 
             // Declare result
             let result;
@@ -58,7 +58,7 @@ var DATABASE = {
             (
                 `INSERT INTO ${this.users} 
                 SET social = ?, name = ?, password = ?, model = ?, asset = ?, room = ? ;`, 
-                [JSON.stringify(social), name, password, model, asset, room]
+                [JSON.stringify(social), name, password, JSON.stringify(model), asset, room]
             );
             
             // Social user push
@@ -66,7 +66,7 @@ var DATABASE = {
             (
                 `INSERT INTO ${this.users} 
                 SET social = ?, model = ?, asset = ?, room = ? ;`, 
-                [JSON.stringify(social), model, asset, room]
+                [JSON.stringify(social), JSON.stringify(model), asset, room]
             );
             
             // Output
@@ -111,7 +111,7 @@ var DATABASE = {
             // Query
             const result = await this.pool.query
             (
-                `SELECT * FROM jabbon_users WHERE JSON_EXTRACT(social, '$.id') = ? 
+                `SELECT * FROM ${this.users} WHERE JSON_EXTRACT(social, '$.id') = ? 
                 AND JSON_EXTRACT(social, '$.provider') = ?;`, 
                 [social.id, social.provider]
             );

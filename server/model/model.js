@@ -253,7 +253,7 @@ var WORLD = {
 
     getDefaultRoom: function(id)
     {
-        return this.rooms[0];
+        return this.rooms[1];
     },
 
     addUser: function(user)

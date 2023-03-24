@@ -37,9 +37,9 @@ CREATE TABLE IF NOT EXISTS selecta_rooms (
     id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) UNIQUE,
     objects JSON,
-    exits JSON,
     people JSON,
-    defaultPosition JSON, -- MODEL MATRIX
+    exits JSON,
+    default_model JSON,
 
     PRIMARY KEY (id)
 );
@@ -52,8 +52,8 @@ INSERT IGNORE INTO selecta_object_assets(id, asset, model)
 VALUES(1, '{"object": "disco_room.gltf"}', '{"model": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}');
 
 -- CREATE ROOMS
-INSERT IGNORE INTO selecta_rooms (id, name, objects, exits, people, defaultPosition)
+INSERT IGNORE INTO selecta_rooms (id, name, objects, people, exits, default_model)
 VALUES (1, 'Studio 54', '{}', '{}', '{}', '{}'); 
 
-INSERT IGNORE INTO selecta_rooms (id, name, objects, exits, people, defaultPosition) 
+INSERT IGNORE INTO selecta_rooms (id, name, objects, people, exits, default_model) 
 VALUES (2, 'Shadon', '{}', '{}', '{}', '{}'); 
