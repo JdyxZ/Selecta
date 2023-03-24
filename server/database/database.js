@@ -4,7 +4,7 @@
 const mysql = require('mysql2/promise');
 const {USER_CREDENTIALS, DATABASE_CREDENTIALS} = require('../config/database_credentials.js');
 const fs = require('fs/promises');
-const {isObject, isNumber} = require("../../public/framework/javascript.js");
+const {isObject, isNumber, isArray} = require("../../public/framework/javascript.js");
 
 var DATABASE = {
 
@@ -46,7 +46,7 @@ var DATABASE = {
 
             // Throw errors
             if(!isObject(social)) throw "You must send a valid social";
-            if(!isObject(model)) throw "You must send an valid model";
+            if(!isArray(model)) throw "You must send an valid model";
             if(!isNumber(asset)) throw "You must send a valid asset";
             if(!isNumber(room)) throw "You must send a valid room";
 

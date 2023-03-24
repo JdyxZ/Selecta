@@ -14,16 +14,24 @@ const SELECTA =
     settings_menu : document.get("#interface_settings_id"),
     settings_menu_close : document.get("#settings_close_button"),
 
+    // Exit button and image
+    settings_exit : document.get("#logout_button"),
+    settings_exit_button : document.get("#logout-button"),
+
     // Methods
     init: function()
     {
         // Set CSS variables
-        document.documentElement.style.setProperty('--screen_width', available_width + "px");
-        document.documentElement.style.setProperty('--screen_height', available_height + "px");
+        document.documentElement.style.setProperty('--screen_width', this.available_width + "px");
+        document.documentElement.style.setProperty('--screen_height', this.available_height + "px");
+
+        // Hide the logout bttn
+        this.settings_exit_button.hide();
 
         // Set callbacks for interactions
         this.settings_button.when("click",this.onClick.bind(this));
         this.settings_menu_close.when("click",this.onClick.bind(this));
+        this.settings_exit.when("click",() => this.settings_exit_button.click());
 
         // Init other resources
         CONTROLLER.init();

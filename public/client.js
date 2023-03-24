@@ -131,11 +131,8 @@ var CLIENT =
         // Get data
         const room = message.content;
 
-        // Assign new room
-        CONTROLLER.current_room = room;
-
-        // Set room name into the chat
-        room_name.innerText = room.name;
+        // Manage the data
+        CONTROLLER.setRoom(room);
 
     },
 
@@ -145,8 +142,8 @@ var CLIENT =
         console.log("New YOUR_INFO message received\n");
         console.table(message.content);
 
-        // Assign my user info to my_user
-        CONTROLLER.my_user = message.content;
+        // Manage the data
+        CONTROLLER.setMyUser(message.content);
 
     },
 
@@ -156,10 +153,13 @@ var CLIENT =
         console.log("New ASSETS message received\n");
         console.table(message.content);
 
+        // Get the data
         const objects = message.content.objects;
-        
         const avatars = message.contebt.avatars;
-        // TODO
+
+        // Manage the data
+        CONTROLLER.setAvatarAssets(avatars);
+        CONTROLLER.setObjectAssets(objects);
     },
 
     onUserJoin: function(message)
@@ -171,12 +171,8 @@ var CLIENT =
         // Get data
         const users = message.content;
 
-        // Append new users to users
-        users.forEach(user => CONTROLLER.users_obj[user.id] = user);
-        CONTROLLER.users_arr = CONTROLLER.users_arr.concat(users);
-
-        // Set room people
-        setRoomPeople();
+        // Manage the data
+        CONTROLLER.setUsers(users);
     },
 
     onUserLeft: function(message)
@@ -187,21 +183,9 @@ var CLIENT =
 
         // Get data
         const user_id = message.content;
-        const index = CONTROLLER.users_arr.getObjectIndex({id: user_id});
-
-        // Check
-        if(index == -1)
-        { 
-            console.error(`onUserLeft callback --> User id ${user_id} is not in the container`);
-            return;  
-        }
-
-        // Delete left user from users
-        delete CONTROLLER.users_obj.user_id;
-        CONTROLLER.users_arr.splice(index, 1);
-
-        // Set room people
-        setRoomPeople();
+        
+        // Manage the data
+        CONTROLLER.onUserLeft(user_id);
     },
 
     onTick: function(message)
@@ -214,15 +198,8 @@ var CLIENT =
         const sender_id = message.sender;
         const new_target = message.content.target;
 
-        // Check
-        if(!CONTROLLER.users_obj[sender_id])
-        {
-            console.error(`onTick callback -->The user id ${sender_id} is not registered`);
-            return;
-        }
-
-        // Set user target
-        CONTROLLER.users_obj[sender_id].target = new_target;
+        // Manage the data
+        CONTROLLER.onTick(sender_id,new_target);
     },
 
     onExit: function(message)

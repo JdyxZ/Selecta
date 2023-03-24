@@ -19,17 +19,73 @@ const CONTROLLER =
 
     // ON MOUSE
 
-    setRoom: function(path)
+    setRoom: function(room)
     {
-        //load a GLTF for the room
-		MODEL.current_room = new RD.SceneNode({scaling:80,position:[0,-.01,0]});
-		MODEL.current_room.loadGLTF(path);
-		MODEL.scene.root.addChild( MODEL.current_room );
+        // Assign new room
+        MODEL.current_room = room;
+
+        // Set room name into the chat TODO
+        //room_name.innerText = room.name;
+    },
+
+    setMyUser: function(user)
+    {
+        // Assign my user info to my_user
+        MODEL.my_user = user;
+    },
+
+    setUsers: function(users)
+    {
+        // Append new users to users
+        users.forEach(user => MODEL.users_obj[user.id] = user);
+        MODEL.users_arr = MODEL.users_arr.concat(users);
+
+    },
+
+    onUserLeft: function(user_id)
+    {
+        const index = MODEL.users_arr.getObjectIndex({id: user_id});
+
+        // Check
+        if(index == -1)
+        { 
+            console.error(`onUserLeft callback --> User id ${user_id} is not in the container`);
+            return;  
+        }
+
+        // Delete left user from users
+        delete MODEL.users_obj.user_id;
+        MODEL.users_arr.splice(index, 1);
+
+    },
+
+    onTick: function(sender_id,new_target)
+    {
+        // Check
+        if(!CONTROLLER.users_obj[sender_id])
+        {
+            console.error(`onTick callback -->The user id ${sender_id} is not registered`);
+            return;
+        }
+
+        // Set user target
+        CONTROLLER.users_obj[sender_id].target = new_target;
+    },
+
+    loadAnimations: function ( animations , path)
+    {
+        res = {};
+        for (animation in animations)
+        {
+            var anim = res[animation] = new RD.SkeletalAnimation();
+            anim.load(path+animations[animation]);
+        };
+        return res;
     },
 
     setAvatarAssets: function(avatarAssets)
     {
-        forEach(avatar in avatarAssets)
+        for(avatar in avatarAssets)
         {
             // Create the material for the avatar
             var mat = new RD.Material({
@@ -41,7 +97,7 @@ const CONTROLLER =
             
             // Create pivot point for the avatar
             var character_pivot = new RD.SceneNode({
-                position: [-40,-5,0];
+                position: [-40,-5,0]
             });
 
             // Create a mesh for the avatar
@@ -64,18 +120,22 @@ const CONTROLLER =
 
             character_pivot.addChild(avat);
 		    avat.skeleton = new RD.Skeleton();
-            MODEL.user_assets.push();
-        }
+
+            // Load the animations
+
+            var animations = CONTROLLER.loadAnimations(avatar.animations,"data/"+avatar.folder+"/");
+            MODEL.user_assets[avatar.id] = {"character": avat ,"character_pivot": character_pivot,"animations": animations };
+        };
     },
 
     setObjectAssets: function(objectAssets)
     {
-        forEach(object in objectAssets)
+        for(object in objectAssets)
         {
             var obj = new RD.SceneNode( {scaling:object.scaling, position:object.position} );
             obj.loadGLTF(object.object);
             MODEL.object_assets.push(obj);
-        }
+        };
 
     }
 }

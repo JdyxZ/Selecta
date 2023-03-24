@@ -54,6 +54,11 @@ if(typeof(Document) != "undefined")
 
 		return parents;    
 	};
+	
+	HTMLElement.prototype.visibility = function()
+	{
+		return this.style.display;
+	};
 
 	HTMLElement.prototype.get = function(selector)	{
 

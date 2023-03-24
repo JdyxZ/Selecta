@@ -9,16 +9,89 @@
         <!--- SELECTA -->
         <div id="Selecta">
 
-            <!--- GRID -->
-            <div class="grid-layout">
-
-                <!--- APP -->
-                <h1> Aquí va la APP </h1>
-                
-            </div>
-
-            <!--- TEMPLATES -->
+            <!--- APP -->
+            <div class="interface_menu">
+                <h1>Selecta</h1>
             
+                <div class="img_layout"><img src="media/interface/img_speaker_on.png" alt="Descripción de la imagen"></div>
+                <div class="img_layout" style="display:none"><img src="media/interface/img_speaker_off.png" width="50%" height="50%" alt="Descripción de la imagen"></div>
+                <div class="img_layout"><img src="media/interface/img_song.png" width="50%" height="50%" alt="Descripción de la imagen"></div>
+                <div class="img_layout"><img src="media/interface/img_vote.png" width="50%" height="50%" alt="Descripción de la imagen"></div>
+                <div class="img_layout" id="settings_button"><img src="media/interface/img_settings.png" width="50%" height="50%" alt="Descripción de la imagen"></div>
+                <div class="img_layout" id="logout_button">
+                    <img src="media/interface/img_exit.png" width="50%" height="50%" alt="Descripción de la imagen"></div>
+                    <form action="/logout" id="logout-form">
+                        <button type="submit" id="logout-button"></button>
+                    </form>
+                <div class="img_layout"><img src="media/interface/img_info.png" width="50%" height="50%" alt="Descripción de la imagen"></div>
+            
+            </div>
+            <div class ="interface_settings" style="display: none"id="interface_settings_id"> 
+                <div class ="interface_settings_menu">
+                    <label class="menu_label">MENÚ</label>
+                    <div class="img_close" id="settings_close_button"><img src="media/interface/img_close_btn.png" alt="Descripción de la imagen"></div>
+                </div>
+                <div class="interface_settings_buttons_type1">
+                    <label class="volume_label">GENERAL VOLUME</label>
+                    <input class="volume_slider" type="range" min="0" max="50" step="0.1" value="25" id="slider-volumen">
+                </div>
+                <div class="interface_settings_buttons_type1">
+                    <label class="volume_label">MUSIC VOLUME</label>
+                    <input class="volume_slider" type="range" min="0" max="50" step="0.1" value="25" id="slider-volumen">
+                </div>
+                <div class="interface_settings_buttons_type1">
+                    <label class="volume_label">PEOPLE VOLUME</label>
+                    <input class="volume_slider" type="range" min="0" max="50" step="0.1" value="25" id="slider-volumen">
+                </div>
+                <div class="container">
+                    <div class="interface_settings_buttons_type2">
+                        <label class="audio_device_label">INPUT AUDIO DEVICE</label>
+                        <select class="interface_settings_audio_device" id="input_device"><option value="Que te vote txapote">Que te vote txapote</option></select>
+                    </div>
+                    <div class="interface_settings_buttons_type2">
+                        <label class="audio_device_label">OUTPUT AUDIO DEVICE</label>
+                        <select class="interface_settings_audio_device" id="output_device"><option value="Sanchez rojo socialista">Sanchez rojo socialista</option></select>
+                    </div>
+                </div>
+                <div class="interface_settings_buttons_type1">
+                    <label class="volume_label">MICRO VOLUME</label>
+                    <input class="volume_slider" type="range" min="0" max="50" step="0.1" value="25" id="slider-volumen">
+                </div>
+                <div class="interface_settings_apply_changes">APPLY CHANGES</div>
+            </div>
+            <div class="logout_menu">
+                <label class="logout_label">¿Are you sure you want to logout?</label>
+                <button class="logout_decision" id="logout_yes">Yes</button>
+                <button class="logout_decision" id="logout_no">No</button>
+            </div>
+            <!-- <div class ="interface_suggest_song" id="interface_suggest_song_id">
+                <div id="interface_suggest_song_title">SUGGEST A SONG!</div> 
+                <div class="interface_search_var">
+                    <img src="media/interface/img_search.png" width="3%" height="3%" alt="Descripción de la imagen" id="search_var_image">
+                    <input type="text" id="search_var_input">
+                </div>
+                <div class="interface_search_result">
+                    <div class="interface_search_result_song">
+                        <label class="interface_search_result_song_name">Chorrito pa las animas</label>
+                        <label class="interface_search_result_song_channel">Feid</label>
+                        <label class="interface_search_result_song_duration">2:48</label>
+                        <img src="media/interface/img_vote_song_1.png" alt="Descripción de la imagen" class="interface_search_result_song_vote">
+                    </div>
+                    <div class="interface_search_result_song">
+                        <label class="interface_search_result_song_name">Normal</label>
+                        <label class="interface_search_result_song_channel">Feid</label>
+                        <label class="interface_search_result_song_duration">2:36</label>
+                        <img src="media/interface/img_vote_song_2.png" alt="Descripción de la imagen" class="interface_search_result_song_vote">
+                    </div>
+                    <div class="interface_search_result_song">
+                        <label class="interface_search_result_song_name">Silly Watch</label>
+                        <label class="interface_search_result_song_channel">Lil Uzi Vert</label>
+                        <label class="interface_search_result_song_duration">3:16</label>
+                        <img src="media/interface/img_vote_song_2.png" alt="Descripción de la imagen" class="interface_search_result_song_vote">
+                    </div>
+                </div>
+                <div class="interface_error_prompt">ERROR PROMPT</div>
+            </div> -->
 
         <!--- Footer -->
         <%- include('partials/footer.ejs') %>
