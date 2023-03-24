@@ -8,7 +8,7 @@ const CONTROLLER =
     init: function()
     {
         // INIT 
-        CLIENT.init();
+        VIEW.init();
     },
 
     // DRAW
