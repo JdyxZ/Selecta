@@ -476,7 +476,7 @@ var SERVER =
         }, song_duration);
         
         // Set intervals
-        WORLD.intervarls.playbackTime = setInterval(() => {
+        WORLD.intervals.playbackTime = setInterval(() => {
             room.playback_time += WORLD.playback_update_frequency / 1000
         }, WORLD.playback_update_frequency);
     },

@@ -378,13 +378,15 @@ var WORLD = {
 
     removeSuggestion: function(room_id, song_id)
     {
-        // Check
-        if(this.room.getSuggestion(song_id) == undefined) return;
-
-        // Get room and user
+        // Get room
         const room = this.getRoom(room_id);
-        const user = this.getUser(this.room.getSuggestion(song_id).userID);
 
+        // Check
+        if(room.getSuggestion(song_id) == undefined) return;
+
+        // Get user
+        const user = this.getUser(room.getSuggestion(song_id).userID);
+        
         // Remove
         delete room.suggestions[song_id];
         delete user.suggestion;
