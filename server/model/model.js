@@ -102,6 +102,7 @@ Room.prototype.removeUser = function(user)
 {
     this.people.remove(user.id);
     this.num_people--;
+    user.room = null;
 }
 
 Room.prototype.toJSON = function()
@@ -320,28 +321,6 @@ var WORLD = {
     {
         return this.rooms[1];
     },
-
-    addUser: function(user)
-    {
-        if(users[user.id] != undefined)
-        {
-            console.error(`The user ${user.name} already exists`);
-            return;
-        }
-
-        users[user.id] = user;
-    },
-
-    addRoom: function(room)
-    {
-        if(rooms[room.id] != undefined)
-        {
-            console.error(`The room ${room.name} already exists`);
-            return;
-        }
-
-        rooms[room.id] = room;
-    },
     
     removeUser: function(id)
     {
@@ -350,6 +329,7 @@ var WORLD = {
 
     addUsertoRoom: function(user_id, room_id)
     {
+        // Get user and room objects
         const user = this.getUser(user_id);
         const room = this.getRoom(room_id);
         room.addUser(user);

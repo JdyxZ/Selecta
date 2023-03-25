@@ -114,7 +114,7 @@ const CONTROLLER =
         // Remove user votes
         user.votes.forEach(vote => {
             suggestions[vote].vote_counter--;
-        }):
+        });
 
         // Remove user 
         MODEL.users_obj.remove(user_id);
