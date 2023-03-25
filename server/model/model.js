@@ -373,19 +373,20 @@ var WORLD = {
 
         // Add
         user.suggestion = suggestion;
-        room.suggestions[songID] = suggestion;
+        room.suggestions[song_id] = suggestion;
     },
 
     removeSuggestion: function(room_id, song_id)
     {
-        // Get room
+        // Get room and suggestion
         const room = this.getRoom(room_id);
+        const suggestion = room.getSuggestion(song_id);
 
         // Check
-        if(room.getSuggestion(song_id) == undefined) return;
+        if(suggestion == undefined) return;
 
         // Get user
-        const user = this.getUser(room.getSuggestion(song_id).userID);
+        const user = this.getUser(suggestion.userID);
         
         // Remove
         room.suggestions.remove(song_id);
@@ -402,26 +403,33 @@ var WORLD = {
         // Get room and suggestion
         const room = this.getRoom(room_id);
         const suggestion = room.getSuggestion(old_songID);
+        
+        // Check
+        if(suggestion == undefined) return;
 
         // Update
         suggestion.songID = new_songID;
+        suggestion.vote_counter = 0;
 
         // Remove votes for the updated suggestion
         this.removeSuggestionVotes(room_id, new_songID);
     },
 
-    removeSuggestionVotes(room_id, songID)
+    removeSuggestionVotes(room_id, song_id)
     {
         // Get room and suggestion
         const room = this.getRoom(room_id);
-        const suggestion = room.getSuggestion(songID);
+        const suggestion = room.getSuggestion(song_id);
+
+        // Check
+        if(suggestion == undefined) return;
 
         // Reset counter
         suggestion.vote_counter = 0;
 
         // Remove votes
         room.people.forEach(user => {
-            user.votes.remove(songID);
+            user.votes.remove(song_id);
         })
     },
 

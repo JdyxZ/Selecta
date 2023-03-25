@@ -27,6 +27,70 @@ const MODEL =
     context: null,
     scene: null,
     renderer: null,
-    camera: null
-    
+    camera: null,
+
+    // Methods
+    addSuggestion: function(user_id, song_id)
+    {
+        // Get user
+        const user = this.users_obj[user_id];
+
+        // Add
+        user.suggestion = suggestion;
+        this.suggestions[song_id] = suggestion;
+    },
+
+    removeSuggestion: function(song_id)
+    {
+        // Get suggestion
+        const suggestion = this.suggestions[song_id];
+
+        // Check
+        if(suggestion == undefined) return;
+
+        // Get user
+        const user = this.users_obj[suggestion.userID];
+        
+        // Remove
+        this.suggestions.remove(song_id);
+        user.remove(suggestion);
+        user.suggestion = {};
+
+        // Remove votes for the removed suggestion
+        this.removeSuggestionVotes(room_id, song_id);
+
+    },
+
+    updateSuggestion: function(old_songID, new_songID)
+    {
+        // Get suggestion
+        const suggestion = this.suggestions[old_songID];
+
+        // Check
+        if(suggestion == undefined) return;
+
+        // Update
+        suggestion.songID = new_songID;
+        suggestion.vote_counter = 0;
+
+        // Remove votes for the updated suggestion
+        this.removeSuggestionVotes(new_songID);
+    },
+
+    removeSuggestionVotes(song_id)
+    {
+        // Get suggestion
+        const suggestion = this.suggestions[old_songID];
+
+        // Check
+        if(suggestion == undefined) return;
+
+        // Reset counter
+        suggestion.vote_counter = 0;
+
+        // Remove votes
+        users_arr.forEach(user => {
+            user.votes.remove(song_id);
+        })
+    },
 }

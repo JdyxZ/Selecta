@@ -521,7 +521,7 @@ var SERVER =
 
         // Build and FETCH_SONG message
         const message = new Message("system", "FETCH_SONG", JSON.stringify(next_song), getTime());
-        this.sendRoomMessage(message, roomID, []);
+        // this.sendRoomMessage(message, roomID, []); TODO
 
         // Output
         return next_song
