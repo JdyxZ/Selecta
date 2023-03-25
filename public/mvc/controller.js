@@ -13,7 +13,7 @@ const CONTROLLER =
         VIEW.init();
     },
     
-    /***************** WEBSOCKET CALLBACKS *****************/
+    /***************** MESSAGE CALLBACKS *****************/
 
     setRoom: function(room)
     {
@@ -133,27 +133,22 @@ const CONTROLLER =
         // TODO
     },
 
-    onSuggest: function()
+    onSuggest: function(suggestion)
     {
         // TODO
     },
 
-    onVote: function()
+    onVote: function(songID)
     {
         // TODO
     },
 
-    onFetchSong: function()
+    onFetchSong: function(songID)
     {
         // TODO
     },
 
-    onPlaySong: function()
-    {
-        // TODO
-    },
-
-    onSkipSong: function()
+    onPlaySong: function(songID, playbackTime)
     {
         // TODO
     },

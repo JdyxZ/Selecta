@@ -108,9 +108,6 @@ var CLIENT =
             case "PLAY_SONG":
                 this.onPlaySong(message);
                 break;
-            case "SKIP_SONG":
-                this.onSkipSong(message);
-                break;
             case "SHUT_DOWN":
                 this.onShutDown(message);
                 break;
@@ -235,9 +232,13 @@ var CLIENT =
         // Log
         console.log("New SUGGEST message received\n");
         console.table(message.content);
-    
+
+        // Unpack message data
+        const suggestionID = message.content;
+        const suggestion = suggestions[suggestionID];
+
         // Callback
-        CONTROLLER.onSuggest();
+        CONTROLLER.onSuggest(suggestion);
     },
 
     onVote: function(message)
@@ -245,9 +246,12 @@ var CLIENT =
         // Log
         console.log("New VOTE message received\n");
         console.table(message.content);
+
+        // Unpack message data
+        const songID = message.content;
     
         // Callback
-        CONTROLLER.onVote();
+        CONTROLLER.onVote(songID);
     },
 
     onFetchSong: function(message)
@@ -256,8 +260,11 @@ var CLIENT =
         console.log("New FETCH_SONG message received\n");
         console.table(message.content);
 
+        // Unpack message data
+        const songID = message.content;
+
         // Callback
-        CONTROLLER.onFetchSong();
+        CONTROLLER.onFetchSong(songID);
     },
 
     onPlaySong: function(message)
@@ -266,18 +273,12 @@ var CLIENT =
         console.log("New PLAY_SONG message received\n");
         console.table(message.content);
 
-       // Callback
-       CONTROLLER.onPlaySong();
-    },
-
-    onSkipSong: function(message)
-    {
-        // Log
-        console.log("New SKIP_SONG message received\n");
-        console.table(message.content);
+        // Unpack message data
+        const songID = message.content.song;
+        const playbackTime = message.content.playbackTime;
 
        // Callback
-       CONTROLLER.onSkipSong();
+       CONTROLLER.onPlaySong(songID, playbackTime);
     },
 
     onShutDown: function(message)

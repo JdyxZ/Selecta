@@ -394,11 +394,15 @@ var SERVER =
         // Do some checkings
         if(songID !== user_room.current_song.ID && songID !== user_room.next_song.ID) return ["SONGREADY_INVALID_SONGID", true];
 
-        // Calculate playback time
-        const playback_time = user_room.current_song.ID ? user_room.playback_time : user_room.playback_time - (user_room.skipping_time + WORLD.loading_time);
+        // Set playback info obj
+        const playbackInfo =
+        {
+            song: songID,
+            playbackTime: user_room.current_song.ID ? user_room.playback_time : user_room.playback_time - (user_room.skipping_time + WORLD.loading_time)
+        };
 
         // Build and send private message to the user with the song playback time
-        const playback_message = new Message("system", "PLAY_SONG", playback_time, getTime());
+        const playback_message = new Message("system", "PLAY_SONG", JSON.stringify(playbackInfo), getTime());
         this.sendPrivateMessage(playback_message, sender_id);
 
         // Output status
