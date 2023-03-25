@@ -18,6 +18,11 @@ const SELECTA =
     settings_exit : document.get("#logout_button"),
     settings_exit_button : document.get("#logout-button"),
 
+    // You sure you want to exit?
+    exit_button_yes: document.get("#logout_yes"),
+    exit_button_no: document.get("#logout_no"),
+    exit_menu: document.get("#logout_menu"),
+
     // Methods
     init: function()
     {
@@ -25,13 +30,16 @@ const SELECTA =
         document.documentElement.style.setProperty('--screen_width', this.available_width + "px");
         document.documentElement.style.setProperty('--screen_height', this.available_height + "px");
 
-        // Hide the logout bttn
+        // Hides
         this.settings_exit_button.hide();
+        this.exit_menu.hide();
 
         // Set callbacks for interactions
         this.settings_button.when("click",this.onClick.bind(this));
         this.settings_menu_close.when("click",this.onClick.bind(this));
-        this.settings_exit.when("click",() => this.settings_exit_button.click());
+        this.settings_exit.when("click",() => this.exit_menu.show());
+        this.exit_button_yes.when("click",() => this.settings_exit_button.click());
+        this.exit_button_no.when("click",() => this.exit_menu.hide());
 
         // Init other resources
         CONTROLLER.init();
@@ -41,6 +49,7 @@ const SELECTA =
     onClick: function(event)
     {
         var element = null;
+        console.log("click");
         if((event.target.getParents()[0].id == "settings_button") || (event.target.getParents()[0].id == "settings_close_button")) element = this.settings_menu;
         // const element = document.get("#"+event.target.getParents()[0].id);
         
