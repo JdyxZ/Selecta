@@ -30,16 +30,16 @@ const MODEL =
     camera: null,
 
     // Methods
-    addSuggestion: function(user_id, song_id)
+    addSuggestion: function(suggestion)
     {
         // Get user
-        const user = this.users_obj[user_id];
+        const user = this.users_obj[suggestion.userID];
 
         // Add
         user.suggestion = suggestion;
         this.suggestions[song_id] = suggestion;
     },
-
+    
     removeSuggestion: function(song_id)
     {
         // Get suggestion

@@ -135,7 +135,13 @@ const CONTROLLER =
 
     onSuggest: function(suggestion)
     {
-        // TODO
+        // Update the WORLD state
+        if(old_songID == undefined)
+            MODEL.addSuggestion(suggestion);
+        else if(new_songID == old_songID)
+            MODEL.removeSuggestion(suggestion.songID);
+        else
+            MODEL.updateSuggestion(xd, suggestion.songID);
     },
 
     onVote: function(songID)

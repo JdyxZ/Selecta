@@ -236,9 +236,10 @@ var CLIENT =
         // Unpack message data
         const suggestionID = message.content;
         const suggestion = suggestions[suggestionID];
+        const user = MODEL.users_obj[suggestion.userID];
 
         // Callback
-        CONTROLLER.onSuggest(suggestion);
+        CONTROLLER.onSuggest(user, suggestion);
     },
 
     onVote: function(message)
