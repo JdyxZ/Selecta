@@ -84,6 +84,7 @@ function Room(data)
     this.suggestions = {};
     this.skip_counter = 0;
     this.skipping = false;
+    this.skipping_time = 0;
     this.current_song = {};
     this.next_song = {};
     this.playback_time = 0;
@@ -105,7 +106,7 @@ Room.prototype.removeUser = function(user)
 
 Room.prototype.toJSON = function()
 {
-    const{ id, name, objects, people, exits, default_model, suggestions, skip_counter, skipping, current_song, next_song, playback_time, num_people } = this;
+    const{ id, name, objects, people, exits, default_model, suggestions, num_people } = this;
 
     const room_json =
     {
@@ -116,11 +117,6 @@ Room.prototype.toJSON = function()
         exits,
         default_model,
         suggestions,
-        skip_counter,
-        skipping,
-        current_song,
-        next_song,
-        playback_time,
         num_people
     }
 
@@ -215,7 +211,7 @@ var WORLD = {
 
     // Macros
     song_duration_range: [60, 600], // [s, s]
-    playback_update_frequency: 100, // [ms]
+    playback_update_frequency: 10, // [ms]
     loading_duration: 5, // [s]
     skipping_threshold: 0.7, // [%]
 
@@ -224,6 +220,12 @@ var WORLD = {
     {
         "chooseNextSong" : null,
         "playSong" : null
+    },
+
+    // Intervals
+    intervals:
+    {
+        "playbackTime" : null 
     },
 
     // Objects
@@ -376,6 +378,9 @@ var WORLD = {
 
     removeSuggestion: function(room_id, song_id)
     {
+        // Check
+        if(this.room.getSuggestion(song_id) == undefined) return;
+
         // Get room and user
         const room = this.getRoom(room_id);
         const user = this.getUser(this.room.getSuggestion(song_id).userID);

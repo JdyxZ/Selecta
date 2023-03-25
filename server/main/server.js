@@ -116,8 +116,15 @@ var SERVER =
         // Send data to new user and people of the room
         this.onNewUserToRoom(user_id);
 
+        // Build asset object
+        const assets = 
+        {
+            user_assets: WORLD.user_assets, 
+            object_assets: WORLD.object_assets
+        }
+
         // Send to the new user all the app assets
-        message = new Message("system", "ASSETS", JSON.stringify({user_assets: WORLD.user_assets, object_assets: WORLD.object_assets}), getTime());
+        message = new Message("system", "ASSETS", JSON.stringify(assets), getTime());
         this.sendPrivateMessage(message, user.id);
 
         // Log
@@ -368,11 +375,20 @@ var SERVER =
         const user = WORLD.getUser(sender_id);
         const user_room = WORLD.getRoom(user.room);
 
+        // Get songID
+        const songID = content;
+
         // Log
         console.log(`EVENT --> User ${user.name} has sent a SONG_READY message`);
 
-        // Send to the user a private message with the song playback settings info
-        const playback_message = new Message("system", "PLAY_SONG", {current_song: user_room.current_song, playback_time: user_room.playback_time}, getTime());
+        // Do some checkings
+        if(songID !== user_room.current_song.ID && songID !== user_room.next_song.ID) return "SONGREADY_INVALID_SONGID";
+
+        // Calculate playback time
+        const playback_time = user_room.current_song.ID ? user_room.playback_time : user_room.playback_time - (user_room.skipping_time + WORLD.loading_time);
+
+        // Build and send private message to the user with the song playback time
+        const playback_message = new Message("system", "PLAY_SONG", playback_time, getTime());
         this.sendPrivateMessage(playback_message, sender_id);
 
         // Output status
@@ -409,6 +425,50 @@ var SERVER =
 
     /***************** SERVER ACTIONS *****************/
 
+    playSong: function(roomID, song)
+    {
+        // Get room
+        const room = WORLD.getRoom(roomID);
+
+        // Check room
+        if(room.people.length == 0)
+        {
+            console.log(`ERROR ---> There is no people in the room ${room.name} and therefore it is not possible to play a song`);
+            return;
+        } 
+        
+        // Check song
+        const result = this.checkSong(song);
+        if (result == "ERROR") return;
+
+        // Update room playback settings
+        room.current_song = song;
+        room.next_song = null;
+        room.skipping = false;
+        room.skipping_time = 0;
+
+        // Set aux vars
+        const song_duration = room.current_song.duration;
+
+        // Clear intervals
+        clearInterval(WORLD.intervals.playbackTime);
+        room.playback_time = 0.0;
+
+        // Set timers
+        WORLD.timers.chooseNextSong = setTimeout(() => {
+            this.chooseNextSong(roomID)
+        }, song_duration - WORLD.loading_duration);
+
+        WORLD.timers.playSong = setTimeout(() => {
+            this.playSong(roomID, room.next_song)
+        }, song_duration);
+        
+        // Set intervals
+        WORLD.intervarls.playbackTime = setInterval(() => {
+            room.playback_time += WORLD.playback_update_frequency / 1000
+        }, WORLD.playback_update_frequency);
+    },
+
     chooseNextSong: function(roomID)
     {
         // Get room data
@@ -431,26 +491,21 @@ var SERVER =
         // TODO: Get song data with Youtube API
         const next_song = new Song(next_songID, 120);        
 
-        // Build and FETCH_SONG message
-        const message = new Message("system", "FETCH_SONG", JSON.stringify({song: next_song}), getTime());
-        this.sendRoomMessage(message, roomID, []);
-
-        // Remove suggestion
-        // !! ERIC COMMENT, diria que esto no deberia funcionar así, pero no lo se
-        if(WORLD.rooms[roomID].getSuggestion(next_song))
-            WORLD.removeSuggestion(roomID, next_song);
-
         // Update room data
         room.skip_counter = 0;
         room.skipping = true;
+        room.skipping_time = room.playback_time;
+        room.next_song = next_song;
+        WORLD.removeSuggestion(roomID, next_song);
 
         // Update user data
         room.people.forEach(user => {
             user.skip = false;
-        })      
+        });
 
-        // Set next song
-        room.next_song = next_song;
+        // Build and FETCH_SONG message
+        const message = new Message("system", "FETCH_SONG", JSON.stringify(next_song), getTime());
+        this.sendRoomMessage(message, roomID, []);
 
         // Output
         return next_song
@@ -460,7 +515,7 @@ var SERVER =
     {
         // Clear current song timers
         clearTimeout(WORLD.timers.chooseNextSong);
-        clearTimeout(WORLD.timers.playSong);
+        clearTimeout(WORLD.timers.playSong); 
 
         // Choose next song
         const next_song = this.chooseNextSong(roomID);
@@ -492,42 +547,6 @@ var SERVER =
         }
 
         // TODO...
-    },
-
-    playSong: function(roomID, song)
-    {
-        // Get room
-        const room = WORLD.getRoom(roomID);
-
-        // Check room
-        if(room.people.length == 0)
-        {
-            console.log(`ERROR ---> There is no people in the room ${room.name} and therefore it is not possible to play a song`);
-            return;
-        } 
-        
-        // Check song
-        const result = this.checkSong(song);
-        if (result == "ERROR") return;
-
-        // Update room playback settings
-        room.current_song = song;
-        room.next_song = null;
-        room.skipping = false;
-
-        // Set timers
-        // !! ERIC CAMBIO !! current_song --> room.current_song
-        WORLD.timers.chooseNextSong = setTimeout(() => {
-            this.chooseNextSong(roomID)
-        }, room.current_song.duration - WORLD.loading_duration);
-
-        WORLD.timers.playSong = setTimeout(() => {
-            this.playSong(roomID, room.next_song)
-        }, room.current_song.duration);
-        
-        // Update playback time
-        room.playback_time = 0.0;
-        setInterval(() => {room.playback_time += WORLD.playback_update_frequency / 100}, WORLD.playback_update_frequency);
     },
 
     initPlayback: function()
@@ -613,6 +632,7 @@ var SERVER =
         const room_users = user_room.people.clone().remove(user_id);
         const active_room_users_ids = this.filterActiveUsers(room_users); 
         const [_, active_room_users_info] = user_room.getRoomUsersInfo(active_room_users_ids, "INCLUSIVE");
+        const song = user_room.skipping ? user_room.next_song : user_room.current_song;
 
         // Send to the new user info about their current/new room
         message = new Message("system", "ROOM", user_room.toJSON(), getTime());
@@ -631,8 +651,11 @@ var SERVER =
 
         // Send to the current/new room active users data of the new user
         message = new Message("system", "USER_JOIN", [user.toJSON()], getTime());
-        this.sendRoomMessage(message, user.room, user.id);      
-
+        this.sendRoomMessage(message, user.room, user.id); 
+        
+        // Send to the new user info about the room current playback
+        message = new Message("system", "FETCH_SONG", JSON.stringify(song), getTime());
+        this.sendPrivateMessage(message, user_id);
     },
 
     filterActiveUsers(users_id)
