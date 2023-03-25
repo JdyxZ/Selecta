@@ -1,6 +1,6 @@
 // Module imports
 const {User, Room, WORLD, Message, Suggestion, Song} = require("../model/model.js");
-const {getTime, isNumber, isString, isArray, isObject} = require("../../public/framework/javascript.js");
+const {getTime, isNumber, isString, isArray, isObject, outOfRange} = require("../../public/framework/javascript.js");
 const DATABASE = require("../database/database.js");
 
 /***************** SERVER *****************/
@@ -115,6 +115,10 @@ var SERVER =
         
         // Send data to new user and people of the room
         this.onNewUserToRoom(user_id);
+
+        // Send to the new user all the app assets
+        message = new Message("system", "ASSETS", JSON.stringify({user_assets: WORLD.user_assets, object_assets: WORLD.object_assets}), getTime());
+        this.sendPrivateMessage(message, user.id);
 
         // Log
         console.log(`EVENT --> User ${user.name} has joined`);
@@ -432,7 +436,9 @@ var SERVER =
         this.sendRoomMessage(message, roomID, []);
 
         // Remove suggestion
-        WORLD.removeSuggestion(roomID, next_song);
+        // !! ERIC COMMENT, diria que esto no deberia funcionar así, pero no lo se
+        if(WORLD.rooms[roomID].getSuggestion(next_song))
+            WORLD.removeSuggestion(roomID, next_song);
 
         // Update room data
         room.skip_counter = 0;
@@ -477,8 +483,9 @@ var SERVER =
         {
             console.log(`ERROR ---> Invalid song ID ${song.ID}`);
             return "ERROR";
-        }
-        if(!isNumber(song.duration) || outOfRange(song.duration, song_duration_range))
+        } 
+
+        if(!isNumber(song.duration) || outOfRange(song.duration, WORLD.song_duration_range))
         {
             console.log(`ERROR ---> Invalid song duration ${song.duration}`);
             return "ERROR";
@@ -509,13 +516,14 @@ var SERVER =
         room.skipping = false;
 
         // Set timers
+        // !! ERIC CAMBIO !! current_song --> room.current_song
         WORLD.timers.chooseNextSong = setTimeout(() => {
             this.chooseNextSong(roomID)
-        }, current_song.duration - WORLD.loading_duration);
+        }, room.current_song.duration - WORLD.loading_duration);
 
         WORLD.timers.playSong = setTimeout(() => {
             this.playSong(roomID, room.next_song)
-        }, current_song.duration);
+        }, room.current_song.duration);
         
         // Update playback time
         room.playback_time = 0.0;
@@ -624,10 +632,6 @@ var SERVER =
         // Send to the current/new room active users data of the new user
         message = new Message("system", "USER_JOIN", [user.toJSON()], getTime());
         this.sendRoomMessage(message, user.room, user.id);      
-
-        // Send to the new user all the app assets
-        message = new Message("system", "ASSETS", JSON.stringify({user_assets: WORLD.user_assets, object_assets: WORLD.object_assets}), getTime());
-        this.sendPrivateMessage(message, user.id);
 
     },
 

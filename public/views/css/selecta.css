@@ -118,6 +118,18 @@ background-color: #4f545c;
     text-align: center;
     margin-right: 20%;
     padding-bottom: 20px;
+    display: flex;
+}
+
+#Selecta .interface_settings_options{
+    background: #d5e0e0;
+    display: block;
+    flex: 1;
+}
+
+#Selecta .interface_settings_menu_container{
+    background: #d5e0e0;
+    flex: 1;
 }
 
 /* MENÚ SETTINGS VOLUME SLIDERS */

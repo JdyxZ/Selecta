@@ -19,6 +19,8 @@ function User(data)
 
 User.prototype.toJSON = function()
 {
+    const{ id, name, model, asset, room, animation, suggestion, votes, skip } = this;
+
     const user_json =
     {
         id,
@@ -38,6 +40,8 @@ User.prototype.toJSON = function()
 
 User.prototype.toJSONSimplified = function()
 {
+    const{ id, model, asset, dance } = this;
+
     // Make a copy of the properties that we want to share
     const user_json =
     {
@@ -101,6 +105,8 @@ Room.prototype.removeUser = function(user)
 
 Room.prototype.toJSON = function()
 {
+    const{ id, name, objects, people, exits, default_model, suggestions, skip_counter, skipping, current_song, next_song, playback_time, num_people } = this;
+
     const room_json =
     {
         id,

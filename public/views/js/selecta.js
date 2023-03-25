@@ -13,6 +13,7 @@ const SELECTA =
     settings_button : document.get("#settings_button"),
     settings_menu : document.get("#interface_settings_id"),
     settings_menu_close : document.get("#settings_close_button"),
+    settings_apply_changes : document.get("#settings_apply_changes"),
 
     // Exit button and image
     settings_exit : document.get("#logout_button"),
@@ -37,6 +38,8 @@ const SELECTA =
         // Set callbacks for interactions
         this.settings_button.when("click",this.onClick.bind(this));
         this.settings_menu_close.when("click",this.onClick.bind(this));
+        this.settings_apply_changes.when("click",this.settings_menu.hide());
+
         this.settings_exit.when("click",() => this.exit_menu.show());
         this.exit_button_yes.when("click",() => this.settings_exit_button.click());
         this.exit_button_no.when("click",() => this.exit_menu.hide());

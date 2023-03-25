@@ -337,6 +337,6 @@ function check(x)
 
 if(typeof(window) == "undefined")
 {
- 	module.exports = {getTime, getDate, getKeyFromValue, isNumber, isString, isBoolean, isArray, isFunction, isObject};
+ 	module.exports = {getTime, getDate, getKeyFromValue, isNumber, isString, isBoolean, isArray, isFunction, isObject, outOfRange};
 }
  
