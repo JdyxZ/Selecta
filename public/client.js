@@ -131,7 +131,7 @@ var CLIENT =
         // Get data
         const room = message.content;
 
-        // Manage the data
+        // Callback
         CONTROLLER.setRoom(room);
 
     },
@@ -142,7 +142,7 @@ var CLIENT =
         console.log("New YOUR_INFO message received\n");
         console.table(message.content);
 
-        // Manage the data
+        // Callback
         CONTROLLER.setMyUser(message.content);
     },
 
@@ -156,7 +156,7 @@ var CLIENT =
         const user_assets = message.content.user_assets;
         const object_assets = message.contebt.object_assets;
 
-        // Manage the data
+        // Callback
         CONTROLLER.setAvatarAssets(user_assets);
         CONTROLLER.setObjectAssets(object_assets);
     },
@@ -170,7 +170,7 @@ var CLIENT =
         // Get data
         const users = message.content;
 
-        // Manage the data
+        // Callback
         CONTROLLER.onUserJoin(users);
     },
 
@@ -182,9 +182,19 @@ var CLIENT =
 
         // Get data
         const user_id = message.content;
+
+        // Get user index in array
+        const index = MODEL.users_arr.getObjectIndex({id: user_id});
+
+        // Check
+        if(index == -1)
+        { 
+            console.error(`onUserLeft callback --> User id ${user_id} is not in the container`);
+            return;  
+        }
         
-        // Manage the data
-        CONTROLLER.onUserLeft(user_id);
+        // Callback
+        CONTROLLER.onUserLeft(user_id, index);
     },
 
     onTick: function(message)
@@ -195,10 +205,19 @@ var CLIENT =
 
         // Get data
         const sender_id = message.sender;
-        const new_target = message.content.target;
+        const user = MODEL.users_obj[sender_id];
+        const model = message.content.model;
+        const animation = message.content.animation;
 
-        // Manage the data
-        CONTROLLER.onTick(sender_id,new_target);
+        // Check
+        if(!user)
+        {
+            console.error(`onTick callback -->The user id ${sender_id} is not registered`);
+            return;
+        }
+
+        // Callback
+        CONTROLLER.onTick(user, model, animation);
     },
 
     onExit: function(message)
@@ -207,7 +226,8 @@ var CLIENT =
         console.log("New EXIT message received\n");
         console.table(message.content);
 
-        // TODO
+        // Callback
+        CONTROLLER.onExit();
     },
 
     onSuggest: function(message)
@@ -216,7 +236,8 @@ var CLIENT =
         console.log("New SUGGEST message received\n");
         console.table(message.content);
     
-        // TODO
+        // Callback
+        CONTROLLER.onSuggest();
     },
 
     onVote: function(message)
@@ -225,7 +246,8 @@ var CLIENT =
         console.log("New VOTE message received\n");
         console.table(message.content);
     
-        // TODO
+        // Callback
+        CONTROLLER.onVote();
     },
 
     onFetchSong: function(message)
@@ -234,7 +256,8 @@ var CLIENT =
         console.log("New FETCH_SONG message received\n");
         console.table(message.content);
 
-       // TODO
+        // Callback
+        CONTROLLER.onFetchSong();
     },
 
     onPlaySong: function(message)
@@ -243,7 +266,8 @@ var CLIENT =
         console.log("New PLAY_SONG message received\n");
         console.table(message.content);
 
-       // TODO
+       // Callback
+       CONTROLLER.onPlaySong();
     },
 
     onSkipSong: function(message)
@@ -252,7 +276,8 @@ var CLIENT =
         console.log("New SKIP_SONG message received\n");
         console.table(message.content);
 
-       // TODO
+       // Callback
+       CONTROLLER.onSkipSong();
     },
 
     onShutDown: function(message)
@@ -269,6 +294,8 @@ var CLIENT =
         // Log
         console.log("New ERROR message received\n");
         console.table(message.content);
+
+        // TODO
     },
 
     // Methods

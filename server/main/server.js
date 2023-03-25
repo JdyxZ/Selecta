@@ -146,8 +146,8 @@ var SERVER =
         const user_id = connection.user_id;
         const user = WORLD.getUser(user_id);
 
-        // Delete the connection
-        delete this.clients[user_id];
+        // Remove connection
+        this.clients.remove(user_id);
         
         // Update info to the other users
         const message = new Message("system", "USER_LEFT", user.id, getTime());
@@ -326,7 +326,7 @@ var SERVER =
         const response =
         {
             songID,
-            action: already_voted ? "remove" : "add"
+            requester: sender_id
         }
 
         // Redirect the message to the active room users

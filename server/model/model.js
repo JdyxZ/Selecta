@@ -93,14 +93,14 @@ function Room(data)
 
 Room.prototype.addUser = function(user)
 {
-    this.people.push( user.id );
+    this.people.push(user.id);
     this.num_people++;
     user.room = this.id;
 }
 
 Room.prototype.removeUser = function(user)
 {
-    delete this.people[user.id];
+    this.people.remove(user.id);
     this.num_people--;
 }
 
@@ -388,11 +388,11 @@ var WORLD = {
         const user = this.getUser(room.getSuggestion(song_id).userID);
         
         // Remove
-        delete room.suggestions[song_id];
-        delete user.suggestion;
+        room.suggestions.remove(song_id);
+        user.remove(suggestion);
         user.suggestion = {};
 
-        // Remove votes for the deleted suggestion
+        // Remove votes for the removed suggestion
         this.removeSuggestionVotes(room_id, song_id);
 
     },

@@ -27,43 +27,6 @@ const CONTROLLER =
         MODEL.my_user = user;
     },
 
-    onUserJoin: function(users)
-    {
-        // Append new users to users
-        users.forEach(user => MODEL.users_obj[user.id] = user);
-        MODEL.users_arr = MODEL.users_arr.concat(users);
-    },
-
-    onUserLeft: function(user_id)
-    {
-        // Get user index in array
-        const index = MODEL.users_arr.getObjectIndex({id: user_id});
-
-        // Check
-        if(index == -1)
-        { 
-            console.error(`onUserLeft callback --> User id ${user_id} is not in the container`);
-            return;  
-        }
-
-        // Delete left user from users
-        delete MODEL.users_obj.user_id;
-        MODEL.users_arr.splice(index, 1);
-    },
-
-    onTick: function(sender_id,new_target)
-    {
-        // Check
-        if(!MODEL.users_obj[sender_id])
-        {
-            console.error(`onTick callback -->The user id ${sender_id} is not registered`);
-            return;
-        }
-
-        // Set user target
-        MODEL.users_obj[sender_id].target = new_target;
-    },
-
     setAvatarAssets: function(user_assets)
     {
         for(avatar in user_assets)
@@ -129,7 +92,71 @@ const CONTROLLER =
             MODEL.object_assets.push(obj);
         };
 
-    }
+    },
+
+    onUserJoin: function(users)
+    {
+        // Append new users to users
+        users.forEach(user => MODEL.users_obj[user.id] = user);
+        MODEL.users_arr = MODEL.users_arr.concat(users);
+    },
+
+    onUserLeft: function(user_id, index)
+    {
+        // Get user data
+        const user = MODEL.users_obj[user_id];
+        const suggestion = user.suggestion;
+
+        // Remove user suggestion
+        if(suggestion)
+            suggestions.remove(suggestion.songID);
+
+        // Remove user votes
+        user.votes.forEach(vote => {
+            suggestions[vote].vote_counter--;
+        }):
+
+        // Remove user 
+        MODEL.users_obj.remove(user_id);
+        MODEL.users_arr.splice(index, 1);
+    },
+
+    onTick: function(user, model, animation)
+    {
+        // Set user model
+        if(model) user.model = model; 
+        if(animation) user.animation = animation;
+    },
+
+    onExit: function()
+    {
+        // TODO
+    },
+
+    onSuggest: function()
+    {
+        // TODO
+    },
+
+    onVote: function()
+    {
+        // TODO
+    },
+
+    onFetchSong: function()
+    {
+        // TODO
+    },
+
+    onPlaySong: function()
+    {
+        // TODO
+    },
+
+    onSkipSong: function()
+    {
+        // TODO
+    },
 
     /***************** ACTIONS *****************/
 

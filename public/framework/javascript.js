@@ -238,6 +238,11 @@ setObjectProperty("concat", function(obj) {
 	return {...this, ...obj};
 });
 
+setObjectProperty("remove", function(property) { 
+	if(this[property] == undefined) throw "Property does not exist in the object";
+	else delete this[property];
+});
+
 setObjectProperty("isEmpty", function() { 
 	for(const key in this) 
 	{
