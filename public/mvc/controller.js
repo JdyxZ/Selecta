@@ -3,29 +3,22 @@
 const CONTROLLER = 
 {
 
-    // TODO
+    // Vars
+
+    /***************** INIT *****************/
 
     init: function()
     {
         // INIT 
         VIEW.init();
     },
-
-    // DRAW
-
-    // UPDATE
-
-    // UPDATE USER
-
-    // ON MOUSE
+    
+    /***************** WEBSOCKET CALLBACKS *****************/
 
     setRoom: function(room)
     {
         // Assign new room
         MODEL.current_room = room;
-
-        // Set room name into the chat TODO
-        //room_name.innerText = room.name;
     },
 
     setMyUser: function(user)
@@ -34,16 +27,16 @@ const CONTROLLER =
         MODEL.my_user = user;
     },
 
-    setUsers: function(users)
+    onUserJoin: function(users)
     {
         // Append new users to users
         users.forEach(user => MODEL.users_obj[user.id] = user);
         MODEL.users_arr = MODEL.users_arr.concat(users);
-
     },
 
     onUserLeft: function(user_id)
     {
+        // Get user index in array
         const index = MODEL.users_arr.getObjectIndex({id: user_id});
 
         // Check
@@ -56,7 +49,6 @@ const CONTROLLER =
         // Delete left user from users
         delete MODEL.users_obj.user_id;
         MODEL.users_arr.splice(index, 1);
-
     },
 
     onTick: function(sender_id,new_target)
@@ -72,20 +64,9 @@ const CONTROLLER =
         MODEL.users_obj[sender_id].target = new_target;
     },
 
-    loadAnimations: function ( animations , path)
+    setAvatarAssets: function(user_assets)
     {
-        res = {};
-        for (animation in animations)
-        {
-            var anim = res[animation] = new RD.SkeletalAnimation();
-            anim.load(path+animations[animation]);
-        };
-        return res;
-    },
-
-    setAvatarAssets: function(avatarAssets)
-    {
-        for(avatar in avatarAssets)
+        for(avatar in user_assets)
         {
             // Create the material for the avatar
             var mat = new RD.Material({
@@ -128,9 +109,20 @@ const CONTROLLER =
         };
     },
 
-    setObjectAssets: function(objectAssets)
+    loadAnimations: function (animations , path)
     {
-        for(object in objectAssets)
+        res = {};
+        for (animation in animations)
+        {
+            var anim = res[animation] = new RD.SkeletalAnimation();
+            anim.load(path+animations[animation]);
+        };
+        return res;
+    },
+
+    setObjectAssets: function(object_assets)
+    {
+        for(object in object_assets)
         {
             var obj = new RD.SceneNode( {scaling:object.scaling, position:object.position} );
             obj.loadGLTF(object.object);
@@ -138,4 +130,15 @@ const CONTROLLER =
         };
 
     }
+
+    /***************** ACTIONS *****************/
+
+    // DRAW
+
+    // UPDATE
+
+    // UPDATE USER
+
+    // ON MOUSE
+
 }

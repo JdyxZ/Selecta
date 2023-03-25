@@ -144,7 +144,6 @@ var CLIENT =
 
         // Manage the data
         CONTROLLER.setMyUser(message.content);
-
     },
 
     setAssets: function(message)
@@ -153,13 +152,13 @@ var CLIENT =
         console.log("New ASSETS message received\n");
         console.table(message.content);
 
-        // Get the data
-        const objects = message.content.objects;
-        const avatars = message.contebt.avatars;
+        // Get data
+        const user_assets = message.content.user_assets;
+        const object_assets = message.contebt.object_assets;
 
         // Manage the data
-        CONTROLLER.setAvatarAssets(avatars);
-        CONTROLLER.setObjectAssets(objects);
+        CONTROLLER.setAvatarAssets(user_assets);
+        CONTROLLER.setObjectAssets(object_assets);
     },
 
     onUserJoin: function(message)
@@ -172,7 +171,7 @@ var CLIENT =
         const users = message.content;
 
         // Manage the data
-        CONTROLLER.setUsers(users);
+        CONTROLLER.onUserJoin(users);
     },
 
     onUserLeft: function(message)

@@ -75,21 +75,30 @@ var SERVER =
             
             // Check message
             const result = this.checkMessage(connection, message);
-            if (result != "OK") throw result;
+            if (result[0] != "OK") throw result;
 
             // If there is no send time, append one
             if(message.time == null) message.time = getTime();
 
             // Eventually, message has passed general checkings and is ready to be routed!
             const status = this.routeMessage(message);
-            if (status != "OK") throw status;
+            if (status[0] != "OK") throw status;
         } 
         // Catch errors
         catch (error) 
         {
+            // Log error
             console.log("ERROR --> Error upon processing received message \n", error);
-            const message = new Message("system", "ERROR", "Error upon processing your message", getTime());
-            connection.sendUTF(JSON.stringify(message));
+
+            // Build error message
+            let error_message;
+            if(isArray(error) && error.length == 2 && error[1] === true)
+                error_message = new Message("system", "ERROR", error, getTime());
+            else
+                error_message = new Message("system", "ERROR", "Error upon processing your message", getTime());
+            
+            // Send error message
+            this.sendPrivateMessage(error_message, message.sender);
         }
     },
 
@@ -160,22 +169,22 @@ var SERVER =
 
         // Check the sender is sending a valid type of message 
         if(!this.messages_types.includes(message.type))
-            return "TYPE_MESSAGE_ERROR";
+            return ["TYPE_MESSAGE_ERROR", true];
         
         // Check that the sender is registered in the WORLD
         if(user == undefined)
-            return "SENDER_EXISTS_ERROR";
+            return ["SENDER_EXISTS_ERROR", false];
         
         // Check the sender id and the connection user id matches
         if (message.sender != user_id)
-            return "SENDER_MATCH_ERROR";
+            return ["SENDER_MATCH_ERROR", false];
         
         // Check message content is not empty
         if(message.content.length == 0)
-            return "MESSAGE_EMPTY_ERROR";
+            return ["MESSAGE_EMPTY_ERROR", true];
 
         // Output
-        return "OK";
+        return ["OK", false];
     },
 
     /***************** MESSAGE ROUTING *****************/
@@ -198,6 +207,8 @@ var SERVER =
                 return this.onSongReady(message);
             case "EXIT":
                 return this.onExit(message);
+            default:
+                return ["WTF", false];
         }
     },
 
@@ -214,9 +225,9 @@ var SERVER =
         console.log(`EVENT --> User ${user.name} has sent a TICK message`);
 
         // Do some checkings
-        if(content.model == undefined && content.animation == undefined) return "TICK_WRONG_CONTENT";
-        if(content.model && !isArray(content.model)) return "TICK_WRONG_MODEL_TYPE";
-        if(content.animation && !isString(content.animation)) return "TICK_WRONG_ANIMATION_TYPE";
+        if(content.model == undefined && content.animation == undefined) return ["TICK_WRONG_CONTENT", true];
+        if(content.model && !isArray(content.model)) return ["TICK_WRONG_MODEL_TYPE", true];
+        if(content.animation && !isString(content.animation)) return ["TICK_WRONG_ANIMATION_TYPE", true];
 
         // Update the WORLD state
         if(content.model != undefined) user.model = content.model;  
@@ -226,7 +237,7 @@ var SERVER =
         this.sendRoomMessage(message, user.room, user.id);
 
         // Output status
-        return "OK";
+        return ["OK", false];
     },
 
     onSuggest: function(message)
@@ -255,8 +266,8 @@ var SERVER =
         // - The suggestion is a music type video
 
         // Do some checkings
-        if(!isString(new_songID)) return "SUGGEST_WRONG_SONGID";  
-        if(suggestion != undefined && suggestion.userID != sender_id) return "SUGGEST_SONG_ALREADY_SUGGESTED";
+        if(!isString(new_songID)) return ["SUGGEST_WRONG_SONGID", true];  
+        if(suggestion != undefined && suggestion.userID != sender_id) return ["SUGGEST_SONG_ALREADY_SUGGESTED", true];
 
         // Update the WORLD state
         if(old_songID == undefined)
@@ -270,7 +281,7 @@ var SERVER =
         this.sendRoomMessage(message, user.room, sender_id);
 
         // Output status
-        return "OK";
+        return ["OK", false];
     },
 
     onVote: function(message)
@@ -293,9 +304,8 @@ var SERVER =
         console.log(`EVENT --> User ${user.name} has sent a VOTE message`);
 
         // Do some checkings
-        if(!isString(songID)) return "VOTE_WRONG_SONGID"; // TODO: Check with Youtube API    
-        if(suggestion == undefined) return "VOTE_SONG_DOES_NOT_BELONG_TO_THE_ROOM";   
-        if(suggestion.userID == sender_id) return "VOTE_SONG_BELONGS_TO_THE_USER";
+        if(suggestion == undefined) return ["VOTE_SONG_DOES_NOT_BELONG_TO_THE_ROOM", true];   
+        if(suggestion.userID == sender_id) return ["VOTE_SONG_BELONGS_TO_THE_USER", false];
 
         // Set aux var
         const already_voted = songID in user.votes;
@@ -323,7 +333,7 @@ var SERVER =
         this.sendRoomMessage(response, user.room, sender_id);
 
         // Output status
-        return "OK"
+        return ["OK", false];
     },
 
     onSkip: function(message)
@@ -340,7 +350,7 @@ var SERVER =
         console.log(`EVENT --> User ${user.name} has sent a SKIP message`);
 
         // Do some checkings
-        if(user_room.skipping) return "SKIP_SONG_IS_SKIPPING";        
+        if(user_room.skipping) return ["SKIP_SONG_IS_SKIPPING", true];        
 
         // Update WORLD state
         if(user.skip)
@@ -362,7 +372,7 @@ var SERVER =
             this.skipSong(user.room);
 
         // Output status
-        return "OK";
+        return ["OK", false];
     },
 
     onSongReady: function(message)
@@ -382,7 +392,7 @@ var SERVER =
         console.log(`EVENT --> User ${user.name} has sent a SONG_READY message`);
 
         // Do some checkings
-        if(songID !== user_room.current_song.ID && songID !== user_room.next_song.ID) return "SONGREADY_INVALID_SONGID";
+        if(songID !== user_room.current_song.ID && songID !== user_room.next_song.ID) return ["SONGREADY_INVALID_SONGID", true];
 
         // Calculate playback time
         const playback_time = user_room.current_song.ID ? user_room.playback_time : user_room.playback_time - (user_room.skipping_time + WORLD.loading_time);
@@ -392,7 +402,7 @@ var SERVER =
         this.sendPrivateMessage(playback_message, sender_id);
 
         // Output status
-        return "OK";
+        return ["OK", false];
     },
 
     onExit: function(message)
@@ -419,8 +429,10 @@ var SERVER =
 
         // Notify the users of the old room that the user has left
         message = new Message("system", "USER_LEFT", user_id, getTime());   
-        this.sendRoomMessage(message, previous_room, sender_id);     
-
+        this.sendRoomMessage(message, previous_room, sender_id);    
+        
+        // Output status
+        return ["OK", false];
     },
 
     /***************** SERVER ACTIONS *****************/

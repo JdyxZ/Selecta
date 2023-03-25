@@ -3,7 +3,7 @@
 const DATABASE = require("../database/database.js");
 const CRYPTO = require("../utils/crypto.js");
 const fs = require('fs/promises');
-require("../../public/framework.js");
+require("../../public/framework/javascript.js");
 
 async function test()
 {
@@ -38,6 +38,15 @@ async function test()
     {
         if(hola.owns(key))
             console.log(key);
+    }
+
+    try
+    {
+        throw ["HOLA", "qué tal?"]
+    } 
+    catch (error)
+    {
+        console.log(error);
     }
 
 }
