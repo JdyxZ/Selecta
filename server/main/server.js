@@ -449,7 +449,7 @@ var SERVER =
         // Check room
         if(room.people.length == 0)
         {
-            console.log(`ERROR ---> There is no people in the room ${room.name} and therefore it is not possible to play a song`);
+            console.log(`STATUS ---> There is no people in the room ${room.name} and therefore it is not possible to play a song`);
             return;
         } 
         
@@ -508,7 +508,8 @@ var SERVER =
         const next_song = new Song(next_songID, 120);  
         
         // Get selected suggestion's user
-        const user = WORLD.getUser(room.getSuggestion(next_songID).userID);
+        const suggestion = room.getSuggestion(next_songID);
+        const user = suggestion !== undefined ? WORLD.getUser(suggestion.userID) : null;
 
         // Update room data
         room.skip_counter = 0;
@@ -547,6 +548,9 @@ var SERVER =
 
     checkSong(song)
     {
+        // TODO: Quitar después
+        if(!song) return;
+
         // Checkings
         if(song.constructor.name != "Song") 
         {
