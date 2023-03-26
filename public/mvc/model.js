@@ -30,58 +30,87 @@ const MODEL =
     camera: null,
 
     // Methods
-    addSuggestion: function(suggestion)
+    getUser: function(id)
     {
-        // Get user
-        const user = this.users_obj[suggestion.userID];
+        return this.users_obj[id];
+    },
 
+    addUser: function(user)
+    {
+        this.users_obj[user.id] = user;
+        this.users_arr.append(user);
+    },
+
+    addUsers: function(users)
+    {
+        users.forEach(user => this.users_obj[user.id] = user);
+        this.users_arr = this.users_arr.concat(users);
+    },
+
+    removeUser: function(id)
+    {
+        // Get user index in array
+        const index = this.users_arr.getObjectIndex({id: user_id});
+
+        // Check
+        if(index == -1)
+        { 
+            console.error(`onUserLeft callback --> User id ${user_id} is not in the users array`);
+            return;  
+        }
+        
+        // Get user data
+        const user = this.users_arr[user_id];
+        const suggestion = user.suggestion;
+
+        // Remove user suggestion
+        if(suggestion)
+            this.suggestions.remove(suggestion.songID);
+
+        // Remove user votes
+        user.votes.forEach(vote => {
+            this.suggestions[vote].vote_counter--;
+        });
+
+        // Remove user 
+        this.users_obj.remove(user_id);
+        this.users_arr.splice(index, 1);
+    },
+
+    addSuggestion: function(user, suggestion)
+    {
         // Add
         user.suggestion = suggestion;
-        this.suggestions[song_id] = suggestion;
+        this.suggestions[suggestion.songID] = suggestion;
     },
     
-    removeSuggestion: function(song_id)
+    removeSuggestion: function(user, suggestion)
     {
-        // Get suggestion
-        const suggestion = this.suggestions[song_id];
-
         // Check
         if(suggestion == undefined) return;
 
-        // Get user
-        const user = this.users_obj[suggestion.userID];
-        
+        // Remove votes
+        this.removeSuggestionVotes(suggestion);
+
         // Remove
-        this.suggestions.remove(song_id);
-        user.remove(suggestion);
+        this.suggestions.remove(suggestion.songID);
         user.suggestion = {};
-
-        // Remove votes for the removed suggestion
-        this.removeSuggestionVotes(room_id, song_id);
-
     },
 
-    updateSuggestion: function(old_songID, new_songID)
+    updateSuggestion: function(suggestion, new_songID)
     {
-        // Get suggestion
-        const suggestion = this.suggestions[old_songID];
-
         // Check
         if(suggestion == undefined) return;
+
+        // Remove votes
+        this.removeSuggestionVotes(suggestion);
 
         // Update
         suggestion.songID = new_songID;
-        suggestion.vote_counter = 0;
-
-        // Remove votes for the updated suggestion
-        this.removeSuggestionVotes(new_songID);
     },
 
-    removeSuggestionVotes(song_id)
+    removeSuggestionVotes(suggestion)
     {
-        // Get suggestion
-        const suggestion = this.suggestions[old_songID];
-
         // Check
         if(suggestion == undefined) return;
 
@@ -89,8 +118,18 @@ const MODEL =
         suggestion.vote_counter = 0;
 
         // Remove votes
-        users_arr.forEach(user => {
-            user.votes.remove(song_id);
+        this.users_arr.forEach(user => {
+            user.votes.remove(suggestion.songID);
         })
     },
+}
+
+/***************** MESSAGE *****************/
+
+function Message(sender, type, content, time)
+{
+    this.sender = sender || ""; //ID
+    this.type = type || "ERROR";
+    this.content = content || "";
+    this.time = time || getTime();
 }

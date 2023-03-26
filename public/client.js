@@ -179,19 +179,9 @@ var CLIENT =
 
         // Get data
         const user_id = message.content;
-
-        // Get user index in array
-        const index = MODEL.users_arr.getObjectIndex({id: user_id});
-
-        // Check
-        if(index == -1)
-        { 
-            console.error(`onUserLeft callback --> User id ${user_id} is not in the container`);
-            return;  
-        }
         
         // Callback
-        CONTROLLER.onUserLeft(user_id, index);
+        CONTROLLER.onUserLeft(user_id);
     },
 
     onTick: function(message)
@@ -209,7 +199,7 @@ var CLIENT =
         // Check
         if(!user)
         {
-            console.error(`onTick callback -->The user id ${sender_id} is not registered`);
+            console.error(`onTick callback --> The user id ${sender_id} is not registered`);
             return;
         }
 
@@ -249,10 +239,12 @@ var CLIENT =
         console.table(message.content);
 
         // Unpack message data
-        const songID = message.content;
+        const songID = message.content.songID;
+        const requester = message.content.requester;
+        const user = MODEL.users_obj[requester];
     
         // Callback
-        CONTROLLER.onVote(songID);
+        CONTROLLER.onVote(user, songID);
     },
 
     onFetchSong: function(message)
@@ -275,11 +267,21 @@ var CLIENT =
         console.table(message.content);
 
         // Unpack message data
-        const songID = message.content.song;
-        const playbackTime = message.content.playbackTime;
+        const songID = message.content.playbackInfo.song;
+        const playbackTime = message.content.playbackInfo.playbackTime;
+
+        // Guess which song is the one to play
+        let type;
+        if(songID === MODEL.current_song.songID) type = "current";
+        else if(songID === MODEL.current_song.songID) type = "next";
+        else
+        {
+            console.log(`onPlaySong callback --> The song ${songID} is not the current nor the next one`);
+            return;
+        }
 
        // Callback
-       CONTROLLER.onPlaySong(songID, playbackTime);
+       CONTROLLER.onPlaySong(type, playbackTime);
     },
 
     onShutDown: function(message)

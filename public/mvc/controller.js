@@ -97,28 +97,13 @@ const CONTROLLER =
     onUserJoin: function(users)
     {
         // Append new users to users
-        users.forEach(user => MODEL.users_obj[user.id] = user);
-        MODEL.users_arr = MODEL.users_arr.concat(users);
+        MODEL.addUsers(users);
     },
 
-    onUserLeft: function(user_id, index)
+    onUserLeft: function(user_id)
     {
-        // Get user data
-        const user = MODEL.users_obj[user_id];
-        const suggestion = user.suggestion;
-
-        // Remove user suggestion
-        if(suggestion)
-            suggestions.remove(suggestion.songID);
-
-        // Remove user votes
-        user.votes.forEach(vote => {
-            suggestions[vote].vote_counter--;
-        });
-
-        // Remove user 
-        MODEL.users_obj.remove(user_id);
-        MODEL.users_arr.splice(index, 1);
+        // Remove user
+        MODEL.removeUser(user_id);
     },
 
     onTick: function(user, model, animation)
@@ -133,30 +118,66 @@ const CONTROLLER =
         // TODO
     },
 
-    onSuggest: function(suggestion)
+    onSuggest: function(user, suggestion)
     {
-        // Update the WORLD state
+        // Get suggestion IDs
+        const old_songID = user.suggestion.songID;
+        const new_songID = suggestion.songID;
+
+        // Update the MODEL state
         if(old_songID == undefined)
-            MODEL.addSuggestion(suggestion);
+            MODEL.addSuggestion(user, suggestion);
         else if(new_songID == old_songID)
-            MODEL.removeSuggestion(suggestion.songID);
+            MODEL.removeSuggestion(user, suggestion);
         else
-            MODEL.updateSuggestion(xd, suggestion.songID);
+            MODEL.updateSuggestion(suggestion, new_songID);
     },
 
-    onVote: function(songID)
+    onVote: function(user, songID)
     {
-        // TODO
+        // Set aux vars
+        const already_voted = songID in user.votes;
+        const suggestion = MODEL.suggestions[songID];
+
+        // Update MODEL state
+        if(already_voted)
+        {
+            user.votes.remove(songID);
+            suggestion.vote_counter--;
+        }    
+        else
+        {
+            user.votes = [...user.votes, songID];
+            suggestion.vote_counter++;
+        }
     },
 
     onFetchSong: function(songID)
     {
-        // TODO
+        // TODO: Download song from Youtube
+        // TODO: Register the song in the MODEL (current or next song vars)
+        
+        // When the song is downloaded, notify the system the song is ready to be played
+        const message = new Message(MODEL.my_user.id, "SONG_READY", songID, getTime());
+        //CLIENT.sendMessage(message);
     },
 
-    onPlaySong: function(songID, playbackTime)
+
+    onPlaySong: function(type, playbackTime)
     {
-        // TODO
+        if(type == "current")
+        {
+            // TODO: play the current song at the indicated playbackTime
+        }
+        else if (playbackTime > 0)
+        {
+            // TODO: play the next song at the indicated playbackTime
+        }
+        else
+        {
+            // TODO: schedule the playback of the song at the indicated playbackTime
+            setTimeout(() => {}, -playbackTime);
+        }
     },
 
     /***************** ACTIONS *****************/

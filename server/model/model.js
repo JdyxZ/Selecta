@@ -342,65 +342,49 @@ var WORLD = {
         room.removeUser(user);
     },
 
-    addSuggestion: function(room_id, user_id, song_id)
+    addSuggestion: function(room, user, songID)
     {
         // Build suggestion instance
-        const suggestion = new Suggestion(song_id, user_id, 0);
-
-        // Get room and user
-        const room = this.getRoom(room_id);
-        const user = this.getUser(user_id);
+        const suggestion = new Suggestion(songID, user.id, 0);
 
         // Add
         user.suggestion = suggestion;
-        room.suggestions[song_id] = suggestion;
+        room.suggestions[songID] = suggestion;
     },
 
-    removeSuggestion: function(room_id, song_id)
+    removeSuggestion: function(room, user, songID)
     {
-        // Get room and suggestion
-        const room = this.getRoom(room_id);
-        const suggestion = room.getSuggestion(song_id);
+        // Get suggestion
+        const suggestion = room.getSuggestion(songID);
 
         // Check
         if(suggestion == undefined) return;
 
-        // Get user
-        const user = this.getUser(suggestion.userID);
-        
+        // Remove votes
+        this.removeSuggestionVotes(room, suggestion);
+
         // Remove
-        room.suggestions.remove(song_id);
-        user.remove(suggestion);
+        room.suggestions.remove(songID);
         user.suggestion = {};
-
-        // Remove votes for the removed suggestion
-        this.removeSuggestionVotes(room_id, song_id);
-
     },
 
-    updateSuggestion: function(room_id, old_songID, new_songID)
+    updateSuggestion: function(room, old_songID, new_songID)
     {
-        // Get room and suggestion
-        const room = this.getRoom(room_id);
+        // Get suggestion
         const suggestion = room.getSuggestion(old_songID);
         
         // Check
         if(suggestion == undefined) return;
 
+        // Remove votes
+        this.removeSuggestionVotes(room, suggestion);
+
         // Update
         suggestion.songID = new_songID;
-        suggestion.vote_counter = 0;
-
-        // Remove votes for the updated suggestion
-        this.removeSuggestionVotes(room_id, new_songID);
     },
 
-    removeSuggestionVotes(room_id, song_id)
+    removeSuggestionVotes(room, suggestion)
     {
-        // Get room and suggestion
-        const room = this.getRoom(room_id);
-        const suggestion = room.getSuggestion(song_id);
-
         // Check
         if(suggestion == undefined) return;
 
@@ -409,7 +393,7 @@ var WORLD = {
 
         // Remove votes
         room.people.forEach(user => {
-            user.votes.remove(song_id);
+            user.votes.remove(songID);
         })
     },
 
@@ -456,16 +440,6 @@ var WORLD = {
     }
 }
 
-/***************** MESSAGE *****************/
-
-function Message(sender, type, content, time)
-{
-    this.sender = sender || ""; //ID
-    this.type = type || "ERROR";
-    this.content = content || "";
-    this.time = time || getTime();
-}
-
 /***************** SUGGESTION *****************/
 
 function Suggestion(songID, userID, vote_counter)
@@ -483,6 +457,17 @@ function Song(ID, duration)
     this.duration = duration;
 }
 
+/***************** MESSAGE *****************/
+
+function Message(sender, type, content, time)
+{
+    this.sender = sender || ""; //ID
+    this.type = type || "ERROR";
+    this.content = content || "";
+    this.time = time || getTime();
+}
+
+// Export
 if(typeof(window) == "undefined")
 {
     module.exports = { WORLD, Room, User, Message, Suggestion, Song};

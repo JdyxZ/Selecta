@@ -271,11 +271,11 @@ var SERVER =
 
         // Update the WORLD state
         if(old_songID == undefined)
-            WORLD.addSuggestion(user.room, sender_id, new_songID);
+            WORLD.addSuggestion(user_room, user, new_songID);
         else if(new_songID == old_songID)
-            WORLD.removeSuggestion(user.room, old_songID);
+            WORLD.removeSuggestion(user_room, user, new_songID);
         else
-            WORLD.updateSuggestion(user.room, old_songID, new_songID);
+            WORLD.updateSuggestion(user_room, old_songID, new_songID);
 
         // Redirect the message to the active room users
         this.sendRoomMessage(message, user.room, sender_id);
@@ -305,7 +305,7 @@ var SERVER =
 
         // Do some checkings
         if(suggestion == undefined) return ["VOTE_SONG_DOES_NOT_BELONG_TO_THE_ROOM", true];   
-        if(suggestion.userID == sender_id) return ["VOTE_SONG_BELONGS_TO_THE_USER", false];
+        if(suggestion.userID == sender_id) return ["VOTE_SONG_BELONGS_TO_THE_USER", true];
 
         // Set aux var
         const already_voted = songID in user.votes;
@@ -314,12 +314,12 @@ var SERVER =
         if(already_voted)
         {
             user.votes.remove(songID);
-            user_room.suggestions[songID].vote_counter--;
+            suggestion.vote_counter--;
         }    
         else
         {
             user.votes = [...user.votes, songID];
-            user_room.suggestions[songID].vote_counter++;
+            suggestion.vote_counter++;
         }
 
         // Build response message
@@ -398,7 +398,7 @@ var SERVER =
         const playbackInfo =
         {
             song: songID,
-            playbackTime: user_room.current_song.ID ? user_room.playback_time : user_room.playback_time - (user_room.skipping_time + WORLD.loading_time)
+            playbackTime: user_room.current_song.ID === songID ? user_room.playback_time : user_room.playback_time - (user_room.skipping_time + WORLD.loading_time)
         };
 
         // Build and send private message to the user with the song playback time
@@ -505,14 +505,17 @@ var SERVER =
             next_songID = MVS.pickRandom();
 
         // TODO: Get song data with Youtube API
-        const next_song = new Song(next_songID, 120);        
+        const next_song = new Song(next_songID, 120);  
+        
+        // Get selected suggestion's user
+        const user = WORLD.getUser(room.getSuggestion(next_songID).userID);
 
         // Update room data
         room.skip_counter = 0;
         room.skipping = true;
         room.skipping_time = room.playback_time;
         room.next_song = next_song;
-        WORLD.removeSuggestion(roomID, next_song);
+        WORLD.removeSuggestion(room, user, next_song);
 
         // Update user data
         room.people.forEach(user => {
