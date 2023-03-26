@@ -124,6 +124,11 @@ if(typeof(Document) != "undefined")
 		this.style.display = "none";
 	};
 
+	HTMLElement.prototype.change_background_color = function(color)
+	{
+		this.style.backgroundColor = color;
+	};
+
 };
 
 /***************** HTML METHODS *****************/
