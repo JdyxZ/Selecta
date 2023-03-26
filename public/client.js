@@ -150,12 +150,11 @@ var CLIENT =
         console.table(message.content);
 
         // Get data
-        const user_assets = message.content.user_assets;
-        const object_assets = message.contebt.object_assets;
-
+        const content = JSON.parse(message.content)
+        MODEL.temp = content.object_assets;
         // Callback
-        CONTROLLER.setAvatarAssets(user_assets);
-        CONTROLLER.setObjectAssets(object_assets);
+        CONTROLLER.setAvatarAssets(content.user_assets);
+        CONTROLLER.setObjectAssets(content.object_assets);
     },
 
     onUserJoin: function(message)

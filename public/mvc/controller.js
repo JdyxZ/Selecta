@@ -25,19 +25,25 @@ const CONTROLLER =
     {
         // Assign my user info to my_user
         MODEL.my_user = user;
+
+        VIEW.AddUserToScene(user.id)
     },
 
     setAvatarAssets: function(user_assets)
     {
-        for(avatar in user_assets)
+        for(id in user_assets)
         {
+            // Get data
+            var asset = user_assets[id].asset;
+            var animations = user_assets[id].animations;
+
             // Create the material for the avatar
             var mat = new RD.Material({
                 textures: {
-                color: avatar.folder + "/" + avatar.texture }
+                color: asset.folder + "/" + asset.texture }
                 });
-            
-            mat.register(avatar.folder);
+            console.log(asset.folder);
+            mat.register(asset.folder);
             
             // Create pivot point for the avatar
             var character_pivot = new RD.SceneNode({
@@ -46,15 +52,15 @@ const CONTROLLER =
 
             // Create a mesh for the avatar
             var avat = new RD.SceneNode({
-                scaling: avatar.scale,
-                mesh: avatar.folder+"/"+avatar.mesh,
-                material: avatar.folder
+                scaling: asset.scale,
+                mesh: asset.folder+"/"+asset.mesh,
+                material: asset.folder
             });
 
             var avat_selector = new RD.SceneNode({
                 position: [0,20,0],
                 mesh: "cube",
-                material: avatar.folder,
+                material: asset.folder,
                 scaling: [8,20,8],
                 name: avat_selector,
                 layers: 0b1000
@@ -66,30 +72,31 @@ const CONTROLLER =
 		    avat.skeleton = new RD.Skeleton();
 
             // Load the animations
-
-            var animations = CONTROLLER.loadAnimations(avatar.animations,"data/"+avatar.folder+"/");
-            MODEL.user_assets[avatar.id] = {"character": avat ,"character_pivot": character_pivot,"animations": animations };
+            var animations = CONTROLLER.loadAnimations(animations,"media/assets/users_assets/"+asset.folder+"/");
+            MODEL.user_assets[id] = {"character": avat ,"character_pivot": character_pivot,"animations": animations };
         };
     },
 
     loadAnimations: function (animations , path)
     {
         res = {};
-        for (animation in animations)
+        for (id in animations)
         {
-            var anim = res[animation] = new RD.SkeletalAnimation();
-            anim.load(path+animations[animation]);
+            var anim = res[id] = new RD.SkeletalAnimation();
+            anim.load(path+animations[id]);
         };
         return res;
     },
 
     setObjectAssets: function(object_assets)
     {
-        for(object in object_assets)
+        for(id in object_assets)
         {
-            var obj = new RD.SceneNode( {scaling:object.scaling, position:object.position} );
-            obj.loadGLTF(object.object);
-            MODEL.object_assets.push(obj);
+            var object = object_assets[id].asset;
+            var obj = new RD.SceneNode( {scaling:80, position:[0,-.01,0]} );
+            obj.loadGLTF("media/assets/objects_assets/"+object.object);
+            MODEL.scene.root.addChild( obj );
+            MODEL.object_assets[id] = obj;
         };
 
     },
@@ -98,12 +105,14 @@ const CONTROLLER =
     {
         // Append new users to users
         MODEL.addUsers(users);
+        users.forEach(user => VIEW.AddUserToScene(user.id));
     },
 
     onUserLeft: function(user_id)
     {
         // Remove user
         MODEL.removeUser(user_id);
+        VIEW.removeUser(user_id);
     },
 
     onTick: function(user, model, animation)

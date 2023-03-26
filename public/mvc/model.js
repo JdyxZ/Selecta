@@ -7,6 +7,8 @@ const MODEL =
     my_suggestion: null,
     my_votes: null,
 
+    temp: null,
+    
     // Room data
     current_room: null,
     users_obj: {},

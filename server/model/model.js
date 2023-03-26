@@ -416,7 +416,7 @@ var WORLD = {
         })
 
         // Create object assets
-        world_json.user_assets.forEach(object_asset_json => {
+        world_json.object_assets.forEach(object_asset_json => {
             this.createObjectAsset(object_asset_json);
         })
     },

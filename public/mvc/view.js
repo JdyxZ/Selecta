@@ -61,6 +61,16 @@ const VIEW =
 		// Launch loop
 		MODEL.context.animate();
     },
+    
+    AddUserToScene: function(id)
+    {
+        MODEL.scene.root.addChild( "TODO" );
+    },
+
+    RemoveUserFromScene: function(id)
+    {
+        CONTROLLER.scene.root.removeChild( "TODO" );
+    },
 
     draw: function()
     {
