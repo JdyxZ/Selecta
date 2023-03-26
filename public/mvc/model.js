@@ -24,7 +24,7 @@ const MODEL =
     next_song: null, 
     playback_time: null, // Playback time of the current song
     skipping_time: null, // Song time when the skip action should be performed
-    player: new Audio("./media/test.mp3"),
+    player: new Audio(),
 
     // Scene data
     context: null,

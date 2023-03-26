@@ -125,7 +125,7 @@ var CLIENT =
         console.log("New ROOM message received\n");
         console.table(message.content);
 
-        // Get data
+        // Unpack message data
         const room = message.content;
 
         // Callback
@@ -139,8 +139,11 @@ var CLIENT =
         console.log("New YOUR_INFO message received\n");
         console.table(message.content);
 
+        // Unpack message data
+        const users = message.content
+
         // Callback
-        CONTROLLER.setMyUser(message.content);
+        CONTROLLER.setMyUser(users);
     },
 
     setAssets: function(message)
@@ -149,12 +152,13 @@ var CLIENT =
         console.log("New ASSETS message received\n");
         console.table(message.content);
 
-        // Get data
-        const content = JSON.parse(message.content)
-        MODEL.temp = content.object_assets;
+        // Unpack message data
+        const user_assets = message.content.user_assets;
+        const object_assets = message.content.object_assets;
+
         // Callback
-        CONTROLLER.setAvatarAssets(content.user_assets);
-        CONTROLLER.setObjectAssets(content.object_assets);
+        CONTROLLER.setAvatarAssets(user_assets);
+        CONTROLLER.setObjectAssets(object_assets);
     },
 
     onUserJoin: function(message)
@@ -163,7 +167,7 @@ var CLIENT =
         console.log("New USER_JOIN message received\n");
         console.table(message.content);
 
-        // Get data
+        // Unpack message data
         const users = message.content;
 
         // Callback
@@ -176,7 +180,7 @@ var CLIENT =
         console.log("New USER_LEFT message received\n");
         console.table(message.content);
 
-        // Get data
+        // Unpack message data
         const user_id = message.content;
         
         // Callback
@@ -189,7 +193,7 @@ var CLIENT =
         console.log("New TICK message received\n");
         console.table(message.content);
 
-        // Get data
+        // Unpack message data
         const sender_id = message.sender;
         const user = MODEL.users_obj[sender_id];
         const model = message.content.model;

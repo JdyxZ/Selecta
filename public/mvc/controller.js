@@ -53,7 +53,7 @@ const CONTROLLER =
             // Create a mesh for the avatar
             var avat = new RD.SceneNode({
                 scaling: asset.scale,
-                mesh: asset.folder+"/"+asset.mesh,
+                mesh: asset.folder + "/" + asset.mesh,
                 material: asset.folder
             });
 
@@ -72,7 +72,7 @@ const CONTROLLER =
 		    avat.skeleton = new RD.Skeleton();
 
             // Load the animations
-            var animations = CONTROLLER.loadAnimations(animations,"media/assets/users_assets/"+asset.folder+"/");
+            var animations = CONTROLLER.loadAnimations(animations, "media/assets/user_assets/" + asset.folder + "/");
             MODEL.user_assets[id] = {"character": avat ,"character_pivot": character_pivot,"animations": animations };
         };
     },
@@ -94,7 +94,7 @@ const CONTROLLER =
         {
             var object = object_assets[id].asset;
             var obj = new RD.SceneNode( {scaling:80, position:[0,-.01,0]} );
-            obj.loadGLTF("media/assets/objects_assets/"+object.object);
+            obj.loadGLTF("media/assets/object_assets/" + object.object);
             MODEL.scene.root.addChild( obj );
             MODEL.object_assets[id] = obj;
         };
