@@ -62,14 +62,14 @@ const VIEW =
 		MODEL.context.animate();
     },
     
-    AddUserToScene: function(id)
+    addUser: function(id)
     {
-        MODEL.scene.root.addChild( "TODO" );
+        // MODEL.scene.root.addChild( "TODO" );
     },
 
-    RemoveUserFromScene: function(id)
+    removeUser: function(id)
     {
-        CONTROLLER.scene.root.removeChild( "TODO" );
+        // MODEL.scene.root.removeChild( "TODO" );
     },
 
     draw: function()

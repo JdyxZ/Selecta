@@ -53,21 +53,21 @@ const MODEL =
     removeUser: function(id)
     {
         // Get user index in array
-        const index = this.users_arr.getObjectIndex({id: user_id});
+        const index = this.users_arr.getObjectIndex({id: id});
 
         // Check
         if(index == -1)
         { 
-            console.error(`onUserLeft callback --> User id ${user_id} is not in the users array`);
+            console.error(`onUserLeft callback --> User id ${id} is not in the users array`);
             return;  
         }
         
         // Get user data
-        const user = this.users_arr[user_id];
+        const user = this.users_obj[id];
         const suggestion = user.suggestion;
 
         // Remove user suggestion
-        if(suggestion)
+        if(suggestion.songID)
             this.suggestions.remove(suggestion.songID);
 
         // Remove user votes
@@ -76,7 +76,7 @@ const MODEL =
         });
 
         // Remove user 
-        this.users_obj.remove(user_id);
+        this.users_obj.remove(id);
         this.users_arr.splice(index, 1);
     },
 

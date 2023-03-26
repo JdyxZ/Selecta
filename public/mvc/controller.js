@@ -26,7 +26,7 @@ const CONTROLLER =
         // Assign my user info to my_user
         MODEL.my_user = user;
 
-        VIEW.AddUserToScene(user.id)
+        VIEW.addUser(user.id)
     },
 
     setAvatarAssets: function(user_assets)
@@ -105,7 +105,7 @@ const CONTROLLER =
     {
         // Append new users to users
         MODEL.addUsers(users);
-        users.forEach(user => VIEW.AddUserToScene(user.id));
+        users.forEach(user => VIEW.addUser(user.id));
     },
 
     onUserLeft: function(user_id)
