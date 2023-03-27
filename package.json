@@ -27,6 +27,7 @@
     "express-mysql-session": "^2.1.8",
     "express-session": "^1.17.3",
     "fs": "^0.0.1-security",
+    "googleapis": "^114.0.0",
     "http": "^0.0.1-security",
     "morgan": "^1.10.0",
     "mysql2": "^3.2.0",

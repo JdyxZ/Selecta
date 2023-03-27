@@ -90,7 +90,7 @@ const SELECTA =
         CONTROLLER.init();
 
         // !!TEMPORAL!!
-        MODEL.player.play();
+        // MODEL.player.play();
     },
 
     init_slider: function(slider)

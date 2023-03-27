@@ -31,9 +31,6 @@ var SERVER =
         // Init model
         WORLD.init(model.rooms, model.users, model.user_assets, model.object_assets);
 
-        // Start room playback
-        this.initPlayback();
-
         // Status prints
         console.log("\n*********** MODEL INFO *********** \n");
         console.log(`World data successfully loaded!`);
@@ -48,6 +45,9 @@ var SERVER =
         console.log(`Server listening at port ${port}`);
         console.log("\n*********** SERVER LOG *********** \n");
         this.port = port;
+
+        // Start room playback
+        this.initPlayback();
     },
 
     // Update world
@@ -505,7 +505,7 @@ var SERVER =
             next_songID = MVS.pickRandom();
 
         // TODO: Get song data with Youtube API
-        const next_song = new Song(next_songID, 120);  
+        const next_song = new Song(next_songID, 10000);  
         
         // Get selected suggestion's user
         const suggestion = room.getSuggestion(next_songID);
@@ -524,8 +524,8 @@ var SERVER =
         });
 
         // Build and FETCH_SONG message
-        const message = new Message("system", "FETCH_SONG", JSON.stringify(next_song), getTime());
-        // this.sendRoomMessage(message, roomID, []); TODO
+        const message = new Message("system", "FETCH_SONG", next_songID, getTime());
+        this.sendRoomMessage(message, roomID, []); 
 
         // Output
         return next_song
@@ -577,7 +577,7 @@ var SERVER =
         for (const roomID in WORLD.rooms)
         {
             // TODO: Pick a random song from default playlist and get song data from Youtube API
-            let song = new Song("QubialaSteve123", 120);
+            let song = new Song("QubialaSteve123", 10000);
 
             // Play song
             this.playSong(roomID, song)
@@ -677,7 +677,7 @@ var SERVER =
         this.sendRoomMessage(message, user.room, user.id); 
         
         // Send to the new user info about the room current playback
-        message = new Message("system", "FETCH_SONG", JSON.stringify(song), getTime());
+        message = new Message("system", "FETCH_SONG", song.ID, getTime());
         this.sendPrivateMessage(message, user_id);
     },
 

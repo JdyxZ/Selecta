@@ -87,7 +87,7 @@ async function main()
     server.listen(app.get('server_port'), () => SERVER.onReady(app.get('server_port')));
 
     // Update database on exit and periodically
-    require("../utils/update.js");
+    //require("../utils/update.js");
 
     /***************** WEBSOCKET *****************/
 

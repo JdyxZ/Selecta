@@ -211,9 +211,9 @@ Room.prototype.getMostVotedSuggestions = function()
 var WORLD = {
 
     // Macros
-    song_duration_range: [60, 600], // [s, s]
+    song_duration_range: [10000, 600000], // [ms, ms]
     playback_update_frequency: 10, // [ms]
-    loading_duration: 5, // [s]
+    loading_duration: 5000, // [ms]
     skipping_threshold: 0.7, // [%]
 
     // Timers

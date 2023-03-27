@@ -239,14 +239,47 @@ const VIEW =
 		MODEL.context.animate();
     },
     
-    AddUserToScene: function(id)
+    addUser: function(id)
     {
-        //MODEL.scene.root.addChild( "TODO" );
+        MODEL.scene.root.addChild( "TODO" );
     },
 
-    RemoveUserFromScene: function(id)
+    removeUser: function(id)
     {
-        //CONTROLLER.scene.root.removeChild( "TODO" );
+        CONTROLLER.scene.root.removeChild( "TODO" );
+    },
+
+    draw: function()
+    {
+        // Shape data from the canvas
+        gl.canvas.width = VIEW.canvas_parent.offsetWidth;
+        gl.canvas.height = VIEW.canvas_parent.offsetHeight;
+        gl.viewport(0,0,gl.canvas.width,gl.canvas.height);
+        
+        // Check if the my_user is initialized
+			if(!MODEL.my_user)
+            return
+            
+        // Check if the assets are loaded
+        if(!MODEL.user_assets[MODEL.my_user.asset])
+            return  
+
+        // Obtain avatar and camera positions
+        var campos = MODEL.user_assets[MODEL.my_user.asset].character_pivot.localToGlobal([0,60,-70]);
+        var camtarget = MODEL.user_assets[MODEL.my_user.asset].character_pivot.localToGlobal([0,10,70]);
+
+        // Compute the smooth camera
+        var smoothtarget = vec3.lerp( vec3.create(), MODEL.camera.target, camtarget, 0.02 );
+
+        // Update the camera
+        MODEL.camera.perspective( 60, gl.canvas.width / gl.canvas.height, 0.1, 1000 );
+        MODEL.amera.lookAt( campos, smoothtarget, [0,1,0] );
+
+        // Clear the scene
+        MODEL.renderer.clear(MODEL.bg_color);
+
+        // Set the sceneanimation
+        MODEL.renderer.render(MODEL.scene, MODEL.camera, null, 0b11 );
     },
 
     update: function(dt) 

@@ -239,7 +239,7 @@ setObjectProperty("concat", function(obj) {
 });
 
 setObjectProperty("remove", function(property) { 
-	if(this[property] == undefined) throw "Property does not exist in the object";
+	if(this[property] == undefined) throw `Property ${property} does not exist in the object`;
 	else delete this[property];
 });
 
