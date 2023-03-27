@@ -31,6 +31,7 @@ const MODEL =
     scene: null,
     renderer: null,
     camera: null,
+    walarea: null,
 
     // Methods
     getUser: function(id)

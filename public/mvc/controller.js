@@ -82,7 +82,7 @@ const CONTROLLER =
         res = {};
         for (id in animations)
         {
-            var anim = res[id] = new RD.SkeletalAnimation();
+            var anim = res[animations[id]] = new RD.SkeletalAnimation();
             anim.load(path+animations[id]);
         };
         return res;
