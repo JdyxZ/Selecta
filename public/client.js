@@ -6,18 +6,22 @@ var CLIENT =
     server_port: null,
     server_address: null,
     protocol: null,
+    api_credentials: null,
     socket: null,
     debug: null,
     
     init: async function()
     {
         // Fetch server settings
-        const settings = await this.fetchServerSettings();
+        const response = await this.fetchServerResources();
 
         // Set server settings        
-        this.server_protocol = settings.protocol;
-        this.server_address = settings.address;
-        this.server_port = settings.port;
+        this.server_protocol = response.settings.protocol;
+        this.server_address = response.settings.address;
+        this.server_port = response.settings.port;
+
+        // Set API credentials
+        this.api_credentials = response.api_credentials;
 
         // New WebSocket instance
         this.socket = new WebSocket(`${this.server_protocol == "secure" ? "wss://" : "ws://"}${this.server_address}:${this.server_port}`);
@@ -28,27 +32,38 @@ var CLIENT =
         this.socket.onclose = this.onClose.bind(this);
     },
 
-    fetchServerSettings: async function ()
+    fetchServerResources: async function ()
     {
         try
         {
-            // URL
-            const url = "/server_settings";
+            // URLs
+            const ss_url = "/server_settings";
+            const ac_url = "/api_credentials";
 
-            // Fetch image from url    
-            const response = await fetch(url, {method: "GET"}); 
+            // Fetch resources from url    
+            const ss_response = await fetch(ss_url, {method: "GET"}); 
+            const ac_response = await fetch(ac_url, {method: "GET"});
         
-            // Check response
-            if (response.status !== 200) {
-                console.log(`HTTP-Error ${response.status} upon fetching url ${url} `);
+            // Check responses
+            if (ss_response.status !== 200) {
+                console.log(`HTTP-Error ${ss_response.status} upon fetching url ${ss_url} `);
+                throw "Bad response";
+            };
+
+            if (ac_response.status !== 200) {
+                console.log(`HTTP-Error ${ac_response.status} upon fetching url ${ac_url} `);
                 throw "Bad response";
             };
                 
-            // Convert response into json
-            const settings = await response.json()
+            // Convert responses into response json
+            const response = 
+            {
+                settings: await ss_response.json(),
+                api_credentials: await ac_response.json()
+            }
 
             // Return settings
-            return settings;
+            return response;
         }
         catch(error)
         {
