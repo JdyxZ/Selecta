@@ -12,6 +12,9 @@ const YOUTUBE =
     // Quota
     quotaExceeded: false,
 
+    // Debug
+    debug: null,
+
     // Client methods
     init: async function(keys)
     {
@@ -51,10 +54,11 @@ const YOUTUBE =
         if (this.current_key + 1 >= this.keys.length)
         {
             this.quotaExceeded = true;
-            console.error("Youtube-API-Error ---> Youtube DATA API max quota has been reached. You can no longer use the built-in methods of the API");
+            console.error("Youtube Utils Error ---> Youtube DATA API max quota has been reached. You can no longer use the built-in methods of the API");
         }
         else
         {
+            console.log(`Youtube-API-Status --> The key ${this.current_key} has reached the quota limit, swapping to the key ${this.current_key + 1}`);
             this.current_key++;
             gapi.client.setApiKey(this.keys[this.current_key]);
         }
@@ -64,11 +68,13 @@ const YOUTUBE =
     // API methods
     search: async function(query)
     {
-        // Check client and quota
-        if(!this.Youtube || this.quotaExceeded) return null;
-
         try
         {
+            // Checks
+            if(!this.Youtube) throw "YOUTUBE_NULL_CLIENT";
+            if(this.quotaExceeded) throw "YOUTUBE_QUOTA_EXCEEDED";
+            if(!isString(query)) throw "YOUTUBE_INVALID_INPUT"
+
             // Execute
             const response = await this.Youtube.search.list({
                 part: ["snippet", "id"],
@@ -77,80 +83,111 @@ const YOUTUBE =
                 order: "relevance",
                 maxResults: 25,
                 relevanceLanguage: "ES",
-                // videoDuration: "short",
-                // videoCategoryId: 10, // stands for music videos
-                // videoEmbeddable: true
             });
-    
+
+            // Set aux var
+            const search = response.result.items;
+
+            // Check
+            if(search.length == 0) throw "YOUTUBE_EMPTY_RESPONSE";
+
+            // Build json response object
+            const data = search.map(video => {          
+                return {                  
+                    ID: video.id.videoId,
+                    title: video.snippet.title,
+                    description: video.snippet.description,
+                    thumbnails: video.snippet.thumbnails,
+                    publisherChannel: {ID: video.snippet.channelId, name: video.snippet.channelTitle}, 
+                    publicationTime: video.snippet.publishedAt,
+                    elapsedTime: Date.elapsedTime(video.snippet.publishedAt),
+                    categoryID: video.snippet.categoryId,
+                    live: video.snippet.liveBroadcastContent == "live" ? true : false,
+                };
+            });
+
             // Output
-            return response.result.items;
+            return data;
         } 
         catch(err)
         {
-            if(err.errors && err.errors[0].reason === "quotaExceeded")
+            if(err.result && err.result.error.errors.getObjectIndex({reason: "quotaExceeded"}) != -1)
             {
                 this.setNewAPIKey();
                 return this.search(query);
             }
+            else if(err.result)
+            {
+                console.error(`Youtube Utils Error --> Error upon searching for ${query}`, err.result.error.errors);
+                return null;
+            }
             else
             {
-                console.error(`\nYoutube-API-Error --> "${err}" upon searching for ${query}`);
+                console.error(`Youtube Utils Error --> "${err}" upon searching for ${query}`);
                 return null;
             }
         }
     },
 
-    getVideoInfo: async function(videoID)
+    getVideosInfo: async function(videoIDs)
     {
-        // Check client and quota
-        if(!this.Youtube || this.quotaExceeded) return null;
-
         try
         {
+            // Checks
+            if(!this.Youtube) throw "YOUTUBE_NULL_CLIENT";
+            if(this.quotaExceeded) throw "YOUTUBE_QUOTA_EXCEEDED";
+            if(!isString(videoIDs) && !isArray(videoIDs)) throw "YOUTUBE_INVALID_INPUT"
+
             // Execute
             const response = await this.Youtube.videos.list({
                 part: ["id", "snippet", "contentDetails", "status", "statistics", "player"],
-                id: videoID
+                id: videoIDs
             });
 
             // Set aux var
-            const video = response.result.items[0];
+            const videos = response.result.items;
 
             // Check
-            if(!video) return undefined;
+            if(videos.length == 0) throw "YOUTUBE_EMPTY_RESPONSE";
 
             // Build json response object
-            const data =
-            {
-                ID: video.id,
-                title: video.snippet.title,
-                description: video.snippet.description,
-                thumbnails: video.snippet.thumbnails,
-                publisherChannel: {ID: video.snippet.channelId, name: video.snippet.channelTitle}, 
-                publicationTime: video.snippet.publishedAt,
-                elapsedTime: Date.elapsedTime(video.snippet.publishedAt),
-                categoryID: video.snippet.categoryId,
-                live: video.snippet.liveBroadcastContent == "live" ? true : false,
-                duration: Date.parsePT(video.contentDetails.duration),
-                embeddable: video.status.embeddable,
-                viewCount: video.statistics.viewCount,
-                likeCount: video.statistics.likeCount,
-                commentCount: video.statistics.songCount
-            }
+            const data = videos.map(video => {          
+                return {   
+                    ID: video.id,
+                    title: video.snippet.title,
+                    description: video.snippet.description,
+                    thumbnails: video.snippet.thumbnails,
+                    publisherChannel: {ID: video.snippet.channelId, name: video.snippet.channelTitle}, 
+                    publicationTime: video.snippet.publishedAt,
+                    elapsedTime: Date.elapsedTime(video.snippet.publishedAt),
+                    categoryID: video.snippet.categoryId,
+                    live: video.snippet.liveBroadcastContent == "live" ? true : false,
+                    duration: Date.parsePT(video.contentDetails.duration),
+                    embeddable: video.status.embeddable,
+                    viewCount: video.statistics.viewCount,
+                    likeCount: video.statistics.likeCount,
+                    commentCount: video.statistics.songCount
+                };
+            });
     
             // Output
             return data;
         } 
         catch(err)
         {
-            if(err.errors && err.errors[0].reason === "quotaExceeded")
+            if(err.result && err.result.error.errors.getObjectIndex({reason: "quotaExceeded"}) != -1)
             {
                 this.setNewAPIKey();
-                return this.search(query);
+                return this.getVideosInfo(videoIDs);
+            }
+            else if(err.result)
+            {
+                console.error(`Youtube Utils Error --> Error upon fetching info of the videos ${videoIDs}`, err.result.error.errors);
+                return null;
             }
             else
             {
-                console.error(`\nYoutube-API-Error ---> "${err}" upon fetching info of the video ${videoID}`);
+                console.error(`Youtube Utils Error ---> "${err}" upon fetching info of the videos ${videoIDs}`);
                 return null;
             }
         }
@@ -160,108 +197,121 @@ const YOUTUBE =
     {
         if(video === undefined) return "YOUTUBE_CHECK_INVALID_VIDEOID";
         if(video === null) return "YOUTUBE_CHECK_SOMETHING_WRONG_HAPPENED";
-        if(video.live) return "YOUTUBE_CHECK_LIVE_VIDEO";
-        // if(video.duration > WORLD.song_duration_range > 240000) return "YOUTUBE_CHECK_INVALID_DURATION";
-        // if(video.categoryID != 10) return "YOUTUBE_CHECK_INVALID_CATEGORY";
-        // if(!video.embeddable) return "YOUTUBE_CHECK_NOT_EMBEDABBLE";        
+        if(video.live) return "YOUTUBE_CHECK_LIVE_VIDEO";   
         else return "OK";
     },
 
-    getChannelInfo: async function(channelID)
+    getChannelsInfo: async function(channelIDs)
     {
-        // Check client and quota
-        if(!this.Youtube || this.quotaExceeded) return null;
-
         try
         {
+            // Checks
+            if(!this.Youtube) throw "YOUTUBE_NULL_CLIENT";
+            if(this.quotaExceeded) throw "YOUTUBE_QUOTA_EXCEEDED";
+            if(!isString(channelIDs) && !isArray(channelIDs)) throw "YOUTUBE_INVALID_INPUT"
+
             // Execute
             const response = await this.Youtube.channels.list({
                 part: ["id", "snippet", "statistics"],
-                id: channelID
+                id: channelIDs
             });
 
             // Set aux var
-            const channel = response.result.items[0];
+            const channels = response.result.items;
 
             // Check
-            if(!channel) return undefined;
+            if(channels.length == 0) throw "YOUTUBE_EMPTY_RESPONSE";
 
             // Build json response object
-            const data =
-            {
-                ID: channel.id,
-                title: channel.snippet.title,
-                description: channel.snippet.description,
-                country: channel.snippet.country,
-                publicationTime: channel.snippet.publishedAt,
-                thumbnails: channel.snippet.thumbnails,
-                viewCount: channel.statistics.viewCount,
-                subscriberCount: channel.statistics.subscriberCount,
-                videoCount: channel.statistics.videoCount,   
-            }
+            const data = channels.map(channel => {
+                return {
+                    ID: channel.id,
+                    title: channel.snippet.title,
+                    description: channel.snippet.description,
+                    country: channel.snippet.country,
+                    publicationTime: channel.snippet.publishedAt,
+                    thumbnails: channel.snippet.thumbnails,
+                    viewCount: channel.statistics.viewCount,
+                    subscriberCount: channel.statistics.subscriberCount,
+                    videoCount: channel.statistics.videoCount,   
+                };
+            });
     
             // Output
             return data;
         } 
         catch(err)
         {
-            if(err.errors && err.errors[0].reason === "quotaExceeded")
+            if(err.result && err.result.error.errors.getObjectIndex({reason: "quotaExceeded"}) != -1)
             {
                 this.setNewAPIKey();
-                return this.search(query);
+                return this.getChannelsInfo(channelIDs);
+            }
+            else if(err.result)
+            {
+                console.error(`Youtube Utils Error --> Error upon fetching info of the channels ${channelIDs}`, err.result.error.errors);
+                return null;
             }
             else
             {
-                console.error(`\nYoutube-API-Error --> "${err}" upon fetching info of the channel ${channelID}`);
+                console.error(`Youtube Utils Error --> "${err}" upon fetching info of the channels ${channelIDs}`);
                 return null;
             }
         }
     },
 
-    getPlaylistInfo: async function(playlistID)
+    getPlaylistsInfo: async function(playlistIDs)
     {
-        // Check client and quota
-        if(!this.Youtube || this.quotaExceeded) return null;
-
         try
         {
+            // Checks
+            if(!this.Youtube) throw "YOUTUBE_NULL_CLIENT";
+            if(this.quotaExceeded) throw "YOUTUBE_QUOTA_EXCEEDED";
+            if(!isString(playlistIDs) && !isArray(playlistIDs)) throw "YOUTUBE_INVALID_INPUT"
+
             // Execute
             const response = await this.Youtube.playlists.list({
                 part: ["contentDetails", "id", "player", "snippet", "status"],
-                id: playlistID
+                id: playlistIDs
             });
 
             // Set aux var
-            const playlist = response.result.items[0];
+            const playlists = response.result.items;
 
             // Check
-            if(!playlist) return undefined;
+            if(playlists.length == 0) throw "YOUTUBE_EMPTY_RESPONSE";
 
             // Build json response object
-            const data =
-            {
-                ID: playlist.id,
-                title: playlist.snippet.title,
-                description: playlist.snippet.description,
-                publicationTime: playlist.snippet.publishedAt,
-                thumbnails: playlist.snippet.thumbnails,
-                privacy: playlist.status.privacyStatus,
-                numItems: playlist.contentDetails.itemCount
-            }
+            const data = playlists.map(playlist => {
+                return {
+                    ID: playlist.id,
+                    title: playlist.snippet.title,
+                    description: playlist.snippet.description,
+                    publicationTime: playlist.snippet.publishedAt,
+                    thumbnails: playlist.snippet.thumbnails,
+                    privacy: playlist.status.privacyStatus,
+                    numItems: playlist.contentDetails.itemCount
+                }
+            });
     
             // Output
             return data;
         } 
         catch(err)
         {
-            if(err.errors && err.errors[0].reason === "quotaExceeded")
+            if(err.result && err.result.error.errors.getObjectIndex({reason: "quotaExceeded"}) != -1)
             {
                 this.setNewAPIKey();
-                return this.search(query);
+                return this.getPlaylistsInfo(playlistIDs);
+            }
+            else if(err.result)
+            {
+                console.error(`Youtube Utils Error --> Error upon fetching info of the playlists ${playlistIDs}`, err.result.error.errors);
+                return null;
             }
             else
             {
-                console.error(`\nYoutube-API-Error --> "${err}" upon fetching info of the playlist ${playlistID}`);
+                console.error(`Youtube Utils Error --> "${err}" upon fetching info of the playlists ${playlistIDs}`);
                 return null;
             }
         }
@@ -269,11 +319,13 @@ const YOUTUBE =
 
     getPlaylistItems: async function(playlistID)
     {
-        // Check client and quota
-        if(!this.Youtube || this.quotaExceeded) return null;
-
         try
         {
+            // Checks
+            if(!this.Youtube) throw "YOUTUBE_NULL_CLIENT";
+            if(this.quotaExceeded) throw "YOUTUBE_QUOTA_EXCEEDED";
+            if(!isString(playlistID)) throw "YOUTUBE_INVALID_INPUT"
+
             // Execute
             const response = await this.Youtube.playlistItems.list({
                 part: ["snippet", "contentDetails", "id", "status"],
@@ -281,13 +333,13 @@ const YOUTUBE =
             });
 
             // Set aux var
-            const playlist = response.result.items;
+            const playlistItems = response.result.items;
 
             // Check
-            if(playlist.length == 0) return undefined;
+            if(playlistItems.length == 0) throw "YOUTUBE_EMPTY_RESPONSE";
 
             // Build json response object
-            const data = playlist.map(video => {          
+            const data = playlistItems.map(video => {          
                 return {                  
                     ID: video.contentDetails.videoId,
                     position: video.snippet.position,
@@ -305,16 +357,34 @@ const YOUTUBE =
         } 
         catch(err)
         {
-            if(err.errors && err.errors[0].reason === "quotaExceeded")
+            if(err.result && err.result.error.errors.getObjectIndex({reason: "quotaExceeded"}) != -1)
             {
                 this.setNewAPIKey();
-                return this.search(query);
+                return this.getPlaylistItems(playlistID);
+            }
+            else if(err.result)
+            {
+                console.error(`Youtube Utils Error --> Error upon fetching info of the playlist ${playlistID}`, err.result.error.errors);
+                return null;
             }
             else
             {
-                console.error(`\nYoutube-API-Error ---> "${err}" upon fetching items of the playlist ${playlistID}`);
+                console.error(`Youtube Utils Error ---> "${err}" upon fetching items of the playlist ${playlistID}`);
                 return null;
             }
         }
+    },
+
+    downloadAudioStreams: function(videoID)
+    {
+        try
+        {
+            if(!isString(videoID)) throw "YOUTUBE_INVALID_INPUT";
+        }
+        catch(err)
+        {
+            console.error(`Youtube Utils Error ---> "${err}" upon downloading audio streams of the video ${videoID}`)
+        }
+        
     }
 }

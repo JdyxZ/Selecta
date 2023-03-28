@@ -262,16 +262,16 @@ var SERVER =
         console.log(`EVENT --> User ${user.name} has sent a SUGGEST message`);
 
         // Fetch song data
-        const songData = await YOUTUBE.getVideoInfo(new_songID);
+        const videosData = await YOUTUBE.getVideosInfo(new_songID);
 
         // Do some checkings
-        const check = YOUTUBE.checkVideoInfo(songData);
+        const check = YOUTUBE.checkVideoInfo(videosData[0]);
         if(check != "OK") return [check, true];
         if(suggestion != undefined && suggestion.userID != sender_id) return ["SUGGEST_SONG_ALREADY_SUGGESTED", true];
 
         // Fetch channel's song data from Youtube API
-        const channelData = await YOUTUBE.getChannelInfo(songData.publisherChannel.ID);
-        if(channelData) songData.publisherChannel = channelData;
+        const channelsData = await YOUTUBE.getChannelsInfo(videosData[0].publisherChannel.ID);
+        if(channelsData[0]) videosData[0].publisherChannel = channelsData[0];
 
         // Update the WORLD state
         if(old_songID == undefined)
@@ -282,7 +282,7 @@ var SERVER =
             WORLD.updateSuggestion(user_room, old_songID, new_songID);
 
         // Fill the content of the message with the video data
-        message.content = songData;
+        message.content = videosData[0];
 
         // Redirect the message to the active room users
         this.sendRoomMessage(message, user.room, sender_id);
@@ -492,10 +492,10 @@ var SERVER =
             next_songID = MVS.pickRandom().songID;
 
         // Fetch song data with Youtube API
-        const songData = await YOUTUBE.getVideoInfo(songID);
+        const videosData = await YOUTUBE.getVideosInfo(songID);
 
         // Check song data
-        const check = YOUTUBE.checkVideoInfo(songData);
+        const check = YOUTUBE.checkVideoInfo(videosData[0]);
         if(check != "OK")
         {
             console.log(`ERROR -> ${check}`);
@@ -503,11 +503,11 @@ var SERVER =
         }
         
         // Fetch channel's song data from Youtube API
-        const channelData = await YOUTUBE.getChannelInfo(songData.publisherChannel.ID);
-        if(channelData) songData.publisherChannel = channelData;
+        const channelsData = await YOUTUBE.getChannelsInfo(videosData[0].publisherChannel.ID);
+        if(channelsData[0]) videosData[0].publisherChannel = channelsData[0];
 
         // Create new instance ofSong with song data
-        const next_song = new Song(songData);  
+        const next_song = new Song(videosData[0]);  
         
         // Get selected suggestion's user
         const suggestion = room.getSuggestion(next_songID);
@@ -573,18 +573,18 @@ var SERVER =
             const songID = room.playlist_items.pickRandom();
 
             // Fetch song data from Youtube API
-            const songData = await YOUTUBE.getVideoInfo(songID);
+            const videosData = await YOUTUBE.getVideosInfo(songID);
 
             // Check song data
-            const check = YOUTUBE.checkVideoInfo(songData);
+            const check = YOUTUBE.checkVideoInfo(videosData[0]);
             if(check != "OK") throw check;
 
             // Fetch channel's song data from Youtube API
-            const channelData = await YOUTUBE.getChannelInfo(songData.publisherChannel.ID);
-            if(channelData) songData.publisherChannel = channelData;
+            const channelsData = await YOUTUBE.getChannelsInfo(videosData[0].publisherChannel.ID);
+            if(channelsData[0]) videosData[0].publisherChannel = channelsData[0];
 
             // Create song instance
-            const song = new Song(songData);
+            const song = new Song(videosData[0]);
 
             // Play song
             this.playSong(roomID, song)
