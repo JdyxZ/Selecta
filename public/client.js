@@ -31,7 +31,7 @@ var CLIENT =
         YOUTUBE.keys = response.keys;
 
         // Init Youtube DATA API
-        // YOUTUBE.init();
+        await YOUTUBE.init();
     },
 
     fetchServerResources: async function ()
@@ -140,7 +140,7 @@ var CLIENT =
     {
         // Log
         console.log("New ROOM message received\n");
-        console.table(message.content);
+        //console.table(message.content);
 
         // Unpack message data
         const room = message.content;
@@ -154,7 +154,7 @@ var CLIENT =
     {
         // Log
         console.log("New YOUR_INFO message received\n");
-        console.table(message.content);
+        //console.table(message.content);
 
         // Unpack message data
         const users = message.content
@@ -167,7 +167,7 @@ var CLIENT =
     {
         // Log
         console.log("New ASSETS message received\n");
-        console.table(message.content);
+        //console.table(message.content);
 
         // Unpack message data
         const user_assets = message.content.user_assets;
@@ -182,7 +182,7 @@ var CLIENT =
     {
         // Log
         console.log("New USER_JOIN message received\n");
-        console.table(message.content);
+        //console.table(message.content);
 
         // Unpack message data
         const users = message.content;
@@ -195,7 +195,7 @@ var CLIENT =
     {
         // Log
         console.log("New USER_LEFT message received\n");
-        console.table(message.content);
+        //console.table(message.content);
 
         // Unpack message data
         const user_id = message.content;
@@ -208,7 +208,7 @@ var CLIENT =
     {
         // Log
         console.log("New TICK message received\n");
-        console.table(message.content);
+        //console.table(message.content);
 
         // Unpack message data
         const sender = message.sender;
@@ -231,7 +231,7 @@ var CLIENT =
     {
         // Log
         console.log("New EXIT message received\n");
-        console.table(message.content);
+        //console.table(message.content);
 
         // Callback
         CONTROLLER.onExit();
@@ -241,7 +241,7 @@ var CLIENT =
     {
         // Log
         console.log("New SUGGEST message received\n");
-        console.table(message.content);
+        //console.table(message.content);
 
         // Unpack message data
         const song = message.content;
@@ -256,7 +256,7 @@ var CLIENT =
     {
         // Log
         console.log("New VOTE message received\n");
-        console.table(message.content);
+        //console.table(message.content);
 
         // Unpack message data
         const requester = message.sender;
@@ -271,7 +271,7 @@ var CLIENT =
     {
         // Log
         console.log("New FETCH_SONG message received\n");
-        console.table(message.content);
+        //console.table(message.content);
 
         // Unpack message data
         const song = message.content;
@@ -284,7 +284,7 @@ var CLIENT =
     {
         // Log
         console.log("New PLAY_SONG message received\n");
-        console.table(message.content);
+        //console.table(message.content);
 
         // Unpack message data
         const songID = message.content.playbackInfo.song;
@@ -308,7 +308,7 @@ var CLIENT =
     {
         // Log
         console.log("New SHUT_DOWN message received\n");
-        console.table(message.content);
+        //console.table(message.content);
 
         // TODO
     },
@@ -317,7 +317,7 @@ var CLIENT =
     {
         // Log
         console.log("New ERROR message received\n");
-        console.table(message.content);
+        //console.table(message.content);
 
         // TODO
     },

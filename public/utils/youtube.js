@@ -7,32 +7,70 @@ const YOUTUBE =
 
     // Keys
     keys: null,
-    current_key: null,
+    current_key: 0,
 
-    // Methods
-    init: function(keys)
+    // Quota
+    quotaExceeded: false,
+
+    // Client methods
+    init: async function(keys)
     {
         // Set keys
         this.key = keys;
 
-        // Set new client
-        Youtube = this.getNewClient(); 
+        // Get new client
+        this.Youtube = await this.getClient(); 
     },
 
-    getNewClient: async function()
+    initClient: function()
     {
-        return await google.youtube({
-            version: "v3",
-            auth: API_CREDENTIALS.google.private
+        return new Promise((resolve,_) => {
+            gapi.load('client', resolve);
         });
     },
 
-    search: async function(query)
+    getClient: async function()
     {
         try
         {
+            const key = this.keys[this.current_key];
+            await this.initClient();
+            await gapi.client.init({apiKey: key});
+            await gapi.client.load("https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest");
+            return gapi.client.youtube;
+        }
+        catch(err)
+        {
+            console.error(err);
+            return null;
+        }
+    },
+
+    setNewAPIKey: function()
+    {
+        if (this.current_key + 1 >= this.keys.length)
+        {
+            this.quotaExceeded = true;
+            console.error("Youtube-API-Error ---> Youtube DATA API max quota has been reached. You can no longer use the built-in methods of the API");
+        }
+        else
+        {
+            this.current_key++;
+            gapi.client.setApiKey(this.keys[this.current_key]);
+        }
+        
+    },
+
+    // API methods
+    search: async function(query)
+    {
+        // Check client and quota
+        if(!this.Youtube || this.quotaExceeded) return null;
+
+        try
+        {
             // Execute
-            const response = await Youtube.search.list({
+            const response = await this.Youtube.search.list({
                 part: ["snippet", "id"],
                 q: query,
                 type: "video",
@@ -45,27 +83,38 @@ const YOUTUBE =
             });
     
             // Output
-            return response.data.items;
+            return response.result.items;
         } 
         catch(err)
         {
-            console.log(`\nYoutube-API-Error "${err}" upon searching for ${query}`);
-            return null;
+            if(err.errors && err.errors[0].reason === "quotaExceeded")
+            {
+                this.setNewAPIKey();
+                return this.search(query);
+            }
+            else
+            {
+                console.error(`\nYoutube-API-Error --> "${err}" upon searching for ${query}`);
+                return null;
+            }
         }
     },
 
     getVideoInfo: async function(videoID)
     {
+        // Check client and quota
+        if(!this.Youtube || this.quotaExceeded) return null;
+
         try
         {
             // Execute
-            const response = await Youtube.videos.list({
+            const response = await this.Youtube.videos.list({
                 part: ["id", "snippet", "contentDetails", "status", "statistics", "player"],
                 id: videoID
             });
 
             // Set aux var
-            const video = response.data.items[0];
+            const video = response.result.items[0];
 
             // Check
             if(!video) return undefined;
@@ -94,8 +143,16 @@ const YOUTUBE =
         } 
         catch(err)
         {
-            console.log(`\nYoutube-API-Error "${err}" upon fetching data of video ${videoID}`);
-            return null;
+            if(err.errors && err.errors[0].reason === "quotaExceeded")
+            {
+                this.setNewAPIKey();
+                return this.search(query);
+            }
+            else
+            {
+                console.error(`\nYoutube-API-Error ---> "${err}" upon fetching info of the video ${videoID}`);
+                return null;
+            }
         }
     },
 
@@ -112,16 +169,19 @@ const YOUTUBE =
 
     getChannelInfo: async function(channelID)
     {
+        // Check client and quota
+        if(!this.Youtube || this.quotaExceeded) return null;
+
         try
         {
             // Execute
-            const response = await Youtube.channels.list({
+            const response = await this.Youtube.channels.list({
                 part: ["id", "snippet", "statistics"],
                 id: channelID
             });
 
             // Set aux var
-            const channel = response.data.items[0];
+            const channel = response.result.items[0];
 
             // Check
             if(!channel) return undefined;
@@ -145,23 +205,34 @@ const YOUTUBE =
         } 
         catch(err)
         {
-            console.log(`\nYoutube-API-Error "${err}" upon fetching data of channel ${channelID}`);
-            return null;
+            if(err.errors && err.errors[0].reason === "quotaExceeded")
+            {
+                this.setNewAPIKey();
+                return this.search(query);
+            }
+            else
+            {
+                console.error(`\nYoutube-API-Error --> "${err}" upon fetching info of the channel ${channelID}`);
+                return null;
+            }
         }
     },
 
     getPlaylistInfo: async function(playlistID)
     {
+        // Check client and quota
+        if(!this.Youtube || this.quotaExceeded) return null;
+
         try
         {
             // Execute
-            const response = await Youtube.playlists.list({
+            const response = await this.Youtube.playlists.list({
                 part: ["contentDetails", "id", "player", "snippet", "status"],
                 id: playlistID
             });
 
             // Set aux var
-            const playlist = response.data.items[0];
+            const playlist = response.result.items[0];
 
             // Check
             if(!playlist) return undefined;
@@ -183,23 +254,34 @@ const YOUTUBE =
         } 
         catch(err)
         {
-            console.log(`\nYoutube-API-Error "${err}" upon fetching data of playlist ${playlistID}`);
-            return null;
+            if(err.errors && err.errors[0].reason === "quotaExceeded")
+            {
+                this.setNewAPIKey();
+                return this.search(query);
+            }
+            else
+            {
+                console.error(`\nYoutube-API-Error --> "${err}" upon fetching info of the playlist ${playlistID}`);
+                return null;
+            }
         }
     },
 
     getPlaylistItems: async function(playlistID)
     {
+        // Check client and quota
+        if(!this.Youtube || this.quotaExceeded) return null;
+
         try
         {
             // Execute
-            const response = await Youtube.playlistItems.list({
+            const response = await this.Youtube.playlistItems.list({
                 part: ["snippet", "contentDetails", "id", "status"],
                 playlistId: playlistID
             });
 
             // Set aux var
-            const playlist = response.data.items;
+            const playlist = response.result.items;
 
             // Check
             if(playlist.length == 0) return undefined;
@@ -223,8 +305,16 @@ const YOUTUBE =
         } 
         catch(err)
         {
-            console.log(`\nYoutube-API-Error "${err}" upon fetching item data of playlist ${playlistID}`);
-            return null;
+            if(err.errors && err.errors[0].reason === "quotaExceeded")
+            {
+                this.setNewAPIKey();
+                return this.search(query);
+            }
+            else
+            {
+                console.error(`\nYoutube-API-Error ---> "${err}" upon fetching items of the playlist ${playlistID}`);
+                return null;
+            }
         }
     }
 }
