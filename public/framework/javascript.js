@@ -56,7 +56,6 @@ Date.parsePT = function(str)
 	const seconds_regex = /(\d+(?:\.\d+)?)S/;
 
 	// Check
-	if(main_regex === "PT") throw `Invalid string ${str} to parse to PT format`;
 	if(!main_regex.test(str)) throw `Invalid string ${str} to parse to PT format`;
 
 	// Apply match
