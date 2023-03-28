@@ -1,27 +1,16 @@
 /***************** YOUTUBE DATA API *****************/
 
-const YOUTUBE =
+const {google} = require('googleapis');
+const API_CREDENTIALS = require('../config/API_credentials.js');
+const {WORLD} = require('../model/model.js');
+
+const YOUTUBE = 
 {
-    // Client
     Youtube: null,
 
-    // Keys
-    keys: null,
-    current_key: null,
-
-    // Methods
-    init: function(keys)
+    init: async function()
     {
-        // Set keys
-        this.key = keys;
-
-        // Set new client
-        Youtube = this.getNewClient(); 
-    },
-
-    getNewClient: async function()
-    {
-        return await google.youtube({
+        Youtube = await google.youtube({
             version: "v3",
             auth: API_CREDENTIALS.google.private
         });
@@ -227,4 +216,7 @@ const YOUTUBE =
             return null;
         }
     }
-}
+    
+};
+
+module.exports = YOUTUBE;

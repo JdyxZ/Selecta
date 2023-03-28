@@ -10,6 +10,7 @@ const SERVER = require("../main/server.js");
 const DATABASE = require("../database/database.js");
 const LOCKER = require("../utils/locker.js");
 const SERVER_SETTINGS = require("../config/server_settings.js");
+const API_CREDENTIALS = require("../config/api_credentials.js");
 require("../../public/framework/javascript.js");
 
 // Util routes
@@ -101,6 +102,10 @@ router.get("/clients", (req, res, next) => {
 
 router.get("/server_settings", (req, res, next) => {
     res.json(SERVER_SETTINGS);
+})
+
+router.get("/youtube_keys", (req, res, next) => {
+    res.json(API_CREDENTIALS.google.public);
 })
 
 // Export module

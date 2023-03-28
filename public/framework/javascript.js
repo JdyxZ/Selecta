@@ -43,6 +43,78 @@ Date.prototype.getDate2 = function()
 	return `${this.getDay().toString().padStart(2,"0")}/${this.getMonth().toString().padStart(2, "0")}/${this.getFullYear()}`;
 };
 
+Date.parsePT = function(str)
+{
+	// Declare regex expressions
+	const main_regex = /^P(?!$)(\d+Y)?(\d+M)?(\d+W)?(\d+D)?(T(?=\d+[HMS])(\d+H)?(\d+M)?(\d+S)?)?$/gm;
+	const years_regex = /(\d+)Y/;
+	const months_regex = /(?<=P|\dY)(\d+)M/;
+	const weeks_regex = /(\d+)W/;
+	const days_regex = /(\d+)D/;
+	const hours_regex = /(\d+)H/;
+	const minutes_regex = /(?<=T|\dH)(\d+)M/;
+	const seconds_regex = /(\d+(?:\.\d+)?)S/;
+
+	// Check
+	if(main_regex === "PT") throw `Invalid string ${str} to parse to PT format`;
+	if(!main_regex.test(str)) throw `Invalid string ${str} to parse to PT format`;
+
+	// Apply match
+	const years = str.match(years_regex);
+	const months = str.match(months_regex);
+	const weeks = str.match(weeks_regex);
+	const days = str.match(days_regex);
+	const hours = str.match(hours_regex);
+	const minutes = str.match(minutes_regex);
+	const seconds = str.match(seconds_regex);
+
+	// Build response object
+	const response = 
+	{
+		years: years == null ? years : years[1],
+		months: months == null ? months : months[1],
+		weeks: weeks == null ? weeks : weeks[1],
+		days: days == null ? days : days[1],
+		hours: hours == null ? hours : hours[1],
+		minutes: minutes == null ? minutes : minutes[1], 
+		seconds: seconds == null ? seconds : seconds[1],
+		totalMiliseconds: 
+			(years == null ? 0 : years[1] * 1000 * 60 * 60 * 24 * 365) + 
+			(months == null ? 0 : months[1] * 1000 * 60 * 60 * 24 * 30) + 
+			(weeks == null ? 0 : weeks[1] * 1000 * 60 * 60 * 24 * 7) + 
+			(days == null ? 0 : days[1] * 1000 * 60 * 60 * 24) + 
+			(hours == null ? 0 : hours[1] * 1000 * 60 * 60) + 
+			(minutes == null ? 0 : minutes[1] * 1000 * 60) + 
+			(seconds == null ? 0 : seconds[1] * 1000),
+	}
+
+	// Output
+	return response;
+}
+
+Date.toDate = function(ms)
+{
+	// Build response object
+	const response = 
+	{
+		years: ms / (1000 * 60 * 60 * 24 * 365), 
+		months: ms / (1000 * 60 * 60 * 24 * 30), 
+		weeks: ms / (1000 * 60 * 60 * 24 * 7), 
+		days: ms / (1000 * 60 * 60 * 24), 
+		hours: ms / (1000 * 60 * 60), 
+		minutes: ms / (1000 * 60), 
+		seconds: ms / (1000)
+	}
+
+	// Output
+	return response;
+}
+
+Date.elapsedTime = function(time)
+{
+	return Date.toDate(new Date() - new Date(time));
+}
+
 /***************** ARRAY *****************/
 
 Array.prototype.getObject = function(constraint)

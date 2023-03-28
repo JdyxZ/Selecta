@@ -14,6 +14,7 @@ const MODEL =
     users_obj: {},
     users_arr: [],
     suggestions: {},
+    songs: {},
 
     // Assets data
     user_assets : {}, // User skins
@@ -32,7 +33,7 @@ const MODEL =
     renderer: null,
     camera: null,
 
-    // Methods
+    // User Methods
     getUser: function(id)
     {
         return this.users_obj[id];
@@ -80,6 +81,12 @@ const MODEL =
         this.users_arr.splice(index, 1);
     },
 
+    // Suggestion Methods
+    getSuggestion: function(suggestionID)
+    {
+        return this.suggestions[suggestionID];
+    },
+
     addSuggestion: function(user, suggestion)
     {
         // Add
@@ -125,6 +132,28 @@ const MODEL =
             user.votes.remove(suggestion.songID);
         })
     },
+
+    // Song methods
+    getSong: function(songID)
+    {
+        return this.songs[songID];
+    },
+
+    addSong: function(song)
+    {
+        this.songs[song.ID] = song;
+    },
+
+    removeSong: function(songID)
+    {
+        this.songs.remove(songID);
+    },
+
+    updateSong: function(old_songID, song)
+    {
+        this.removeSong(old_songID);
+        this.addSong(song);
+    }
 }
 
 /***************** MESSAGE *****************/

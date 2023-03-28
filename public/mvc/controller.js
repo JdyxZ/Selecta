@@ -127,26 +127,35 @@ const CONTROLLER =
         // TODO
     },
 
-    onSuggest: function(user, suggestion)
+    onSuggest: function(user, suggestion, song)
     {
         // Get suggestion IDs
         const old_songID = user.suggestion.songID;
-        const new_songID = suggestion.songID;
+        const new_songID = song.ID;
 
         // Update the MODEL state
         if(old_songID == undefined)
+        {
             MODEL.addSuggestion(user, suggestion);
+            MODEL.addSong(song);
+        }
         else if(new_songID == old_songID)
+        {
             MODEL.removeSuggestion(user, suggestion);
+            MODEL.removeSong(new_songID);
+        }
         else
+        {
             MODEL.updateSuggestion(suggestion, new_songID);
+            MODEL.updateSong(old_songID, song);
+        }
     },
 
     onVote: function(user, songID)
     {
         // Set aux vars
         const already_voted = songID in user.votes;
-        const suggestion = MODEL.suggestions[songID];
+        const suggestion = MODEL.getSuggestion(songID);
 
         // Update MODEL state
         if(already_voted)
@@ -161,13 +170,16 @@ const CONTROLLER =
         }
     },
 
-    onFetchSong: function(songID)
+    onFetchSong: function(song)
     {
-        // TODO: Download song from Youtube
+        // TODO: Download song from Youtube (stream)
         // TODO: Register the song in the MODEL (current or next song vars)
+
+        // Remove suggestion
+        // Remove song from songs obj and place song into current_song, next_song var
         
         // When the song is downloaded, notify the system the song is ready to be played
-        const message = new Message(MODEL.my_user.id, "SONG_READY", songID, getTime());
+        const message = new Message(MODEL.my_user.id, "SONG_READY", song.ID, getTime());
         //CLIENT.sendMessage(message);
     },
 

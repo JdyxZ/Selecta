@@ -2,6 +2,7 @@
 const {User, Room, WORLD, Message, Suggestion, Song} = require("../model/model.js");
 const {getTime, isNumber, isString, isArray, isObject, outOfRange} = require("../../public/framework/javascript.js");
 const DATABASE = require("../database/database.js");
+const YOUTUBE = require("../utils/youtube.js");
 
 /***************** SERVER *****************/
 var SERVER = 
@@ -240,7 +241,7 @@ var SERVER =
         return ["OK", false];
     },
 
-    onSuggest: function(message)
+    onSuggest: async function(message)
     {
         // Get message data
         const sender_id = message.sender;
@@ -260,14 +261,17 @@ var SERVER =
         // Log
         console.log(`EVENT --> User ${user.name} has sent a SUGGEST message`);
 
-        // TODO: Check
-        // - Whether the ID is valid with the Youtube API
-        // - Suggestion is within song_duration_range     
-        // - The suggestion is a music type video
+        // Fetch song data
+        const songData = await YOUTUBE.getVideoInfo(new_songID);
 
         // Do some checkings
-        if(!isString(new_songID)) return ["SUGGEST_WRONG_SONGID", true];  
+        const check = YOUTUBE.checkVideoInfo(songData);
+        if(check != "OK") return [check, true];
         if(suggestion != undefined && suggestion.userID != sender_id) return ["SUGGEST_SONG_ALREADY_SUGGESTED", true];
+
+        // Fetch channel's song data from Youtube API
+        const channelData = await YOUTUBE.getChannelInfo(songData.publisherChannel.ID);
+        if(channelData) songData.publisherChannel = channelData;
 
         // Update the WORLD state
         if(old_songID == undefined)
@@ -276,6 +280,9 @@ var SERVER =
             WORLD.removeSuggestion(user_room, user, new_songID);
         else
             WORLD.updateSuggestion(user_room, old_songID, new_songID);
+
+        // Fill the content of the message with the video data
+        message.content = songData;
 
         // Redirect the message to the active room users
         this.sendRoomMessage(message, user.room, sender_id);
@@ -322,15 +329,8 @@ var SERVER =
             suggestion.vote_counter++;
         }
 
-        // Build response message
-        const response =
-        {
-            songID,
-            requester: sender_id
-        }
-
         // Redirect the message to the active room users
-        this.sendRoomMessage(response, user.room, sender_id);
+        this.sendRoomMessage(message, user.room, sender_id);
 
         // Output status
         return ["OK", false];
@@ -446,17 +446,6 @@ var SERVER =
         // Get room
         const room = WORLD.getRoom(roomID);
 
-        // Check room
-        if(room.people.length == 0)
-        {
-            console.log(`STATUS ---> There is no people in the room ${room.name} and therefore it is not possible to play a song`);
-            return;
-        } 
-        
-        // Check song
-        const result = this.checkSong(song);
-        if (result == "ERROR") return;
-
         // Update room playback settings
         room.current_song = song;
         room.next_song = null;
@@ -464,7 +453,7 @@ var SERVER =
         room.skipping_time = 0;
 
         // Set aux vars
-        const song_duration = room.current_song.duration;
+        const song_duration = room.current_song.duration.totalMiliseconds;
 
         // Clear intervals
         clearInterval(WORLD.intervals.playbackTime);
@@ -485,27 +474,40 @@ var SERVER =
         }, WORLD.playback_update_frequency);
     },
 
-    chooseNextSong: function(roomID)
+    chooseNextSong: async function(roomID)
     {
         // Get room data
         const room = WORLD.getRoom(roomID); 
         const MVS = room.getMostVotedSuggestions(); // Most Voted Suggestion
 
-        // Declare next songID
+        // Declare next song
         let next_songID = null;
 
         // Consider different case scenarios
-        if(room.num_people.length == 0) 
-            return;
-        else if(MVS.length == 0)           
-            next_songID = "QubialaSteve123"; // TODO: Select a song from the default playlist
+        if(MVS.length == 0)           
+            next_songID = room.playlist_items.pickRandom();
         else if(MVS.length == 1) 
-            next_songID = MVS[0];
+            next_songID = MVS[0].songID;
         else
-            next_songID = MVS.pickRandom();
+            next_songID = MVS.pickRandom().songID;
 
-        // TODO: Get song data with Youtube API
-        const next_song = new Song(next_songID, 10000);  
+        // Fetch song data with Youtube API
+        const songData = await YOUTUBE.getVideoInfo(songID);
+
+        // Check song data
+        const check = YOUTUBE.checkVideoInfo(songData);
+        if(check != "OK")
+        {
+            console.log(`ERROR -> ${check}`);
+            return;
+        }
+        
+        // Fetch channel's song data from Youtube API
+        const channelData = await YOUTUBE.getChannelInfo(songData.publisherChannel.ID);
+        if(channelData) songData.publisherChannel = channelData;
+
+        // Create new instance ofSong with song data
+        const next_song = new Song(songData);  
         
         // Get selected suggestion's user
         const suggestion = room.getSuggestion(next_songID);
@@ -524,11 +526,11 @@ var SERVER =
         });
 
         // Build and FETCH_SONG message
-        const message = new Message("system", "FETCH_SONG", next_songID, getTime());
+        const message = new Message("system", "FETCH_SONG", JSON.stringify(next_song), getTime());
         this.sendRoomMessage(message, roomID, []); 
 
         // Output
-        return next_song
+        return next_song;
     },
 
     skipSong: function(roomID)
@@ -546,38 +548,43 @@ var SERVER =
         }, WORLD.loading_duration);
     },
 
-    checkSong(song)
-    {
-        // TODO: Quitar después
-        if(!song) return;
-
-        // Checkings
-        if(song.constructor.name != "Song") 
-        {
-            console.log(`ERROR ---> Invalid value for the song ${song}`);
-            return "ERROR";
-        }
-        if(!isString(song.ID)) // TODO: Check with Youtube API that song.ID is valid
-        {
-            console.log(`ERROR ---> Invalid song ID ${song.ID}`);
-            return "ERROR";
-        } 
-
-        if(!isNumber(song.duration) || outOfRange(song.duration, WORLD.song_duration_range))
-        {
-            console.log(`ERROR ---> Invalid song duration ${song.duration}`);
-            return "ERROR";
-        }
-
-        // TODO...
-    },
-
-    initPlayback: function()
+    initPlayback: async function()
     {
         for (const roomID in WORLD.rooms)
         {
-            // TODO: Pick a random song from default playlist and get song data from Youtube API
-            let song = new Song("QubialaSteve123", 10000);
+            // Get room
+            const room = WORLD.getRoom(roomID);
+
+            // Get playlist items
+            const playlist_items = await YOUTUBE.getPlaylistItems(room.playlist);
+
+            // Check
+            if(!playlist_items)
+            {
+                if(playlist_items === undefined) console.log(`ERROR ---> The playlist ${room.playlist} does not exist or does not have no item yet`);
+                if(playlist_items === null) console.log(`ERROR ---> Something went wrong upon fetching default room playlist items`);
+                return;
+            }
+
+            // Store playlist items
+            room.playlist_items = playlist_items.map(item => item.ID);
+
+            // Pick a random song from the playlist
+            const songID = room.playlist_items.pickRandom();
+
+            // Fetch song data from Youtube API
+            const songData = await YOUTUBE.getVideoInfo(songID);
+
+            // Check song data
+            const check = YOUTUBE.checkVideoInfo(songData);
+            if(check != "OK") throw check;
+
+            // Fetch channel's song data from Youtube API
+            const channelData = await YOUTUBE.getChannelInfo(songData.publisherChannel.ID);
+            if(channelData) songData.publisherChannel = channelData;
+
+            // Create song instance
+            const song = new Song(songData);
 
             // Play song
             this.playSong(roomID, song)
@@ -677,7 +684,7 @@ var SERVER =
         this.sendRoomMessage(message, user.room, user.id); 
         
         // Send to the new user info about the room current playback
-        message = new Message("system", "FETCH_SONG", song.ID, getTime());
+        message = new Message("system", "FETCH_SONG", JSON.stringify(song), getTime());
         this.sendPrivateMessage(message, user_id);
     },
 

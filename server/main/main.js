@@ -8,6 +8,14 @@ async function main()
     // Init MySQL connection
     await DATABASE.init();
 
+    /***************** YOUTUBE *****************/
+
+    // Require DATABASE module
+    const YOUTUBE = require("../utils/youtube.js");
+
+    // Init Youtube DATA API connection
+    await YOUTUBE.init();
+
     /***************** IMPORTS *****************/
 
     // External module 

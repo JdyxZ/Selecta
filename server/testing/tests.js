@@ -2,53 +2,30 @@
 
 const DATABASE = require("../database/database.js");
 const CRYPTO = require("../utils/crypto.js");
+const YOUTUBE = require("../utils/youtube.js");
 const fs = require('fs/promises');
-require("../../public/framework/javascript.js");
+const {isArray} = require("../../public/framework/javascript.js");
+const {Song} = require('../model/model.js');
 
 async function test()
 {
-    // Init database connection
+    // Init database and youtube API connection
     await DATABASE.init();
+    await YOUTUBE.init();
 
-    // Try validate social user
-    const social =
-    {
-        id: 1,
-        provider: "google"
-    }
+    // URLs
+    const youtube_keys_url = "http://localhost:9015/youtube_keys";
 
-    const [status, result] = await DATABASE.validateUserSocial(social);
-    
-    console.log(status);
-    console.log(result[0]);
+    // Fetch resources from url    
+    const youtube_keys = await fetch(youtube_keys_url, {method: "GET"});
 
-    // hasOwnProperty problem
-    var hola = {"number": 1};
+    if (youtube_keys.status !== 200) {
+        console.log(`HTTP-Error ${youtube_keys.status} upon fetching url ${youtube_keys_url} `);
+        throw "Bad response";
+    };
 
-    console.log("\nTHE PROBLEM\n")
-
-    for(var key in hola)
-    {
-        console.log(key);
-    }
-
-    console.log("\nTHE SOLUTION\n")
-
-    for(var key in hola)
-    {
-        if(hola.owns(key))
-            console.log(key);
-    }
-
-    try
-    {
-        throw ["HOLA", "qué tal?"]
-    } 
-    catch (error)
-    {
-        console.log(error);
-    }
-
+    console.log(youtube_keys);
+    console.log(isArray(youtube_keys));
 }
 
 test();

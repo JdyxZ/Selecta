@@ -81,6 +81,7 @@ function Room(data)
     this.people = data == undefined ? [] : data.people || []; 
     this.exits = data == undefined ? [] : data.exits || [];
     this.default_model = data == undefined ? [] : data.default_model || [];
+    this.playlist = data == undefined ? null : data.playlist || null;
     this.suggestions = {};
     this.skip_counter = 0;
     this.skipping = false;
@@ -89,6 +90,7 @@ function Room(data)
     this.next_song = {};
     this.playback_time = 0;
     this.num_people = 0;
+    this.playlist_items = [];
 }
 
 Room.prototype.addUser = function(user)
@@ -211,7 +213,6 @@ Room.prototype.getMostVotedSuggestions = function()
 var WORLD = {
 
     // Macros
-    song_duration_range: [10000, 600000], // [ms, ms]
     playback_update_frequency: 10, // [ms]
     loading_duration: 5000, // [ms]
     skipping_threshold: 0.7, // [%]
@@ -451,10 +452,19 @@ function Suggestion(songID, userID, vote_counter)
 
 /***************** SONG *****************/
 
-function Song(ID, duration)
+function Song(data)
 {
-    this.ID = ID;
-    this.duration = duration;
+    this.ID = data.ID;
+    this.title = data.title;
+    this.description = data.description;
+    this.thumbnails = data.thumbnails;
+    this.publisherChannel = data.publisherChannel;
+    this.publicationTime = data.publicationTime;
+    this.elapsedTime = data.elapsedTime;
+    this.duration = data.duration;
+    this.viewCount = data.viewCount;
+    this.likeCount = data.likeCount;
+    this.commentCount = data.commentCount;
 }
 
 /***************** MESSAGE *****************/

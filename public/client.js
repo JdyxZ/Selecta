@@ -6,7 +6,6 @@ var CLIENT =
     server_port: null,
     server_address: null,
     protocol: null,
-    api_credentials: null,
     socket: null,
     debug: null,
     
@@ -20,9 +19,6 @@ var CLIENT =
         this.server_address = response.settings.address;
         this.server_port = response.settings.port;
 
-        // Set API credentials
-        this.api_credentials = response.api_credentials;
-
         // New WebSocket instance
         this.socket = new WebSocket(`${this.server_protocol == "secure" ? "wss://" : "ws://"}${this.server_address}:${this.server_port}`);
 
@@ -30,6 +26,12 @@ var CLIENT =
         this.socket.onmessage = this.onMessage.bind(this);
         this.socket.onopen = this.onOpen.bind(this);
         this.socket.onclose = this.onClose.bind(this);
+
+        // Set Youtube DATA API keys
+        YOUTUBE.keys = response.keys;
+
+        // Init Youtube DATA API
+        // YOUTUBE.init();
     },
 
     fetchServerResources: async function ()
@@ -37,29 +39,29 @@ var CLIENT =
         try
         {
             // URLs
-            const ss_url = "/server_settings";
-            const ac_url = "/api_credentials";
+            const server_settings_url = "/server_settings";
+            const youtube_keys_url = "/youtube_keys";
 
             // Fetch resources from url    
-            const ss_response = await fetch(ss_url, {method: "GET"}); 
-            const ac_response = await fetch(ac_url, {method: "GET"});
+            const server_settings = await fetch(server_settings_url, {method: "GET"}); 
+            const youtube_keys = await fetch(youtube_keys_url, {method: "GET"});
         
             // Check responses
-            if (ss_response.status !== 200) {
-                console.log(`HTTP-Error ${ss_response.status} upon fetching url ${ss_url} `);
+            if (server_settings.status !== 200) {
+                console.log(`HTTP-Error ${server_settings.status} upon fetching url ${server_settings_url} `);
                 throw "Bad response";
             };
 
-            if (ac_response.status !== 200) {
-                console.log(`HTTP-Error ${ac_response.status} upon fetching url ${ac_url} `);
+            if (youtube_keys.status !== 200) {
+                console.log(`HTTP-Error ${youtube_keys.status} upon fetching url ${youtube_keys_url} `);
                 throw "Bad response";
             };
                 
             // Convert responses into response json
             const response = 
             {
-                settings: await ss_response.json(),
-                api_credentials: await ac_response.json()
+                settings: await server_settings.json(),
+                keys: await youtube_keys.json()
             }
 
             // Return settings
@@ -209,15 +211,15 @@ var CLIENT =
         console.table(message.content);
 
         // Unpack message data
-        const sender_id = message.sender;
-        const user = MODEL.users_obj[sender_id];
+        const sender = message.sender;
+        const user = MODEL.getUser(sender);
         const model = message.content.model;
         const animation = message.content.animation;
 
         // Check
         if(!user)
         {
-            console.error(`onTick callback --> The user id ${sender_id} is not registered`);
+            console.error(`onTick callback --> The user id ${sender} is not registered`);
             return;
         }
 
@@ -242,12 +244,12 @@ var CLIENT =
         console.table(message.content);
 
         // Unpack message data
-        const suggestionID = message.content;
-        const suggestion = suggestions[suggestionID];
-        const user = MODEL.users_obj[suggestion.userID];
+        const song = message.content;
+        const suggestion = MODEL.getSuggestion(song.ID);
+        const user = MODEL.getUser(suggestion.userID);
 
         // Callback
-        CONTROLLER.onSuggest(user, suggestion);
+        CONTROLLER.onSuggest(user, suggestion, song);
     },
 
     onVote: function(message)
@@ -257,9 +259,9 @@ var CLIENT =
         console.table(message.content);
 
         // Unpack message data
-        const songID = message.content.songID;
-        const requester = message.content.requester;
-        const user = MODEL.users_obj[requester];
+        const requester = message.sender;
+        const songID = message.content;
+        const user = MODEL.getUser(requester);
     
         // Callback
         CONTROLLER.onVote(user, songID);
@@ -272,10 +274,10 @@ var CLIENT =
         console.table(message.content);
 
         // Unpack message data
-        const songID = message.content;
+        const song = message.content;
 
         // Callback
-        CONTROLLER.onFetchSong(songID);
+        CONTROLLER.onFetchSong(song);
     },
 
     onPlaySong: function(message)
