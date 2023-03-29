@@ -1,7 +1,5 @@
 /***************** YOUTUBE DATA API *****************/
 
-const ytdl = require('ytdl-core');
-
 const YOUTUBE =
 {
     // Client

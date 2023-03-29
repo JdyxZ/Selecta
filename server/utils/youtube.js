@@ -87,7 +87,7 @@ const YOUTUBE =
 
             // Execute
             const response = await this.Youtube.videos.list({
-                part: ["id", "snippet", "contentDetails", "status", "statistics", "player","jh"],
+                part: ["id", "snippet", "contentDetails", "status", "statistics", "player"],
                 id: videoIDs
             });
 
