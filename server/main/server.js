@@ -27,7 +27,7 @@ var SERVER =
             console.log(model);
             process.exit();
             return;
-        }            
+        }           
    
         // Init model
         WORLD.init(model.rooms, model.users, model.user_assets, model.object_assets);
@@ -54,8 +54,8 @@ var SERVER =
     // Update world
     updateWorld: async function()
     {
-       await DATABASE.updateModel(WORLD);
-       console.log("EVENT --> Model successfully updated");
+        await DATABASE.updateModel(WORLD);
+        console.log("EVENT --> Model successfully updated");
     },
 
     // Before closing
@@ -227,7 +227,7 @@ var SERVER =
 
         // Do some checkings
         if(content.model == undefined && content.animation == undefined) return ["TICK_WRONG_CONTENT", true];
-        if(content.model && !isArray(content.model)) return ["TICK_WRONG_MODEL_TYPE", true];
+        if(content.model && !isObject(content.model)) return ["TICK_WRONG_MODEL_TYPE", true];
         if(content.animation && !isString(content.animation)) return ["TICK_WRONG_ANIMATION_TYPE", true];
 
         // Update the WORLD state

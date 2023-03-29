@@ -49,7 +49,7 @@ const CONTROLLER =
         
         // Create pivot point for the avatar
         var character_pivot = new RD.SceneNode({
-            position: [-40,-5,0]
+            position: user_position
         });
 
         // Create a mesh for the avatar
@@ -60,9 +60,12 @@ const CONTROLLER =
             material: "girl2"
         });
 
-        character_pivot.addChild(avat);
+        avat.id = "avat1";
         avat.skeleton = new RD.Skeleton();
-        MODEL.scene.root.addChild( character_pivot ); 
+
+        character_pivot.addChild(avat);
+        character_pivot.id = id;
+         
 
         var avat_selector = new RD.SceneNode({
             position: [0,20,0],
@@ -73,9 +76,11 @@ const CONTROLLER =
             layers: 0b1000
         });
 
+        avat.id = "avat";
+
         character_pivot.addChild( avat_selector );
         
-
+        MODEL.scene.root.addChild( character_pivot );
         // Set the character_pivot id to the id of the user
         //character_pivot.id = id;
 
@@ -137,7 +142,7 @@ const CONTROLLER =
     {
         // Append new users to users
         MODEL.addUsers(users);
-        users.forEach(user =>{ if(!(MODEL.user_assets[user.id] === 'undefined')) VIEW.addUser(user.id) } );
+        users.forEach(user =>{ if(!(MODEL.user_assets[user.id] === 'undefined')) VIEW.addUser(user) } );
     },
 
     onUserLeft: function(user_id)

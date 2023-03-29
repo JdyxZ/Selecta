@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS selecta_rooms (
     people JSON,
     exits JSON,
     default_model JSON,
-    playlist VARCHAR(255) NOT NULL,
+    playlist VARCHAR(255) ,
 
     PRIMARY KEY (id)
 );
@@ -54,7 +54,7 @@ VALUES(1, '{"object": "disco_room.gltf"}', '{"model": [0, 0, 0, 0, 0, 0, 0, 0, 0
 
 -- CREATE ROOMS
 INSERT IGNORE INTO selecta_rooms (id, name, objects, people, exits, default_model, playlist)
-VALUES (1, 'Studio 54', '{}', '{}', '{}', '{}', 'PLaXq35jqloUVY5tCNun4XiFFIxX9fJmns'); 
+VALUES (1, 'Studio 54', '{}', '{}', '{}', '{"position": [-40,-5,0] ,"rotation": 0}', 'PLaXq35jqloUVY5tCNun4XiFFIxX9fJmns'); 
 
 INSERT IGNORE INTO selecta_rooms (id, name, objects, people, exits, default_model, playlist) 
-VALUES (2, 'Shadon', '{}', '{}', '{}', '{}', 'PLaXq35jqloUVY5tCNun4XiFFIxX9fJmns'); 
+VALUES (2, 'Shadon', '{}', '{}', '{}', '{"position": [-40,-5,0] ,"rotation": 0}', 'PLaXq35jqloUVY5tCNun4XiFFIxX9fJmns'); 

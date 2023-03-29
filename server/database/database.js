@@ -327,7 +327,7 @@ var DATABASE = {
                 values.push([room.id, objects_json, people_json]);
                 return values;
             }, []);
-
+            
             // Query            
             const result = await this.pool.query
             (

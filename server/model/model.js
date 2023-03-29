@@ -95,6 +95,9 @@ function Room(data)
 
 Room.prototype.addUser = function(user)
 {
+    if(this.people.includes(user.id))
+        return
+
     this.people.push(user.id);
     this.num_people++;
     user.room = this.id;
@@ -102,6 +105,9 @@ Room.prototype.addUser = function(user)
 
 Room.prototype.removeUser = function(user)
 {
+    if(!(this.people.includes(user.id)))
+        return
+    
     this.people.remove(user.id);
     this.num_people--;
     user.room = null;

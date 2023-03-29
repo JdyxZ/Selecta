@@ -104,11 +104,12 @@ const VIEW =
     {
         //console.log(MODEL.user_assets[user.id]);
         const id = user.id;
-
+        console.log("adding a user");
+        
         // Get the corresponding user asset
         var asset = MODEL.raw_user_assets[user.asset];
         //console.log(MODEL.raw_user_assets);
-
+        console.log(user);
         // Create the asset instance
         CONTROLLER.createAsset(asset,[-40,-5,0],id);
         
@@ -153,7 +154,7 @@ const VIEW =
         MODEL.renderer.clear(MODEL.bg_color);
 
         // Set the sceneanimation
-
+        
         //console.log(MODEL.room_scene);
         MODEL.renderer.render(MODEL.scene, MODEL.camera, null, 0b11 );
     },
@@ -172,6 +173,9 @@ const VIEW =
         // Just in case
         MODEL.scene.update(dt);
 
+        // Get the my_user node
+        character_pivot_node = MODEL.scene.root.findNode(MODEL.my_user.id);
+
         // Necessary data to update
         var t = getTime();
         var anim = MODEL.user_assets[MODEL.my_user.id].animations['idle.skanim'];
@@ -180,8 +184,10 @@ const VIEW =
         // Check the keys for moving
         if(gl.keys["UP"])
         {
+            console.log(MODEL.my_user.id);
             // Set the pivot to walk forward
-            MODEL.user_assets[MODEL.my_user.id].character_pivot.moveLocal([0,0,1]);
+            //MODEL.user_assets[MODEL.my_user.id].character_pivot.moveLocal([0,0,1]);
+            character_pivot_node.moveLocal([0,0,1]);
 
             // Set the walking animation
             anim = MODEL.user_assets[MODEL.my_user.id].animations['walking.skanim'];
@@ -190,7 +196,8 @@ const VIEW =
         else if(gl.keys["DOWN"])
         {
             // Set the pivot to walk backwards
-            MODEL.user_assets[MODEL.my_user.id].character_pivot.moveLocal([0,0,-1]);
+            //MODEL.user_assets[MODEL.my_user.id].character_pivot.moveLocal([0,0,-1]);
+            character_pivot_node.moveLocal([0,0,-1]);
 
             // Set the walking animation and timefactor for the skeleton (walking animation inverse)
             anim = MODEL.user_assets[MODEL.my_user.id].animations['walking.skanim'];
@@ -225,7 +232,7 @@ const VIEW =
         }
         
         // In case the avatar is outside the boundingbox we calculate the near position
-        var pos = MODEL.user_assets[MODEL.my_user.id].character_pivot.position;
+        var pos = character_pivot_node.position;
         var nearest_pos = MODEL.walkarea.adjustPosition( pos );
         MODEL.user_assets[MODEL.my_user.id].character_pivot.position = nearest_pos;
 
@@ -233,6 +240,7 @@ const VIEW =
         anim.assignTime( t * 0.001 * time_factor );
         
         // Copy the skeleton in the animation to the character
-        MODEL.user_assets[MODEL.my_user.id].character.skeleton.copyFrom( anim.skeleton );
+        //MODEL.user_assets[MODEL.my_user.id].character.skeleton.copyFrom( anim.skeleton );
+        character_pivot_node.findNode('avat').skeleton.copyFrom( anim.skeleton );
     }
 }
