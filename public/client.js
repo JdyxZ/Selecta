@@ -169,9 +169,11 @@ var CLIENT =
         console.log("New ASSETS message received\n");
         //console.table(message.content);
 
+        const parsed_mssg = JSON.parse(message.content);
+
         // Unpack message data
-        const user_assets = message.content.user_assets;
-        const object_assets = message.content.object_assets;
+        const user_assets = JSON.parse(message.content).user_assets;
+        const object_assets = JSON.parse(message.content).object_assets;
 
         // Callback
         CONTROLLER.setAvatarAssets(user_assets);
