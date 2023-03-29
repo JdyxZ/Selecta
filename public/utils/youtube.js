@@ -375,16 +375,8 @@ const YOUTUBE =
         }
     },
 
-    fetchAudioStreams: function(videoID)
+    fetchAudioStreams: async function(videoID)
     {
-        try
-        {
-            if(!isString(videoID)) throw "YOUTUBE_INVALID_INPUT";
-        }
-        catch(err)
-        {
-            console.error(`Youtube Utils Error ---> "${err}" upon downloading audio streams of the video ${videoID}`)
-        }
         
     }
 }
