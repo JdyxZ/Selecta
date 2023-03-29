@@ -3,6 +3,7 @@
 // External modules
 const express = require('express');
 const router = express.Router();
+const url = require('url');
 
 // Our modules
 const {WORLD} = require("../model/model.js");
@@ -11,6 +12,7 @@ const DATABASE = require("../database/database.js");
 const LOCKER = require("../utils/locker.js");
 const SERVER_SETTINGS = require("../config/server_settings.js");
 const API_CREDENTIALS = require("../config/api_credentials.js");
+const YOUTUBE = require("../utils/youtube.js");
 require("../../public/framework/javascript.js");
 
 // Util routes
@@ -102,11 +104,27 @@ router.get("/clients", (req, res, next) => {
 
 router.get("/server_settings", (req, res, next) => {
     res.json(SERVER_SETTINGS);
-})
+});
+
+// Youtube 
 
 router.get("/youtube_keys", (req, res, next) => {
     res.json(API_CREDENTIALS.google.public);
-})
+});
+
+router.get("/youtubeGetAudioStreams", async (req, res, next) =>
+{
+    // Unpack params
+    const params = url.parse(req.url, true).query;
+
+    // Process request
+    const result = await YOUTUBE.fetchAudioStreams(params.videoID);
+
+    // Respond
+    res.json(result);    
+});
+
+
 
 // Export module
 module.exports = router;

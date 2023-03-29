@@ -1,9 +1,14 @@
 /***************** YOUTUBE DATA API *****************/
 
+// External modules
 const {google} = require('googleapis');
+const ytdl = require('ytdl-core');
+
+// Our modules
 const API_CREDENTIALS = require('../config/API_credentials.js');
 const {WORLD} = require('../model/model.js');
 const {isString, isArray} = require('../../public/framework/javascript.js');
+
 
 const YOUTUBE = 
 {
@@ -87,7 +92,7 @@ const YOUTUBE =
 
             // Execute
             const response = await this.Youtube.videos.list({
-                part: ["id", "snippet", "contentDetails", "status", "statistics", "player","jh"],
+                part: ["id", "snippet", "contentDetails", "status", "statistics", "player"],
                 id: videoIDs
             });
 
@@ -296,6 +301,29 @@ const YOUTUBE =
                 console.error(`Youtube Utils Error ---> "${err}" upon fetching items of the playlist ${playlistID}`);
                 return null;
             }
+        }
+    },
+
+    fetchAudioStreams: async function(videoID)
+    {
+        try
+        {
+            // Check videoID
+            const check = await ytdl.validateURL(videoID);
+            if(!check) throw `YOUTUBE_UNABLE_TO_PARSE_${videoID}`;
+
+            // Fetch audio info
+            const info = await ytdl.getInfo(videoID);
+            const audio_info = await ytdl.chooseFormat(info.formats, {quality: 'highestaudio', filter: 'audioonly'});
+
+            // Check result
+            if(audio_info.isEmpty()) throw "YOUTUBE_VIDEO_WITHOUT_AUDIO";
+
+            return ["OK", audio_info];
+        }
+        catch(err)
+        {
+            return ["ERROR", err];
         }
     }
     
