@@ -1,6 +1,6 @@
 // Module imports
 const {User, Room, WORLD, Message, Suggestion, Song} = require("../model/model.js");
-const {getTime, isNumber, isString, isArray, isObject, outOfRange} = require("../../public/framework/javascript.js");
+const {isNumber, isString, isArray, isObject, outOfRange} = require("../../public/framework/javascript.js");
 const DATABASE = require("../database/database.js");
 const YOUTUBE = require("../utils/youtube.js");
 
@@ -79,7 +79,7 @@ var SERVER =
             if (result[0] != "OK") throw result;
 
             // If there is no send time, append one
-            if(message.time == null) message.time = getTime();
+            if(message.time == null) message.time = Date.getTime();
 
             // Eventually, message has passed general checkings and is ready to be routed!
             const status = this.routeMessage(message);
@@ -94,9 +94,9 @@ var SERVER =
             // Build error message
             let error_message;
             if(isArray(error) && error.length == 2 && error[1] === true)
-                error_message = new Message("system", "ERROR", error, getTime());
+                error_message = new Message("system", "ERROR", error[1], Date.getTime());
             else
-                error_message = new Message("system", "ERROR", "Error upon processing your message", getTime());
+                error_message = new Message("system", "ERROR", "Error upon processing your message", Date.getTime());
             
             // Send error message
             this.sendPrivateMessage(error_message, message.sender);
@@ -134,7 +134,7 @@ var SERVER =
         }
 
         // Send to the new user all the app assets
-        message = new Message("system", "ASSETS", JSON.stringify(assets), getTime());
+        message = new Message("system", "ASSETS", JSON.stringify(assets), Date.getTime());
         this.sendPrivateMessage(message, user.id);
 
         // Log
@@ -151,7 +151,7 @@ var SERVER =
         this.clients.remove(user_id);
         
         // Update info to the other users
-        const message = new Message("system", "USER_LEFT", user.id, getTime());
+        const message = new Message("system", "USER_LEFT", user.id, Date.getTime());
         this.sendRoomMessage(message, user.room, user_id);
 
         // Log
@@ -204,8 +204,6 @@ var SERVER =
                 return this.onVote(message);
             case "SKIP":
                 return this.onSkip(message);
-            case "SONG_READY":
-                return this.onSongReady(message);
             case "EXIT":
                 return this.onExit(message);
             default:
@@ -262,16 +260,16 @@ var SERVER =
         console.log(`EVENT --> User ${user.name} has sent a SUGGEST message`);
 
         // Fetch song data
-        const videosData = await YOUTUBE.getVideosInfo(new_songID);
+        const videoData = await YOUTUBE.getVideosInfo(new_songID)[0];
 
         // Do some checkings
-        const check = YOUTUBE.checkVideoInfo(videosData[0]);
+        const check = YOUTUBE.checkVideoInfo(videoData);
         if(check != "OK") return [check, true];
         if(suggestion != undefined && suggestion.userID != sender_id) return ["SUGGEST_SONG_ALREADY_SUGGESTED", true];
 
         // Fetch channel's song data from Youtube API
-        const channelsData = await YOUTUBE.getChannelsInfo(videosData[0].publisherChannel.ID);
-        if(channelsData[0]) videosData[0].publisherChannel = channelsData[0];
+        const channelData = await YOUTUBE.getChannelsInfo(videoData.publisherChannel.ID)[0];
+        if(channelData) videoData.publisherChannel = channelData;
 
         // Update the WORLD state
         if(old_songID == undefined)
@@ -282,7 +280,7 @@ var SERVER =
             WORLD.updateSuggestion(user_room, old_songID, new_songID);
 
         // Fill the content of the message with the video data
-        message.content = videosData[0];
+        message.content = videoData;
 
         // Redirect the message to the active room users
         this.sendRoomMessage(message, user.room, sender_id);
@@ -375,40 +373,6 @@ var SERVER =
         return ["OK", false];
     },
 
-    onSongReady: function(message)
-    {
-        // Get message data
-        const sender_id = message.sender;
-        const content = message.content;
-
-        // Get user data
-        const user = WORLD.getUser(sender_id);
-        const user_room = WORLD.getRoom(user.room);
-
-        // Get songID
-        const songID = content;
-
-        // Log
-        console.log(`EVENT --> User ${user.name} has sent a SONG_READY message`);
-
-        // Do some checkings
-        if(songID !== user_room.current_song.ID && songID !== user_room.next_song.ID) return ["SONGREADY_INVALID_SONGID", true];
-
-        // Set playback info obj
-        const playbackInfo =
-        {
-            song: songID,
-            playbackTime: user_room.current_song.ID === songID ? user_room.playback_time : user_room.playback_time - (user_room.skipping_time + WORLD.loading_time)
-        };
-
-        // Build and send private message to the user with the song playback time
-        const playback_message = new Message("system", "PLAY_SONG", JSON.stringify(playbackInfo), getTime());
-        this.sendPrivateMessage(playback_message, sender_id);
-
-        // Output status
-        return ["OK", false];
-    },
-
     onExit: function(message)
     {
         // Get message data
@@ -432,7 +396,7 @@ var SERVER =
         this.onNewUserToRoom(user.id);
 
         // Notify the users of the old room that the user has left
-        message = new Message("system", "USER_LEFT", user_id, getTime());   
+        message = new Message("system", "USER_LEFT", user_id, Date.getTime());   
         this.sendRoomMessage(message, previous_room, sender_id);    
         
         // Output status
@@ -446,6 +410,10 @@ var SERVER =
         // Get room
         const room = WORLD.getRoom(roomID);
 
+        // Check song
+        if(!song)
+            room.timers.playSong = null;
+
         // Update room playback settings
         room.current_song = song;
         room.next_song = null;
@@ -453,23 +421,23 @@ var SERVER =
         room.skipping_time = 0;
 
         // Set aux vars
-        const song_duration = room.current_song.duration.totalMiliseconds;
+        const song_duration = song.duration.totalMiliseconds;
 
         // Clear intervals
-        clearInterval(WORLD.intervals.playbackTime);
+        clearInterval(room.intervals.playbackTime);
         room.playback_time = 0.0;
 
         // Set timers
-        WORLD.timers.chooseNextSong = setTimeout(() => {
+        room.timers.chooseNextSong = setTimeout(() => {
             this.chooseNextSong(roomID)
         }, song_duration - WORLD.loading_duration);
 
-        WORLD.timers.playSong = setTimeout(() => {
+        room.timers.playSong = setTimeout(() => {
             this.playSong(roomID, room.next_song)
         }, song_duration);
         
         // Set intervals
-        WORLD.intervals.playbackTime = setInterval(() => {
+        room.intervals.playbackTime = setInterval(() => {
             room.playback_time += WORLD.playback_update_frequency / 1000
         }, WORLD.playback_update_frequency);
     },
@@ -492,32 +460,42 @@ var SERVER =
             next_songID = MVS.pickRandom().songID;
 
         // Fetch song data with Youtube API
-        const videosData = await YOUTUBE.getVideosInfo(songID);
+        const videoData = (await YOUTUBE.getVideosInfo(next_songID))[0];
 
         // Check song data
-        const check = YOUTUBE.checkVideoInfo(videosData[0]);
+        const check = YOUTUBE.checkVideoInfo(videoData);
         if(check != "OK")
         {
             console.log(`ERROR -> ${check}`);
             return;
         }
         
-        // Fetch channel's song data from Youtube API
-        const channelsData = await YOUTUBE.getChannelsInfo(videosData[0].publisherChannel.ID);
-        if(channelsData[0]) videosData[0].publisherChannel = channelsData[0];
+        // Fetch channel's song data with Youtube API
+        const channelData = await YOUTUBE.getChannelsInfo(videoData.publisherChannel.ID)[0];
+        if(channelData) videoData.publisherChannel = channelData;
+
+        // Fetch audioStream with Youtube Downloading module
+        const audioStream = await YOUTUBE.fetchAudioStreams(next_songID);
+
+        // Check
+        if(audioStream[0] == "ERROR")
+            return
+        
+        // Assign url info
+        videoData.audioStream = audioStream[1];
 
         // Create new instance ofSong with song data
-        const next_song = new Song(videosData[0]);  
+        const next_song = new Song(videoData); 
         
         // Get selected suggestion's user
         const suggestion = room.getSuggestion(next_songID);
         const user = suggestion !== undefined ? WORLD.getUser(suggestion.userID) : null;
 
         // Update room data
-        room.skip_counter = 0;
+        room.next_song = next_song;
         room.skipping = true;
         room.skipping_time = room.playback_time;
-        room.next_song = next_song;
+        room.skip_counter = 0;
         WORLD.removeSuggestion(room, user, next_song);
 
         // Update user data
@@ -525,9 +503,16 @@ var SERVER =
             user.skip = false;
         });
 
-        // Build and FETCH_SONG message
-        const message = new Message("system", "FETCH_SONG", JSON.stringify(next_song), getTime());
-        this.sendRoomMessage(message, roomID, []); 
+        // If the playback timer is not active, play the song
+        if(room.timers.playSong == null)
+            this.playSong(roomID, next_song);
+
+        // Get playbackInfo of the song
+        const playbackInfo = this.getPlaybackInfo(room, next_song);
+        
+        // Send playbackInfo of the song to the room
+        const playback_message = new Message("system", "PLAY_SONG", JSON.stringify(playbackInfo), Date.getTime());
+        this.sendRoomMessage(playback_message, room.id, []);
 
         // Output
         return next_song;
@@ -535,17 +520,20 @@ var SERVER =
 
     skipSong: function(roomID)
     {
+        // Get room
+        const room = WORLD.getRoom(roomID);
+
         // Clear current song timers
-        clearTimeout(WORLD.timers.chooseNextSong);
-        clearTimeout(WORLD.timers.playSong); 
+        clearTimeout(room.timers.chooseNextSong);
+        clearTimeout(room.timers.playSong);
+
+        // Play song after some loading seconds
+        room.timers.playSong = setTimeout(() => {
+            this.playSong(roomID, next_song)
+        }, WORLD.loading_duration);
 
         // Choose next song
         const next_song = this.chooseNextSong(roomID);
-
-        // Play song after some loading seconds
-        WORLD.timers.playSong = setTimeout(() => {
-            this.playSong(roomID, next_song)
-        }, WORLD.loading_duration);
     },
 
     initPlayback: async function()
@@ -569,26 +557,29 @@ var SERVER =
             // Store playlist items
             room.playlist_items = playlist_items.map(item => item.ID);
 
-            // Pick a random song from the playlist
-            const songID = room.playlist_items.pickRandom();
-
-            // Fetch song data from Youtube API
-            const videosData = await YOUTUBE.getVideosInfo(songID);
-
-            // Check song data
-            const check = YOUTUBE.checkVideoInfo(videosData[0]);
-            if(check != "OK") throw check;
-
-            // Fetch channel's song data from Youtube API
-            const channelsData = await YOUTUBE.getChannelsInfo(videosData[0].publisherChannel.ID);
-            if(channelsData[0]) videosData[0].publisherChannel = channelsData[0];
-
-            // Create song instance
-            const song = new Song(videosData[0]);
-
-            // Play song
-            this.playSong(roomID, song)
+            // Start song cycle
+            await this.chooseNextSong(roomID);
         }
+    },
+
+    getPlaybackInfo: function(room, song)
+    {
+        // Check
+        if(!song || (song != room.current_song && song != room.next_song))
+        {
+            console.log("Error ---> getPlaybackInfo: Invalid song");
+            return null;
+        }
+
+        // Build playbackInfo object
+        const playbackInfo =
+        {
+            song: song,
+            playbackTime: room.current_song.ID === song.ID ? room.playback_time : room.playback_time - (room.skipping_time + WORLD.loading_time)
+        };
+
+        // Return object
+        return playbackInfo;
     },
 
     /***************** MESSAGE DELIVERY *****************/
@@ -665,27 +656,39 @@ var SERVER =
         const song = user_room.skipping ? user_room.next_song : user_room.current_song;
 
         // Send to the new user info about their current/new room
-        message = new Message("system", "ROOM", user_room.toJSON(), getTime());
+        message = new Message("system", "ROOM", user_room.toJSON(), Date.getTime());
         this.sendPrivateMessage(message, user_id);
 
         // Send to the new user its own user data
-        message = new Message("system", "YOUR_INFO", user.toJSON(), getTime());
+        message = new Message("system", "YOUR_INFO", user.toJSON(), Date.getTime());
         this.sendPrivateMessage(message, user_id);        
 
         // Send to the new user info about the active users in the current/new room
         if(active_room_users_ids.length > 0)
         {
-            message = new Message("system", "USER_JOIN", active_room_users_info, getTime());
+            message = new Message("system", "USER_JOIN", active_room_users_info, Date.getTime());
             this.sendPrivateMessage(message, user_id);
         }
 
         // Send to the current/new room active users data of the new user
-        message = new Message("system", "USER_JOIN", [user.toJSON()], getTime());
+        message = new Message("system", "USER_JOIN", [user.toJSON()], Date.getTime());
         this.sendRoomMessage(message, user.room, user.id); 
         
         // Send to the new user info about the room current playback
-        message = new Message("system", "FETCH_SONG", JSON.stringify(song), getTime());
-        this.sendPrivateMessage(message, user_id);
+        if(user_room.current_song)
+        {
+            const playbackInfo = this.getPlaybackInfo(user_room, user_room.current_song);
+            message = new Message("system", "PLAY_SONG", JSON.stringify(playbackInfo), Date.getTime());
+            this.sendPrivateMessage(message, user_id);
+        };
+
+        // Send to the new user info about the room future playback
+        if(user_room.next_song)
+        {
+            const playbackInfo = this.getPlaybackInfo(user_room, user_room.next_song);
+            message = new Message("system", "PLAY_SONG", JSON.stringify(playbackInfo), Date.getTime());
+            this.sendPrivateMessage(message, user_id);
+        }
     },
 
     filterActiveUsers(users_id)

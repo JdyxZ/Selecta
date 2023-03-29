@@ -33,15 +33,17 @@ String.prototype.reverse = function()
 
 /***************** DATE *****************/
 
-Date.prototype.getTime2 = function() 
+Date.getTime = function()
 {
-	return `${this.getHours().toString().padStart(2,"0")}:${this.getMinutes().toString().padStart(2, "0")}`
-};
+	const date = new Date();
+	return date.getTime();
+}
 
-Date.prototype.getDate2 = function() 
+Date.getDate = function()
 {
-	return `${this.getDay().toString().padStart(2,"0")}/${this.getMonth().toString().padStart(2, "0")}/${this.getFullYear()}`;
-};
+	const date = new Date();
+	return date.getDate();
+}
 
 Date.parsePT = function(str)
 {
@@ -116,8 +118,20 @@ Date.elapsedTime = function(time)
 
 /***************** ARRAY *****************/
 
-Array.prototype.getObject = function(constraint)
+function setArrayProperty(property, value)
 {
+	const descriptor =
+	{
+		writable: true, 
+		enumerable: false,
+		value
+	};
+
+	Object.defineProperty(Array.prototype, property, descriptor);
+};
+
+setArrayProperty("getObject", function(constraint) { 
+	
 	// Check that constraint is an object
 	if(!isObject(constraint))
 	{
@@ -142,10 +156,10 @@ Array.prototype.getObject = function(constraint)
 
 	// Otherwise return null to let the user know that the object hasn't been found
 	return null;
-};
+});
 
-Array.prototype.getObjects = function(constraint)
-{
+setArrayProperty("getObjects", function(constraint) { 
+	
 	// Check that constraint is an object
 	if(!isObject(constraint))
 	{
@@ -171,10 +185,10 @@ Array.prototype.getObjects = function(constraint)
 
 	// Otherwise return an empty array to let the user know that no object has been found
 	return [];
-};
+});
 
-Array.prototype.getObjectIndex = function(constraint)
-{
+setArrayProperty("getObjectIndex", function(constraint) { 
+
 	// Check that constraint is an object
 	if(!isObject(constraint))
 	{
@@ -184,7 +198,7 @@ Array.prototype.getObjectIndex = function(constraint)
 
 	// Search for the object
 	for (const [index, element] of this.entries())
-    {
+	{
 		// If not an object, skip
 		if(!isObject(element))
 			continue;
@@ -195,14 +209,14 @@ Array.prototype.getObjectIndex = function(constraint)
 		// If found return object info
 		if(match)
 			return index;
-    };
+	};
 
 	// Otherwise return -1 to let the user know that the object hasn't been found
 	return -1;
-};
+});
 
-Array.prototype.getObjectsIndexes = function(constraint)
-{
+setArrayProperty("getObjectsIndexes", function(constraint) { 
+
 	// Check that constraint is an object
 	if(!isObject(constraint))
 	{
@@ -228,18 +242,20 @@ Array.prototype.getObjectsIndexes = function(constraint)
 
 	// Otherwise return an empty array to let the user know that no object has been found
 	return [];
-};
 
-Array.prototype.toObject = function(prefix)
-{
+});
+
+setArrayProperty("toObject", function(prefix) { 
+
 	return this.reduce((obj, element, index) => {
 		obj[`${prefix}${index}`] = element;
 		return obj;
 	}, {})
-};
 
-Array.prototype.remove = function(elements)
-{
+});
+
+setArrayProperty("remove", function(elements) { 
+
 	// Checkings
 	if (isNumber(elements) || isString(elements)) elements = elements.toArray();
 
@@ -252,22 +268,16 @@ Array.prototype.remove = function(elements)
 
 	// Output
 	return this;
-};
 
-Array.prototype.clone = function()
-{
-	return this.concat();
-};
+});
 
-Array.prototype.isEmpty = function()
-{
+setArrayProperty("isEmpty", function() {
 	return this.length == 0;
-};
+});
 
-Array.prototype.pickRandom = function()
-{
+setArrayProperty("pickRandom", function() { 
 	return this[Math.floor(Math.random() * this.length)];
-}
+});
 
 /***************** OBJECT *****************/
 
@@ -301,7 +311,8 @@ setObjectProperty("entries", function() {
 });
 
 setObjectProperty("clone", function() { 
-	return structuredClone(this);
+	if(isArray(this)) return this.concat();
+	else return structuredClone(this);
 });
 
 setObjectProperty("concat", function(obj) { 
@@ -324,18 +335,6 @@ setObjectProperty("isEmpty", function() {
 });
 
  /***************** FUNCTIONS *****************/
-
-function getTime()
-{
-	const date = new Date();
-	return date.getTime2();
-}
-
-function getDate()
-{
-	const date = new Date();
-	return date.getDate2();
-}
 
 function getKeyFromValue(arr, value)
 {
@@ -413,6 +412,6 @@ function check(x)
 
 if(typeof(window) == "undefined")
 {
- 	module.exports = {getTime, getDate, getKeyFromValue, isNumber, isString, isBoolean, isArray, isFunction, isObject, outOfRange};
+ 	module.exports = {getKeyFromValue, isNumber, isString, isBoolean, isArray, isFunction, isObject, outOfRange};
 }
  

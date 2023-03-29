@@ -375,8 +375,10 @@ const YOUTUBE =
         }
     },
 
-    fetchAudioStreams: async function(videoID)
+    fetchAudioStream: async function(videoID)
     {
-        
+        const response = await fetch(`youtubeGetAudioStreams?videoID=${videoID}`);
+        const result = await response.json();
+        return result;
     }
 }

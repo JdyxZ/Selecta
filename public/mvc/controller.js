@@ -207,34 +207,43 @@ const CONTROLLER =
         }
     },
 
-    onFetchSong: function(song)
+    onPlaySong: function(song, playbackTime, timestamp)
     {
-        // TODO: Download song from Youtube (stream)
-        // TODO: Register the song in the MODEL (current or next song vars)
+        // Adjust latency
+        const latency = Date.getTime() - timestamp;
+        playbackTime += latency;
 
-        // Remove suggestion
-        // Remove song from songs obj and place song into current_song, next_song var
-        
-        // When the song is downloaded, notify the system the song is ready to be played
-        const message = new Message(MODEL.my_user.id, "SONG_READY", song.ID, getTime());
-        //CLIENT.sendMessage(message);
-    },
-
-
-    onPlaySong: function(type, playbackTime)
-    {
-        if(type == "current")
+        // Play current song
+        if(playbackTime > 0)
         {
-            // TODO: play the current song at the indicated playbackTime
+            // Update model
+            MODEL.current_song = song;
+
+            // TODO: Force update visuals
+
+            // Play song
+            MODEL.player.src = song.audioStream.url;
+            MODEL.player.time = playbackTime;
+            MODEL.player.play();
         }
-        else if (playbackTime > 0)
+        // Schedule the next song
+        else if (playbackTime < 0)
         {
-            // TODO: play the next song at the indicated playbackTime
-        }
-        else
-        {
-            // TODO: schedule the playback of the song at the indicated playbackTime
-            setTimeout(() => {}, -playbackTime);
+            // Update model
+            MODEL.next_song = song;
+
+            // TODO: Force update visuals
+
+            // Preload the song in an auxiliar player
+            const aux_player = new Audio(song.audioStream.url);
+            aux_player.load();
+
+            // Schedule playback
+            setTimeout(() => {
+                MODEL.player.pause();
+                aux_player.play();
+                MODEL.player = aux_player;
+            }, -playbackTime);
         }
     },
 

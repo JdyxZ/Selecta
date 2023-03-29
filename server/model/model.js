@@ -1,6 +1,6 @@
 /********************************** MODEL **********************************/
 
-const {getTime, isNumber, isString, isArray} = require("../../public/framework/javascript.js");
+const {isNumber, isString, isArray} = require("../../public/framework/javascript.js");
 
 /***************** USER *****************/
 
@@ -75,6 +75,7 @@ function objectAsset(data)
 
 function Room(data)
 {
+    // Data
     this.id = data == undefined ? -1 : data.id || -1;
     this.name = data == undefined ? "unnamed" : data.name || "unnamed";
     this.objects = data == undefined ? [] : data.objects || [];
@@ -91,6 +92,19 @@ function Room(data)
     this.playback_time = 0;
     this.num_people = 0;
     this.playlist_items = [];
+
+    // Timers
+    this.timers =
+    {
+        "chooseNextSong" : null,
+        "playSong" : null
+    };
+
+    // Intervals
+    this.intervals =
+    {
+        "playbackTime" : null 
+    };
 }
 
 Room.prototype.addUser = function(user)
@@ -220,21 +234,8 @@ var WORLD = {
 
     // Macros
     playback_update_frequency: 10, // [ms]
-    loading_duration: 5000, // [ms]
+    loading_duration: 10000, // [ms]
     skipping_threshold: 0.7, // [%]
-
-    // Timers
-    timers: 
-    {
-        "chooseNextSong" : null,
-        "playSong" : null
-    },
-
-    // Intervals
-    intervals:
-    {
-        "playbackTime" : null 
-    },
 
     // Objects
     rooms: {},
@@ -471,6 +472,7 @@ function Song(data)
     this.viewCount = data.viewCount;
     this.likeCount = data.likeCount;
     this.commentCount = data.commentCount;
+    this.audioStream = data.audioStream;
 }
 
 /***************** MESSAGE *****************/
@@ -480,7 +482,7 @@ function Message(sender, type, content, time)
     this.sender = sender || ""; //ID
     this.type = type || "ERROR";
     this.content = content || "";
-    this.time = time || getTime();
+    this.time = time || Date.getTime();
 }
 
 // Export

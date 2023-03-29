@@ -130,12 +130,12 @@ const YOUTUBE =
             if(err.errors)
             {
                 console.error(`Youtube Utils Error --> Error upon fetching info of the videos ${videoIDs}`, err.errors);
-                return null;
+                return [null];
             }
             else
             {
                 console.error(`Youtube Utils Error ---> "${err}" upon fetching info of the videos ${videoIDs}`);
-                return null;
+                return [null];
             }
         }
     },
@@ -191,12 +191,12 @@ const YOUTUBE =
             if(err.errors)
             {
                 console.error(`Youtube Utils Error --> Error upon fetching info of the channels ${channelIDs}`, err.errors);
-                return null;
+                return [null];
             }
             else
             {
                 console.error(`Youtube Utils Error --> "${err}" upon fetching info of the channels ${channelIDs}`);
-                return null;
+                return [null];
             }
         }
     },
@@ -242,12 +242,12 @@ const YOUTUBE =
             if(err.errors)
             {
                 console.error(`Youtube Utils Error --> Error upon fetching info of the playlists ${playlistIDs}`, err.errors);
-                return null;
+                return [null];
             }
             else
             {
                 console.error(`Youtube Utils Error --> "${err}" upon fetching info of the playlists ${playlistIDs}`);
-                return null;
+                return [null];
             }
         }
     },
@@ -309,7 +309,7 @@ const YOUTUBE =
         try
         {
             // Check videoID
-            const check = await ytdl.validateURL(videoID);
+            const check = await ytdl.validateID(videoID);
             if(!check) throw `YOUTUBE_UNABLE_TO_PARSE_${videoID}`;
 
             // Fetch audio info

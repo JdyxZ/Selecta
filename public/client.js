@@ -119,9 +119,6 @@ var CLIENT =
             case "VOTE":
                 this.onVote(message);
                 break;
-            case "FETCH_SONG":
-                this.onFetchSong(message);
-                break;
             case "PLAY_SONG":
                 this.onPlaySong(message);
                 break;
@@ -169,11 +166,12 @@ var CLIENT =
         console.log("New ASSETS message received\n");
         //console.table(message.content);
 
-        const parsed_mssg = JSON.parse(message.content);
+        // Parse message content
+        const content = JSON.parse(message.content);
 
         // Unpack message data
-        const user_assets = JSON.parse(message.content).user_assets;
-        const object_assets = JSON.parse(message.content).object_assets;
+        const user_assets = content.user_assets;
+        const object_assets = content.object_assets;
 
         // Callback
         CONTROLLER.setAvatarAssets(user_assets);
@@ -269,41 +267,22 @@ var CLIENT =
         CONTROLLER.onVote(user, songID);
     },
 
-    onFetchSong: function(message)
-    {
-        // Log
-        console.log("New FETCH_SONG message received\n");
-        //console.table(message.content);
-
-        // Unpack message data
-        const song = message.content;
-
-        // Callback
-        CONTROLLER.onFetchSong(song);
-    },
-
     onPlaySong: function(message)
     {
         // Log
         console.log("New PLAY_SONG message received\n");
-        //console.table(message.content);
+        // console.table(message.content);
+
+        // Parse message content
+        const content = JSON.parse(message.content);
 
         // Unpack message data
-        const songID = message.content.playbackInfo.song;
-        const playbackTime = message.content.playbackInfo.playbackTime;
-
-        // Guess which song is the one to play
-        let type;
-        if(songID === MODEL.current_song.songID) type = "current";
-        else if(songID === MODEL.current_song.songID) type = "next";
-        else
-        {
-            console.log(`onPlaySong callback --> The song ${songID} is not the current nor the next one`);
-            return;
-        }
+        const song = content.song;
+        const playbackTime = content.playbackTime;
+        const timestamp = message.time;
 
        // Callback
-       CONTROLLER.onPlaySong(type, playbackTime);
+       CONTROLLER.onPlaySong(song, playbackTime, timestamp);
     },
 
     onShutDown: function(message)
