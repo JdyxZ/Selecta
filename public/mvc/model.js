@@ -17,6 +17,7 @@ const MODEL =
     songs: {},
 
     // Assets data
+    raw_user_assets: {}, // User assets templates
     user_assets : {}, // User skins
     object_assets: {}, // Furniture and scene assets of all the rooms (they must identify the room they belong to)
 
@@ -30,6 +31,7 @@ const MODEL =
     // Scene data
     context: null,
     scene: null,
+    room_scene: null,
     renderer: null,
     camera: null,
     walarea: null,

@@ -86,8 +86,9 @@ const SELECTA =
         this.mute_button.when("click",this.input_audio_switch.bind(this));
 
         // Init other resources
-        CLIENT.init();
         CONTROLLER.init();
+        CLIENT.init();
+        
 
         // !!TEMPORAL!!
         // MODEL.player.play();
