@@ -20,8 +20,16 @@ async function test()
 
 async function fetchVideoStream(videoID)
 {
-    const response = await ytdl.getInfo("ntCZjb_AAWE");
-    console.log(response);
+    try
+    {
+        const info = await ytdl.getInfo("ntCZjb_AAWE");
+        const audio_info = ytdl.chooseFormat(info.formats, {quality: 'highestaudio', filter: 'audioonly'});
+        console.log(audio_info);
+    }
+    catch(err)
+    {
+        console.log(err);
+    }
 }
 
 test();

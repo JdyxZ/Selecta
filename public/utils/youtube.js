@@ -1,5 +1,7 @@
 /***************** YOUTUBE DATA API *****************/
 
+const ytdl = require('ytdl-core');
+
 const YOUTUBE =
 {
     // Client
@@ -375,7 +377,7 @@ const YOUTUBE =
         }
     },
 
-    downloadAudioStreams: function(videoID)
+    fetchAudioStreams: function(videoID)
     {
         try
         {
