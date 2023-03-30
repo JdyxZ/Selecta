@@ -172,7 +172,7 @@ const CONTROLLER =
         if(user)
         {   
             // Set the pivot of the user
-            character_pivot_node = MODEL.scene.root.findNode(MODEL.user.id);
+            character_pivot_node = MODEL.scene.root.findNode(user.id);
 
             // Set user model
             if(model)
