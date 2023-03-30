@@ -108,7 +108,7 @@ var SERVER =
     {       
         // Get user data
         const user = WORLD.getUser(user_id);
-        console.log(user);
+
         // Check that user exists
         if(!user)
         {

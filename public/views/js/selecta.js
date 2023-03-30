@@ -56,7 +56,7 @@ const SELECTA =
     // Votes interface
 
     // Templates
-    song_template: document.get("#Selecta .song"),
+    videoTemplate: document.get("#Selecta .video"),
 
     // Control varibles
     muted: false,
@@ -166,9 +166,10 @@ const SELECTA =
             this.settings_keybinds_container.show(); 
     },
 
-    youtubeSearch: function()
+    youtubeSearch: async function()
     {
-        
+        const video = await YOUTUBE.getVideosInfo("");
+        const channel = await YOUTUBE.getChannelsInfo()
     },
 
     suggestSong: function()

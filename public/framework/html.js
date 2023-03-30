@@ -127,7 +127,6 @@ HTMLElement.prototype.hide = function()
 
 HTMLElement.prototype.toggleVisibility = function()
 {
-	console.log(this.visibility() == "none");
 	this.visibility() == "none" ? this.show() : this.hide();
 }
 

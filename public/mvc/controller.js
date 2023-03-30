@@ -94,7 +94,6 @@ const CONTROLLER =
 
     setAvatarAssets: function(user_assets)
     {
-        //console.log(user_assets);
         for(id in user_assets)
         {
             MODEL.raw_user_assets[id] = user_assets[id];
@@ -146,9 +145,7 @@ const CONTROLLER =
     onUserJoin: function(users)
     {
         // Append new users to users
-
         MODEL.addUsers(users);
-        console.log(users);
         users.forEach(user =>{ if(!((typeof MODEL.raw_user_assets[user.asset] === 'undefined'))) VIEW.addUser(user) } );
     },
 
