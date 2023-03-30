@@ -90,7 +90,7 @@ var SERVER =
         {
             // Log error
             console.log("ERROR --> Error upon processing received message \n", error);
-
+            
             // Build error message
             let error_message;
             if(isArray(error) && error.length == 2 && error[1] === true)
@@ -213,6 +213,7 @@ var SERVER =
 
     onTick: function(message)
     {
+        
         // Get message data
         const sender_id = message.sender;
         const content = message.content;
@@ -222,6 +223,11 @@ var SERVER =
 
         // Log
         console.log(`EVENT --> User ${user.name} has sent a TICK message`);
+
+        console.log("MODEL")
+        console.log(content.model)
+        console.log("ANIMATION")
+        console.log(content.animation)
 
         // Do some checkings
         if(content.model == undefined && content.animation == undefined) return ["TICK_WRONG_CONTENT", true];

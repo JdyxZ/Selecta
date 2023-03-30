@@ -25,6 +25,7 @@ const CONTROLLER =
     {
         // Assign my user info to my_user
         MODEL.my_user = user;
+        MODEL.my_user.animation = 'idle.skanim'
 
         if(!((typeof MODEL.raw_user_assets[user.id] === 'undefined')))
         {
@@ -32,7 +33,7 @@ const CONTROLLER =
         }
     },
 
-    createAsset: function(user_asset,user_position,id)
+    createAsset: function(user_asset,user_position,user_rotation,id)
     {
         // Get data
         var asset = user_asset.asset;
@@ -49,7 +50,8 @@ const CONTROLLER =
         
         // Create pivot point for the avatar
         var character_pivot = new RD.SceneNode({
-            position: user_position
+            position: user_position,
+            rotation: user_rotation
         });
 
         // Create a mesh for the avatar
@@ -59,8 +61,8 @@ const CONTROLLER =
             mesh: "user_assets/"+asset.folder + "/" + asset.mesh,
             material: "girl2"
         });
+        avat.id = "avat";
 
-        avat.id = "avat1";
         avat.skeleton = new RD.Skeleton();
 
         character_pivot.addChild(avat);
@@ -76,7 +78,7 @@ const CONTROLLER =
             layers: 0b1000
         });
 
-        avat.id = "avat";
+        avat_selector.id = "avatselector";
 
         character_pivot.addChild( avat_selector );
         
@@ -100,12 +102,15 @@ const CONTROLLER =
 
         VIEW.addUser(MODEL.my_user);
 
-        for(user_id in MODEL.users_arr)
+        for(user_id in MODEL.users_obj)
         {
-            if (MODEL.users_arr.hasOwnProperty(user_id))
-            {
-                VIEW.addUser(MODEL.users_obj[user_id]);
-            };
+            console.log(MODEL.users_obj[user_id]);
+
+            if((typeof MODEL.users_obj[user_id] === 'undefined'))
+                return
+
+            console.log(MODEL.users_obj[user_id]);
+            VIEW.addUser(MODEL.users_obj[user_id]);
         }
     },
 
@@ -141,8 +146,10 @@ const CONTROLLER =
     onUserJoin: function(users)
     {
         // Append new users to users
+
         MODEL.addUsers(users);
-        users.forEach(user =>{ if(!(MODEL.user_assets[user.id] === 'undefined')) VIEW.addUser(user) } );
+        console.log(users);
+        users.forEach(user =>{ if(!((typeof MODEL.raw_user_assets[user.asset] === 'undefined'))) VIEW.addUser(user) } );
     },
 
     onUserLeft: function(user_id)
@@ -152,11 +159,36 @@ const CONTROLLER =
         VIEW.removeUser(user_id);
     },
 
+    sendTick: function()
+    {
+        const message = new Message(MODEL.my_user.id,"TICK", {"model":MODEL.my_user.model,"animation":MODEL.my_user.animation}, getTime());
+        console.log("sending: ");
+        console.log(message);
+        CLIENT.sendMessage(message);
+    },
+
     onTick: function(user, model, animation)
     {
-        // Set user model
-        if(model) user.model = model; 
-        if(animation) user.animation = animation;
+        if(user)
+        {   
+            // Set the pivot of the user
+            character_pivot_node = MODEL.scene.root.findNode(MODEL.user.id);
+
+            // Set user model
+            if(model)
+            {
+                user.model = model; 
+                character_pivot_node.position = model['position'];
+                character_pivot_node.rotation = model['rotation'];
+            } 
+            if(animation) user.animation = animation;
+        }
+        else
+        {
+            // Set user model
+            if(model) user.model = model; 
+            if(animation) user.animation = animation;
+        }
     },
 
     onExit: function()

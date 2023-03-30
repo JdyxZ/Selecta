@@ -46,7 +46,7 @@ var DATABASE = {
 
             // Throw errors
             if(!isObject(social)) throw "You must send a valid social";
-            if(!isArray(model)) throw "You must send an valid model";
+            if(!isObject(model)) throw "You must send an valid model";
             if(!isNumber(asset)) throw "You must send a valid asset";
             if(!isNumber(room)) throw "You must send a valid room";
 

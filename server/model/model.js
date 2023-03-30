@@ -259,7 +259,6 @@ var WORLD = {
         {
             room.exits = room.exits.values();
             room.people = room.people.values();
-            room.default_model = room.default_model.values();
         });
 
         // Map user assets properties to proper structures

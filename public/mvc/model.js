@@ -51,6 +51,7 @@ const MODEL =
     addUsers: function(users)
     {
         users.forEach(user => this.users_obj[user.id] = user);
+        users.forEach(user => this.users_obj[user.id].animation = 'idle.skanim');
         this.users_arr = this.users_arr.concat(users);
     },
 
