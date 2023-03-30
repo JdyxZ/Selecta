@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS selecta_rooms (
 
 -- CREATE ASSETS
 INSERT IGNORE INTO selecta_user_assets(id, asset, animations)
-VALUES(1, '{"folder": "girl2", "mesh": "girl2.wbin", "texture": "girl2.png", "scale": 0.3}' , '{"idle": "idle.skanim", "walking": "walking.skanim", "macarena": "macarena.skanim", "dance2": "dance2.skanim"}');
+VALUES(1, '{"folder": "girl2", "mesh": "girl2.wbin", "texture": "girl2.png", "scale": 0.3}' , '{"idle": "idle.skanim", "walking": "walking.skanim", "macarena": "macarena.skanim", "samba": "samba.skanim", "dance": "dance.skanim", "dance2": "dance2.skanim" , "dance3": "dance3.skanim"}');
 
 INSERT IGNORE INTO selecta_object_assets(id, asset, model)
 VALUES(1, '{"object": "disco_room.gltf"}', '{"model": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}');

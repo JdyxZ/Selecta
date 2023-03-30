@@ -220,7 +220,7 @@ const VIEW =
             time_factor = -1;
         }
         // Not dancing
-        else if (MODEL.my_user.animation != 'macarena.skanim' && MODEL.my_user.animation != 'dance2.skanim')
+        else if (MODEL.my_user.animation != 'macarena.skanim' && MODEL.my_user.animation != 'dance2.skanim' && MODEL.my_user.animation != 'dance.skanim' && MODEL.my_user.animation != 'dance3.skanim' && MODEL.my_user.animation != 'samba.skanim')
         {
             if(MODEL.my_user.animation!= 'idle.skanim')
             {
@@ -267,6 +267,42 @@ const VIEW =
             if(MODEL.user_assets[MODEL.my_user.id].animations['dance2.skanim'])
             {
                 MODEL.my_user.animation = 'dance2.skanim';
+                CONTROLLER.sendTick();
+            }  
+        }
+        if(gl.keys["3"])
+        {
+            // Set dancing animation if exists
+            if(MODEL.user_assets[MODEL.my_user.id].animations['dance.skanim'])
+            {
+                MODEL.my_user.animation = 'dance.skanim';
+                CONTROLLER.sendTick();
+            }  
+        }
+        if(gl.keys["4"])
+        {
+            // Set dancing animation if exists
+            if(MODEL.user_assets[MODEL.my_user.id].animations['dance3.skanim'])
+            {
+                MODEL.my_user.animation = 'dance3.skanim';
+                CONTROLLER.sendTick();
+            }  
+        }
+        if(gl.keys["5"])
+        {
+            // Set dancing animation if exists
+            if(MODEL.user_assets[MODEL.my_user.id].animations['samba.skanim'])
+            {
+                MODEL.my_user.animation = 'samba.skanim';
+                CONTROLLER.sendTick();
+            }  
+        }
+        if(gl.keys["0"])
+        {
+            // Set dancing animation if exists
+            if(MODEL.user_assets[MODEL.my_user.id].animations['idle.skanim'])
+            {
+                MODEL.my_user.animation = 'idle.skanim';
                 CONTROLLER.sendTick();
             }  
         }

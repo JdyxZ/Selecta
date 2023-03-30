@@ -27,7 +27,7 @@ var SERVER =
             console.log(model);
             process.exit();
             return;
-        }           
+        }         
    
         // Init model
         WORLD.init(model.rooms, model.users, model.user_assets, model.object_assets);
@@ -56,6 +56,7 @@ var SERVER =
     {
         await DATABASE.updateModel(WORLD);
         console.log("EVENT --> Model successfully updated");
+
     },
 
     // Before closing
@@ -107,7 +108,7 @@ var SERVER =
     {       
         // Get user data
         const user = WORLD.getUser(user_id);
-
+        console.log(user);
         // Check that user exists
         if(!user)
         {

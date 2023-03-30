@@ -8,7 +8,7 @@ function User(data)
 {   
     this.id = data == undefined ? -1 : data.id || -1;
     this.name = data == undefined ? "unnamed" : (data.name != undefined ? data.name : data.social.name || "unamed");
-    this.model = data == undefined ? [] : data.model || [];
+    this.model = data == undefined ? {} : data.model || {};
     this.asset = data == undefined ? 0 : data.asset || 0; 
     this.room = data == undefined ? 1 : data.room || 1;
     this.animation = "idle";
@@ -248,11 +248,6 @@ var WORLD = {
     // Methods
     init: function(rooms_array, users_array, user_assets_array, object_assets_array)
     {
-        // Map user properties to proper structures
-        users_array.map( user => 
-        {
-            user.model = user.model.values();
-        });
 
         // Map room properties to proper structures
         rooms_array.map( room => 
