@@ -68,7 +68,7 @@ const SELECTA =
         this.initSliders();
 
         // Update MODEL state
-        MODEL.player.volume = this.sliders.music_volume.value;
+        this.updateModel();
 
         // Init other resources
         CONTROLLER.init();
@@ -107,6 +107,11 @@ const SELECTA =
             slider.step = 0.01;
             slider.value = 0.1;
         });
+    },
+
+    updateModel: function()
+    {
+        MODEL.player.volume = this.sliders.music_volume.value;
     },
 
     setVolume: function(event)
