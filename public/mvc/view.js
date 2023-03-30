@@ -297,6 +297,15 @@ const VIEW =
                 CONTROLLER.sendTick();
             }  
         }
+        if(gl.keys["0"])
+        {
+            // Set dancing animation if exists
+            if(MODEL.user_assets[MODEL.my_user.id].animations['idle.skanim'])
+            {
+                MODEL.my_user.animation = 'idle.skanim';
+                CONTROLLER.sendTick();
+            }  
+        }
         
         // In case the avatar is outside the boundingbox we calculate the near position
         var pos = character_pivot_node.position;
