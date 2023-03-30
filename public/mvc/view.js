@@ -216,7 +216,7 @@ const VIEW =
         VIEW.user_backup.rotation = MODEL.scene.root.findNode(MODEL.my_user.id).rotation;
 
         // Necessary data to update
-        var t = getTime();
+        var t = Date.getTime();
         var time_factor = 1;
 
         // Check the keys for moving
