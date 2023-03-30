@@ -1,6 +1,6 @@
 /* LOGOUT MENÚ */
 
-#Selecta .logout_menu
+#Selecta #exit_interface
 {
     display: none;
     position: absolute;
@@ -18,14 +18,14 @@
     flex-wrap: wrap; 
 }
 
-#Selecta .logout_label
+#Selecta #exit_interface .logout_label
 {
     font-size: 16px;
     margin: 4% 5% 0% 5%;
     text-align: center;
 }
 
-#Selecta .logout_decision 
+#Selecta #exit_interface .logout_decision 
 {
     color: white;
     background-color: #208d70;

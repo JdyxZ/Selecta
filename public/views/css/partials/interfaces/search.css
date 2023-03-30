@@ -1,6 +1,6 @@
 /* MENÚ SEARCH */
 
-#Selecta #interface_search
+#Selecta #search_interface
 {
     display: none;
     position: absolute;
@@ -19,7 +19,7 @@
     padding-bottom: 20px;
 }
 
-#Selecta #interface_search #title
+#Selecta #search_interface #title
 {
     color: wheat;
     font-size: 20px;
@@ -27,7 +27,7 @@
     font-weight: bold;
 }
 
-#Selecta #interface_search #search_bar
+#Selecta #search_interface #search_bar
 {
     background-color: aliceblue;
     margin: 2% 5% 3% 5%;
@@ -38,7 +38,7 @@
     height: auto;
 }
 
-#Selecta #interface_search #search_bar #input 
+#Selecta #search_interface #search_bar #input 
 {
     margin: 5px 5px 5px 5px;
     width: 100%;
@@ -49,7 +49,7 @@
     padding: 1px 5px 1px 5px;
 }
 
-#Selecta #interface_search #search_bar #image
+#Selecta #search_interface #search_bar #image
 {
     flex: 1;
     margin-top: 1%;
@@ -58,13 +58,13 @@
     transition: 0.3s;
 }
 
-#Selecta #interface_search #search_bar #image:hover
+#Selecta #search_interface #search_bar #image:hover
 {
     background-color: #909797;
 }
 
 
-#Selecta #interface_search #search_result 
+#Selecta #search_interface #search_result 
 {
     background-color: aliceblue;
     margin: 2% 5% 2% 5%;
@@ -72,7 +72,7 @@
     padding: 5px 0px 5px 0px;
 }
 
-#Selecta #interface_search #error_prompt
+#Selecta #search_interface #error_prompt
 {
     color: red;
 }

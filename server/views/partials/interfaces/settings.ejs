@@ -1,66 +1,70 @@
 
-<div id ="interface_settings">
-    
-    <!-- SETTINGS OPTIONS -->
-    <div class="interface_settings_options_container">
-        <div class="interface_settings_options" id="interface_settings_option_video">VIDEO SETTINGS</div>
-        <div class="interface_settings_options" id="interface_settings_option_audio" style="background-color: #208d70;">AUDIO SETTINGS</div>
-        <div class="interface_settings_options" id="interface_settings_option_keybinds">KEYBINDS</div>
+<div id ="settings_interface">
+
+    <div id="style">
+
+         <!-- SETTINGS OPTIONS -->
+        <div class="interface_settings_options_container">
+            <div class="interface_settings_options" id="interface_settings_option_video">VIDEO SETTINGS</div>
+            <div class="interface_settings_options" id="interface_settings_option_audio" style="background-color: #208d70;">AUDIO SETTINGS</div>
+            <div class="interface_settings_options" id="interface_settings_option_keybinds">KEYBINDS</div>
+        </div>
+
+        <!-- SETTINGS -->
+        <div class="interface_settings_menu_container">
+            <div class="img_close" id="settings_close_button"><img src="media/interface/img_close_btn.png" alt="Descripción de la imagen"></div>
+            
+            <!-- AUDIO SETTINGS -->
+            <span id="audio_settings_container" >
+                <div class ="interface_settings_menu">
+                    <label class="menu_label">AUDIO SETTINGS</label>
+                </div>
+                <div class="interface_settings_buttons_type1">
+                    <label class="volume_label">GENERAL VOLUME</label>
+                    <input class="volume_slider" type="range" id="slider_general">
+                </div>
+                <div class="interface_settings_buttons_type1">
+                    <label class="volume_label">MUSIC VOLUME</label>
+                    <input class="volume_slider" type="range" id="slider_music">
+                </div>
+                <div class="interface_settings_buttons_type1">
+                    <label class="volume_label">PEOPLE VOLUME</label>
+                    <input class="volume_slider" type="range" id="slider_people">
+                </div>
+                <div class="container">
+                    <div class="interface_settings_buttons_type2">
+                        <label class="audio_device_label">INPUT AUDIO DEVICE</label>
+                        <select class="interface_settings_audio_device" id="input_device"><option value="Que te vote txapote">Que te vote txapote</option></select>
+                    </div>
+                    <div class="interface_settings_buttons_type2">
+                        <label class="audio_device_label">OUTPUT AUDIO DEVICE</label>
+                        <select class="interface_settings_audio_device" id="output_device"><option value="Sanchez rojo socialista">Sanchez rojo socialista</option></select>
+                    </div>
+                </div>
+                <div class="interface_settings_buttons_type1">
+                    <label class="volume_label">MICRO VOLUME</label>
+                    <input class="volume_slider" type="range" id="slider_mic">
+                </div>
+                <div class="interface_settings_apply_changes" id="settings_apply_changes">APPLY CHANGES</div>
+            </span>
+
+            <!-- VIDEO SETTINGS -->
+            <span id="video_settings_container" style="display: none;">FUTURE IMPLEMENTATIONS</span>
+
+            <!-- KEYBINDS SETTINGS -->
+            <span id="keybinds_settings_container" style="display: none;">
+                <div class ="interface_settings_menu">
+                    <label class="menu_label">KEYBINDS</label>
+                </div>
+                <div class="keybind_template"><label class="keybind_action">MACARENA DANCE</label><label class="keybind_shortcut">1</label></div>
+                <div class="keybind_template"><label class="keybind_action">BREAKDANCE DANCE</label><label class="keybind_shortcut">2</label></div>
+                <div class="keybind_template"><label class="keybind_action">MOVE FORWARD</label><label class="keybind_shortcut">↑</label></div>
+                <div class="keybind_template"><label class="keybind_action">MOVE BACKWARDS</label><label class="keybind_shortcut">↓</label></div>
+                <div class="keybind_template"><label class="keybind_action">ROTATE LEFT</label><label class="keybind_shortcut">←</label></div>
+                <div class="keybind_template"><label class="keybind_action">ROTATE RIGHT</label><label class="keybind_shortcut">→</label></div>
+            </span>
+        </div>
+
     </div>
 
-    <!-- SETTINGS -->
-    <div class="interface_settings_menu_container">
-        <div class="img_close" id="settings_close_button"><img src="media/interface/img_close_btn.png" alt="Descripción de la imagen"></div>
-        
-        <!-- AUDIO SETTINGS -->
-        <span id="audio_settings_container" >
-            <div class ="interface_settings_menu">
-                <label class="menu_label">AUDIO SETTINGS</label>
-            </div>
-            <div class="interface_settings_buttons_type1">
-                <label class="volume_label">GENERAL VOLUME</label>
-                <input class="volume_slider" type="range" id="slider_general">
-            </div>
-            <div class="interface_settings_buttons_type1">
-                <label class="volume_label">MUSIC VOLUME</label>
-                <input class="volume_slider" type="range" id="slider_music">
-            </div>
-            <div class="interface_settings_buttons_type1">
-                <label class="volume_label">PEOPLE VOLUME</label>
-                <input class="volume_slider" type="range" id="slider_people">
-            </div>
-            <div class="container">
-                <div class="interface_settings_buttons_type2">
-                    <label class="audio_device_label">INPUT AUDIO DEVICE</label>
-                    <select class="interface_settings_audio_device" id="input_device"><option value="Que te vote txapote">Que te vote txapote</option></select>
-                </div>
-                <div class="interface_settings_buttons_type2">
-                    <label class="audio_device_label">OUTPUT AUDIO DEVICE</label>
-                    <select class="interface_settings_audio_device" id="output_device"><option value="Sanchez rojo socialista">Sanchez rojo socialista</option></select>
-                </div>
-            </div>
-            <div class="interface_settings_buttons_type1">
-                <label class="volume_label">MICRO VOLUME</label>
-                <input class="volume_slider" type="range" id="slider_mic">
-            </div>
-            <div class="interface_settings_apply_changes" id="settings_apply_changes">APPLY CHANGES</div>
-        </span>
-
-        <!-- VIDEO SETTINGS -->
-        <span id="video_settings_container" style="display: none;">FUTURE IMPLEMENTATIONS</span>
-
-        <!-- KEYBINDS SETTINGS -->
-        <span id="keybinds_settings_container" style="display: none;">
-            <div class ="interface_settings_menu">
-                <label class="menu_label">KEYBINDS</label>
-            </div>
-            <div class="keybind_template"><label class="keybind_action">MACARENA DANCE</label><label class="keybind_shortcut">1</label></div>
-            <div class="keybind_template"><label class="keybind_action">BREAKDANCE DANCE</label><label class="keybind_shortcut">2</label></div>
-            <div class="keybind_template"><label class="keybind_action">MOVE FORWARD</label><label class="keybind_shortcut">↑</label></div>
-            <div class="keybind_template"><label class="keybind_action">MOVE BACKWARDS</label><label class="keybind_shortcut">↓</label></div>
-            <div class="keybind_template"><label class="keybind_action">ROTATE LEFT</label><label class="keybind_shortcut">←</label></div>
-            <div class="keybind_template"><label class="keybind_action">ROTATE RIGHT</label><label class="keybind_shortcut">→</label></div>
-        </span>
-    </div>
-
- </div>
+</div>

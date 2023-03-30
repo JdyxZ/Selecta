@@ -8,10 +8,10 @@ const SELECTA =
     available_width: window.screen.availWidth,
 
     // Interfaces
-    search_interface: document.get("#Selecta #interface_search"),
-    votes_interface: document.get("#Selecta #interface_votes"),
-    settings_interface: document.get("#Selecta #interface_settings"),
-    exit_interface: document.get("#Selecta #logout_menu"),
+    search_interface: document.get("#Selecta #search_interface"),
+    votes_interface: document.get("#Selecta #votes_interface"),
+    settings_interface: document.get("#Selecta #settings_interface"),
+    exit_interface: document.get("#Selecta #exit_interface"),
 
     // Interface triggers
     mute_trigger: document.get("#Selecta #micro_trigger"),
@@ -51,7 +51,7 @@ const SELECTA =
     exit_button_no: document.get("#logout_no"),
 
     // Search interface
-    search_result: document.get("#Selecta #interface_search #search_result"),
+    search_result: document.get("#Selecta #search_interface #search_result"),
 
     // Votes interface
 
@@ -87,13 +87,12 @@ const SELECTA =
         // Triggers
         this.mute_trigger.when("click", this.toggleMute.bind(this));
         this.search_trigger.when("click", () => this.search_interface.toggleVisibility());
-        this.votes_trigger.when("click" () => this.votes_interface.toggleVisibility());
-        this.search_trigger.when("click", () => this.search_interface.toggleVisibility());
+        this.votes_trigger.when("click", () => this.votes_interface.toggleVisibility());
         this.settings_trigger.when("click", () => this.settings_interface.toggleVisibility());
         this.exit_trigger.when("click", () => this.exit_interface.toggleVisibility());
 
         // Settings interactions
-        this.settings_menu_close.when("click", () => this.settings_interface.toggleVisibility());
+        this.settings_menu_close.when("click", () => this.settings_interface.hide());
         this.settings_apply_changes.when("click", () => this.settings_interface.hide());
 
         // Exit button

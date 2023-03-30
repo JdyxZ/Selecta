@@ -1,0 +1,20 @@
+
+
+#Selecta #votes_interface
+{
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 1;
+    background: #696e6e;
+    width: 60%;
+    margin-top: 5%;
+    margin-left: 20%;
+    height: 72%;
+    overflow: hidden;
+    border-radius: 8px;
+    text-align: center;
+    margin-right: 20%;
+    padding-bottom: 20px;
+}
