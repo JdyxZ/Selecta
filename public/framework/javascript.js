@@ -409,7 +409,6 @@ function check(x)
 
 */
 
-
 if(typeof(window) == "undefined")
 {
  	module.exports = {getKeyFromValue, isNumber, isString, isBoolean, isArray, isFunction, isObject, outOfRange};

@@ -2,6 +2,7 @@
 
 #Selecta .logout_menu
 {
+    display: none;
     position: absolute;
     color: white;
     top: 10em;

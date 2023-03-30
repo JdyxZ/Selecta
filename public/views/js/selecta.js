@@ -7,11 +7,22 @@ const SELECTA =
     available_height: window.screen.availHeight,
     available_width: window.screen.availWidth,
 
-    // Interface interactions
-    settings_button : document.get("#settings_button"),
-    settings_menu : document.get("#interface_settings_id"),
-    settings_menu_close : document.get("#settings_close_button"),
-    settings_apply_changes : document.get("#settings_apply_changes"),
+    // Interfaces
+    search_interface: document.get("#Selecta #interface_search #search_result"),
+    settings_interface: document.get("#interface_settings_id"),
+    exit_interface: document.get("#logout_menu"),
+
+    // Interface triggers
+    mute_trigger: document.get("#micro_trigger"),
+    settings_trigger: document.get("#settings_trigger"),
+    exit_trigger: document.get("#logout_trigger"),
+
+    // Mic image
+    mute_img: document.get("#mute_image"),
+
+    // Settings interactions
+    settings_menu_close: document.get("#settings_close_button"),
+    settings_apply_changes: document.get("#settings_apply_changes"),
 
     // Audio, video and keybinds buttons
     settings_audio_button: document.get("#interface_settings_option_audio"),
@@ -24,23 +35,21 @@ const SELECTA =
     settings_keybinds_container: document.get("#keybinds_settings_container"),
 
     // Sliders
-    general_volume_slider: document.get("#slider_general"),
-    music_volume_slider: document.get("#slider_music"),
-    people_volume_slider: document.get("#slider_people"),
-    micro_volume_slider: document.get("#slider_mic"),
+    sliders: {
+        general_volume: document.get("#slider_general"),
+        music_volume: document.get("#slider_music"),
+        people_volume: document.get("#slider_people"),
+        micro_volume: document.get("#slider_mic"),
+    },
 
-    // Exit button and image
-    settings_exit : document.get("#logout_button"),
-    settings_exit_button : document.get("#logout-button"),
-
-    // You sure you want to exit?
+    // Exit button
+    exit_button: document.get("#logout-button"),
     exit_button_yes: document.get("#logout_yes"),
     exit_button_no: document.get("#logout_no"),
-    exit_menu: document.get("#logout_menu"),
 
-    // Mute unmute mic image
-    mute_img: document.get("#mute_image"),
-    mute_button : document.get("#mute_image_button"),
+    // Search interface
+    search_result: document.get("#Selecta #interface_search #search_result"),
+    song_template: document.get("#Selecta #interface_search .song"),
 
     // Control varibles
     muted: false,
@@ -52,56 +61,60 @@ const SELECTA =
         document.documentElement.style.setProperty('--screen_width', this.available_width + "px");
         document.documentElement.style.setProperty('--screen_height', this.available_height + "px");
 
-        // Hides
-        this.settings_exit_button.hide();
-        this.exit_menu.hide();
-
-        // Set callbacks for interactions
-        this.settings_button.when("click", this.onClick.bind(this));
-        this.settings_menu_close.when("click", this.onClick.bind(this));
-        this.settings_apply_changes.when("click", this.settings_menu.hide());
-
-        this.settings_exit.when("click", () => this.exit_menu.show());
-        this.exit_button_yes.when("click", () => this.settings_exit_button.click());
-        this.exit_button_no.when("click", () => this.exit_menu.hide());
-
-        // Callbacks for switching settings menus
-        this.settings_audio_button.when("click", this.switch_menu.bind(this));
-        this.settings_video_button.when("click", this.switch_menu.bind(this));
-        this.settings_keybinds_button.when("click", this.switch_menu.bind(this));
+        // Add listeners
+        this.addEventListeners();
 
         // Init sliders
-        this.init_slider(this.general_volume_slider);
-        this.init_slider(this.music_volume_slider);
-        this.init_slider(this.people_volume_slider);
-        this.init_slider(this.micro_volume_slider);
+        this.initSliders();
 
-        // Callbacks for volume control
-        this.music_volume_slider.when("input", this.adjust_volume);
-        MODEL.player.volume = this.music_volume_slider.value;
-
-        // Callback for mute/unmute
-        this.mute_button.when("click", this.input_audio_switch.bind(this));
+        // Update MODEL state
+        MODEL.player.volume = this.sliders.music_volume.value;
 
         // Init other resources
         CONTROLLER.init();
         CLIENT.init();
     },
 
-    init_slider: function(slider)
-    {
-        slider.min = 0;
-        slider.max = 1;
-        slider.step = 0.01;
-        slider.value = 0.1;
+    addEventListeners: function()
+    {             
+        // Triggers
+        this.mute_trigger.when("click", this.toggleMute.bind(this));
+        this.settings_trigger.when("click", () => this.settings_interface.toggleVisibility());
+        this.exit_trigger.when("click", () => this.exit_interface.toggleVisibility());
+
+        // Settings interactions
+        this.settings_menu_close.when("click", () => this.settings_interface.toggleVisibility());
+        this.settings_apply_changes.when("click", () => this.settings_interface.hide());
+
+        // Exit button
+        this.exit_button_yes.when("click", () => this.exit_button.click());
+        this.exit_button_no.when("click", () => this.exit_interface.hide());
+
+        // Settings menus
+        this.settings_audio_button.when("click", this.switchSettingsMenu.bind(this));
+        this.settings_video_button.when("click", this.switchSettingsMenu.bind(this));
+        this.settings_keybinds_button.when("click", this.switchSettingsMenu.bind(this)); 
+        
+        // Callbacks for volume control
+        this.sliders.music_volume.when("input", this.setVolume);
     },
 
-    adjust_volume: function(event)
+    initSliders: function(slider)
+    {
+        this.sliders.values().forEach(slider => {
+            slider.min = 0;
+            slider.max = 1;
+            slider.step = 0.01;
+            slider.value = 0.1;
+        });
+    },
+
+    setVolume: function(event)
     {
         MODEL.player.volume = event.target.value;
     },
 
-    input_audio_switch: function()
+    toggleMute: function()
     {
         if(this.muted)
         {
@@ -115,7 +128,7 @@ const SELECTA =
         // src="media/interface/img_speaker_off.png"
     },
 
-    switch_menu: function(event)
+    switchSettingsMenu: function(event)
     {
         // Clear the background color of each three buttons
         this.settings_audio_button.change_background_color("#323131");
@@ -139,28 +152,4 @@ const SELECTA =
             this.settings_keybinds_container.show();
         
     },
-
-    onClick: function(event)
-    {
-        var element = null;
-        if((event.target.getParents()[0].id == "settings_button") || (event.target.getParents()[0].id == "settings_close_button")) element = this.settings_menu;
-        // const element = document.get("#"+event.target.getParents()[0].id);
-        
-        // Check the visibility to show or hide depending on the case
-        if (element != null)
-        {
-            if(element.visibility() == "none")
-            {
-                element.show();
-            }
-            else
-            {
-                element.hide();
-            }  
-        }
-        else
-        {
-            console.log("WARNING: onClick function error, element is null");
-        }        
-    }
 }

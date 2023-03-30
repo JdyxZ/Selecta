@@ -1,134 +1,138 @@
 /********************************** HTML FRAMEWORK **********************************/
 
+/***************** DOCUMENT *****************/
+
+Document.prototype.get = function(selector)	{
+
+	// Get query
+	const query = this.querySelector(selector);
+
+	if(query == null)
+	{
+		console.error(`WARNING: Selector '${selector}' has not been found in the DOM. Returning an empty div`);
+		return this.createElement("div");
+	}
+	else
+	{
+		return query;
+	}
+};
+
+Document.prototype.getAll = function(selector)
+{
+	// Get query
+	const query = this.querySelectorAll(selector);
+
+	if(query == null)
+	{
+		console.error(`WARNING: Selector '${selector}' has not been found in the DOM. Returning an empty div`);
+		return this.createElement("div");
+	}
+	else
+	{
+		return query;
+	}
+};
+
+Document.prototype.when = function(event, callback)	{
+	document.addEventListener(event, callback);
+};
+
 /***************** HTML ElEMENTS *****************/
 
-if(typeof(Document) != "undefined")
+HTMLElement.prototype.get = function(selector)	{
+
+	// Get query
+	const query = this.querySelector(selector);
+
+	if (this == null)
+	{
+		console.error("WARNING: The HTML Element you are trying to use is null");
+		return null;
+	}
+	else if (query == null)
+	{
+		console.error(`WARNING: Selector '${selector}' has not been found in the following HTML Element:
+		\t - tag: ${this.tagName} 
+		\t - id: ${this.id ? this.id : 'none'} 
+		\t - class: ${this.className ? this.className : 'none'}
+		Returning an empty div`);
+
+		console.log(this);
+
+		return this.appendChild(document.createElement("div"));
+	}
+	else
+	{
+		return query;
+	}
+};
+
+HTMLElement.prototype.getAll = function(selector)	{
+
+	// Get query
+	const query = this.querySelectorAll(selector);
+
+	if (this == null)
+	{
+		console.error("WARNING: The HTML Element you are trying to use is null");
+		return null;
+	}
+	else if (query == null)
+	{
+		console.error(`WARNING: Selector '${selector}' has not been found in the DOM. Returning an empty div`);
+		return this.appendChild(document.createElement("div"));
+	}
+	else
+	{
+		return query;
+	}
+
+};
+
+HTMLElement.prototype.getParents = function()
 {
-	Document.prototype.get = function(selector)	{
-
-		// Get query
-		const query = this.querySelector(selector);
-
-		if(query == null)
-		{
-			console.error(`WARNING: Selector '${selector}' has not been found in the DOM. Returning an empty div`);
-			return this.createElement("div");
-		}
-		else
-		{
-			return query;
-		}
-	};
-
-	Document.prototype.getAll = function(selector)
-	{
-		// Get query
-		const query = this.querySelectorAll(selector);
-
-		if(query == null)
-		{
-			console.error(`WARNING: Selector '${selector}' has not been found in the DOM. Returning an empty div`);
-			return this.createElement("div");
-		}
-		else
-		{
-			return query;
-		}
-	};
-
-	Document.prototype.when = function(event, callback)	{
-		document.addEventListener(event, callback);
-	};
-
-	HTMLElement.prototype.getParents = function()
-	{
-		let parents = new Array();
-		let current_element = this;
-		
-		while (current_element.parentNode != null)
-		{
-			let parent = current_element.parentNode;
-			parents.push(parent);
-			current_element = parent;
-		}
-
-		return parents;    
-	};
+	let parents = new Array();
+	let current_element = this;
 	
-	HTMLElement.prototype.visibility = function()
+	while (current_element.parentNode != null)
 	{
-		return this.style.display;
-	};
+		let parent = current_element.parentNode;
+		parents.push(parent);
+		current_element = parent;
+	}
 
-	HTMLElement.prototype.get = function(selector)	{
+	return parents;    
+};
 
-		// Get query
-		const query = this.querySelector(selector);
+HTMLElement.prototype.when = function(event, callback)	
+{
+	this.addEventListener(event, callback);
+};
 
-		if (this == null)
-		{
-			console.error("WARNING: The HTML Element you are trying to use is null");
-			return null;
-		}
-		else if (query == null)
-		{
-			console.error(`WARNING: Selector '${selector}' has not been found in the following HTML Element:
-			\t - tag: ${this.tagName} 
-			\t - id: ${this.id ? this.id : 'none'} 
-			\t - class: ${this.className ? this.className : 'none'}
-			Returning an empty div`);
+HTMLElement.prototype.visibility = function()
+{
+	return this.style.display;
+};
 
-			console.log(this);
+HTMLElement.prototype.show = function()
+{
+	this.style.display = "";
+};
 
-			return this.appendChild(document.createElement("div"));
-		}
-		else
-		{
-			return query;
-		}
-	};
+HTMLElement.prototype.hide = function()
+{
+	this.style.display = "none";
+};
 
-	HTMLElement.prototype.getAll = function(selector)	{
+HTMLElement.prototype.toggleVisibility = function()
+{
+	this.visibility() == "none" ? this.show() : this.hide();
+}
 
-		// Get query
-		const query = this.querySelectorAll(selector);
-
-		if (this == null)
-		{
-			console.error("WARNING: The HTML Element you are trying to use is null");
-			return null;
-		}
-		else if (query == null)
-		{
-			console.error(`WARNING: Selector '${selector}' has not been found in the DOM. Returning an empty div`);
-			return this.appendChild(document.createElement("div"));
-		}
-		else
-		{
-			return query;
-		}
-
-	};
-
-	HTMLElement.prototype.when = function(event, callback)	{
-		this.addEventListener(event, callback);
-	};
-
-	HTMLElement.prototype.show = function()
-	{
-		this.style.display = "";
-	};
-
-	HTMLElement.prototype.hide = function()
-	{
-		this.style.display = "none";
-	};
-
-	HTMLElement.prototype.change_background_color = function(color)
-	{
-		this.style.backgroundColor = color;
-	};
-
+HTMLElement.prototype.change_background_color = function(color)
+{
+	this.style.backgroundColor = color;
 };
 
 /***************** HTML METHODS *****************/
@@ -173,7 +177,7 @@ dragElement = function(element, event, available_width, available_height)
 		document.onmouseup = null;
 		document.onmousemove = null;
 	}
-}
+};
 
 if(typeof(window) == "undefined")
 {

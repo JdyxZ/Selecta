@@ -1,6 +1,7 @@
 /* MAIN MENU */
 
-#Selecta .interface_menu {
+#Selecta .interface_menu 
+{
     color: white;
     position: absolute;
     left: 0;
@@ -17,7 +18,8 @@
     
 }
 
-#Selecta .img_layout img {
+#Selecta .img_layout img 
+{
     transition: 0.3s;
     width: auto;
     height: auto;
@@ -28,6 +30,7 @@
     object-fit: contain;
 }
 
-#Selecta .img_layout:hover {
+#Selecta .img_layout:hover 
+{
     background-color: #171717; 
 }
