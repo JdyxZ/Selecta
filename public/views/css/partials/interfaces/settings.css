@@ -3,11 +3,6 @@
 
 #Selecta #settings_interface
 {
-    display: none;
-}
-
-#Selecta #settings_interface .style
-{
     color: white;
     position: absolute;
     left: 0;
