@@ -87,7 +87,7 @@ const SELECTA =
         // Triggers
         this.mute_trigger.when("click", this.toggleMute.bind(this));
         this.search_trigger.when("click", () => this.search_interface.toggleVisibility());
-        this.votes_trigger.when("click" () => this.votes_interface.toggleVisibility());
+        //this.votes_trigger.when("click" () => this.votes_interface.toggleVisibility());
         this.search_trigger.when("click", () => this.search_interface.toggleVisibility());
         this.settings_trigger.when("click", () => this.settings_interface.toggleVisibility());
         this.exit_trigger.when("click", () => this.exit_interface.toggleVisibility());
