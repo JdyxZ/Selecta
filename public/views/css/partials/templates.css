@@ -137,3 +137,50 @@
 {
     flex: 4;
 }
+
+/* SIMPLIFIED VIDEO TEMPLATE */
+
+#Selecta .simplified_video
+{
+    display: none;
+    background-color: rgb(18 19 19);
+    display: flex;
+    flex-direction: row;
+    margin: 0px 1% 3px 1%;
+    width: auto;
+    color: wheat;
+    border-radius: 10px;
+    padding: 2px 2px 2px 2px;
+}
+
+#Selecta .simplified_video .thumbnail
+{
+    flex: 20;
+}
+
+#Selecta .simplified_video .title
+{
+    flex: 20;
+}
+
+#Selecta .simplified_video .channel
+{
+    flex: 20;
+}
+
+#Selecta .simplified_video .channel .thumbnail
+{
+    flex: 20;
+}
+
+#Selecta .simplified_video .channel .title
+{
+    flex: 20;
+}
+
+#Selecta .simplified_video .channel .flag
+{
+    flex: 20;
+}
+
+
