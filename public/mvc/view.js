@@ -109,9 +109,17 @@ const VIEW =
         // Get the corresponding user asset
         var asset = MODEL.raw_user_assets[user.asset];
         //console.log(MODEL.raw_user_assets);
-        //console.log(user);
+        console.log("wtf is ak ilojmeteteer")
+        console.log(user);
+
+        var position = [-40,-5,0];
+        var rotation = [0,0,0];
+
+        if(user.model['position'] != undefined) position = user.model['position'];  
+        if(user.model['rotation'] != undefined) rotation = user.model['rotation'];  
+
         // Create the asset instance
-        CONTROLLER.createAsset(asset,[-40,-5,0],id);
+        CONTROLLER.createAsset(asset,position,rotation,id);
         
         // We add the node to the scene
             
@@ -161,7 +169,7 @@ const VIEW =
 
     update: function(dt) 
     {
-        
+
         // Check if the my_user is initialized
         if(!MODEL.my_user)
             return
@@ -178,30 +186,50 @@ const VIEW =
 
         // Necessary data to update
         var t = getTime();
-        var anim = MODEL.user_assets[MODEL.my_user.id].animations['idle.skanim'];
         var time_factor = 1;
 
         // Check the keys for moving
         if(gl.keys["UP"])
         {
-            console.log(MODEL.my_user.id);
+
             // Set the pivot to walk forward
-            //MODEL.user_assets[MODEL.my_user.id].character_pivot.moveLocal([0,0,1]);
             character_pivot_node.moveLocal([0,0,1]);
 
+            MODEL.my_user.model['position'] = character_pivot_node.position;
+            MODEL.my_user.model['rotation'] = character_pivot_node.rotation;
+
             // Set the walking animation
-            anim = MODEL.user_assets[MODEL.my_user.id].animations['walking.skanim'];
+            MODEL.my_user.animation = 'walking.skanim';
+
+            CONTROLLER.sendTick();
         }
 
         else if(gl.keys["DOWN"])
         {
             // Set the pivot to walk backwards
-            //MODEL.user_assets[MODEL.my_user.id].character_pivot.moveLocal([0,0,-1]);
             character_pivot_node.moveLocal([0,0,-1]);
 
+            MODEL.my_user.model['position'] = character_pivot_node.position;
+            MODEL.my_user.model['rotation'] = character_pivot_node.rotation;
+
             // Set the walking animation and timefactor for the skeleton (walking animation inverse)
-            anim = MODEL.user_assets[MODEL.my_user.id].animations['walking.skanim'];
+            MODEL.my_user.animation = 'walking.skanim';
+
+            CONTROLLER.sendTick();
+            
             time_factor = -1;
+        }
+        // Not dancing
+        else if (MODEL.my_user.animation != 'macarena.skanim' && MODEL.my_user.animation != 'dance2.skanim')
+        {
+            if(MODEL.my_user.animation!= 'idle.skanim')
+            {
+                MODEL.my_user.animation = 'idle.skanim';
+                CONTROLLER.sendTick();
+            }
+            else
+                MODEL.my_user.animation = 'idle.skanim';  
+            
         }
 
         // Check the keys for rotating
@@ -209,12 +237,18 @@ const VIEW =
         {
             // Set the pivot to rotate left
             MODEL.user_assets[MODEL.my_user.id].character_pivot.rotate(90*DEG2RAD*dt,[0,1,0]);
+
+            MODEL.my_user.model['rotation'] = character_pivot_node.rotation;
+            CONTROLLER.sendTick();
         }
         
         else if(gl.keys["RIGHT"])
         {
             // Set the pivot to rotate right
             MODEL.user_assets[MODEL.my_user.id].character_pivot.rotate(-90*DEG2RAD*dt,[0,1,0]);
+
+            MODEL.my_user.model['rotation'] = character_pivot_node.rotation;
+            CONTROLLER.sendTick();
         }
         
         // Deafult keys numbers for dances
@@ -222,13 +256,19 @@ const VIEW =
         {
             // Set dancing animation if exists
             if(MODEL.user_assets[MODEL.my_user.id].animations['macarena.skanim'])
-                anim = MODEL.user_assets[MODEL.my_user.id].animations['macarena.skanim'];
+            {
+                MODEL.my_user.animation = 'macarena.skanim';
+                CONTROLLER.sendTick();
+            }
         }
         if(gl.keys["2"])
         {
             // Set dancing animation if exists
             if(MODEL.user_assets[MODEL.my_user.id].animations['dance2.skanim'])
-                anim = MODEL.user_assets[MODEL.my_user.id].animations['dance2.skanim'];
+            {
+                MODEL.my_user.animation = 'dance2.skanim';
+                CONTROLLER.sendTick();
+            }  
         }
         
         // In case the avatar is outside the boundingbox we calculate the near position
@@ -236,11 +276,24 @@ const VIEW =
         var nearest_pos = MODEL.walkarea.adjustPosition( pos );
         MODEL.user_assets[MODEL.my_user.id].character_pivot.position = nearest_pos;
 
+        var anim = MODEL.user_assets[MODEL.my_user.id].animations[MODEL.my_user.animation];
         // Move bones in the skeleton based on animation
         anim.assignTime( t * 0.001 * time_factor );
         
         // Copy the skeleton in the animation to the character
-        //MODEL.user_assets[MODEL.my_user.id].character.skeleton.copyFrom( anim.skeleton );
         character_pivot_node.findNode('avat').skeleton.copyFrom( anim.skeleton );
+
+        // Set the animations for all the other avatars
+        for(uid in MODEL.users_obj)
+        {
+
+            if(!((typeof MODEL.users_obj[uid] === 'undefined')))
+            {
+                var anim_ = MODEL.user_assets[uid].animations[MODEL.users_obj[uid].animation];
+                anim_.assignTime( t * 0.001 * time_factor );
+                var pivot = MODEL.scene.root.findNode(uid);
+                pivot.findNode('avat').skeleton.copyFrom( anim_.skeleton );
+            }
+        };
     }
 }

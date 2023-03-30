@@ -41,7 +41,7 @@ async function exitHandler(exit_code)
 /***************** UPDATE DATABASE PERIODICALLY *****************/
 
 // Define update interval
-const update_interval = 10000; // [ms]
+const update_interval = 5000; // [ms]
 
 // Update database in each interval
 setInterval(() => {
