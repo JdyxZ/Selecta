@@ -148,7 +148,8 @@ const YOUTUBE =
             const videos = response.result.items;
 
             // Check
-            if(videos.length == 0) throw "YOUTUBE_EMPTY_RESPONSE";
+            const result = this.checkVideosInfo(videos);
+            if(result != "OK") throw result;
 
             // Build json response object
             const data = videos.map(video => {          
@@ -184,22 +185,14 @@ const YOUTUBE =
             else if(err.result)
             {
                 console.error(`Youtube Utils Error --> Error upon fetching info of the videos ${videoIDs}`, err.result.error.errors);
-                return [null];
+                return null;
             }
             else
             {
                 console.error(`Youtube Utils Error ---> "${err}" upon fetching info of the videos ${videoIDs}`);
-                return [null];
+                return null;
             }
         }
-    },
-
-    checkVideoInfo: function(video)
-    {
-        if(video === undefined) return "YOUTUBE_CHECK_INVALID_VIDEOID";
-        if(video === null) return "YOUTUBE_CHECK_SOMETHING_WRONG_HAPPENED";
-        if(video.live) return "YOUTUBE_CHECK_LIVE_VIDEO";   
-        else return "OK";
     },
 
     getChannelsInfo: async function(channelIDs)
@@ -221,7 +214,8 @@ const YOUTUBE =
             const channels = response.result.items;
 
             // Check
-            if(channels.length == 0) throw "YOUTUBE_EMPTY_RESPONSE";
+            const result = this.checkChannelsInfo(channels);
+            if(result != "OK") throw result;
 
             // Build json response object
             const data = channels.map(channel => {
@@ -251,14 +245,38 @@ const YOUTUBE =
             else if(err.result)
             {
                 console.error(`Youtube Utils Error --> Error upon fetching info of the channels ${channelIDs}`, err.result.error.errors);
-                return [null];
+                return null;
             }
             else
             {
                 console.error(`Youtube Utils Error --> "${err}" upon fetching info of the channels ${channelIDs}`);
-                return [null];
+                return null;
             }
         }
+    },
+
+    checkVideosInfo: function(videos)
+    {
+        if(videos.length == 0) return "YOUTUBE_EMPTY_RESPONSE";
+
+        videos.forEach(video => {
+            if(video == null) return "YOUTUBE_CHECK_SOMETHING_WRONG_HAPPENED";
+            // if(video.live) return "YOUTUBE_CHECK_LIVE_VIDEO";   
+        })
+
+        return "OK";
+    },
+
+    checkChannelsInfo: function(channels)
+    {
+        if(channels.length == 0) return "YOUTUBE_EMPTY_RESPONSE";
+
+        channels.forEach(channel => {
+            if(channel === null) return "YOUTUBE_CHECK_SOMETHING_WRONG_HAPPENED";
+            // if(channel.live) return "YOUTUBE_CHECK_LIVE_VIDEO";   
+        })
+      
+        return "OK";
     },
 
     getPlaylistsInfo: async function(playlistIDs)
@@ -308,12 +326,12 @@ const YOUTUBE =
             else if(err.result)
             {
                 console.error(`Youtube Utils Error --> Error upon fetching info of the playlists ${playlistIDs}`, err.result.error.errors);
-                return [null];
+                return null;
             }
             else
             {
                 console.error(`Youtube Utils Error --> "${err}" upon fetching info of the playlists ${playlistIDs}`);
-                return [null];
+                return null;
             }
         }
     },
