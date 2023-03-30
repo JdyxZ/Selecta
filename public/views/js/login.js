@@ -8,7 +8,6 @@ const LOGIN = {
 
     init: function()
     {
-
         // Key down
         this.username.when("keydown", this.onKeyDown.bind(this));
         this.password.when("keydown", this.onKeyDown.bind(this));

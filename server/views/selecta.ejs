@@ -9,114 +9,24 @@
         <!--- SELECTA -->
         <div id="Selecta">
 
-            <!--- APP -->
-            <div class="interface_menu">
-                <h1>Selecta</h1>
-            
-                <div class="img_layout" id="mute_image_button"><img src="media/interface/img_speaker_on.png" alt="Descripción de la imagen" id="mute_image"></div>
-                <!-- <div class="img_layout" style="display:none"><img src="media/interface/img_speaker_off.png" width="50%" height="50%" alt="Descripción de la imagen"></div> -->
-                <div class="img_layout"><img src="media/interface/img_song.png" width="50%" height="50%" alt="Descripción de la imagen"></div>
-                <div class="img_layout"><img src="media/interface/img_vote.png" width="50%" height="50%" alt="Descripción de la imagen"></div>
-                <div class="img_layout" id="settings_button"><img src="media/interface/img_settings.png" width="50%" height="50%" alt="Descripción de la imagen"></div>
-                <div class="img_layout" id="logout_button">
-                    <img src="media/interface/img_exit.png" width="50%" height="50%" alt="Descripción de la imagen"></div>
-                    <form action="/logout" id="logout-form">
-                        <button type="submit" id="logout-button"></button>
-                    </form>
-                <div class="img_layout"><img src="media/interface/img_info.png" width="50%" height="50%" alt="Descripción de la imagen"></div>
-            
-            </div>
-            <div class ="interface_settings" style="display: none"id="interface_settings_id"> 
-                <div class="interface_settings_options_container">
-                    <!-- MENU SETTINGS BUTTONS -->
-                    <div class="interface_settings_options" id="interface_settings_option_video">VIDEO SETTINGS</div>
-                    <div class="interface_settings_options" id="interface_settings_option_audio" style="background-color: #208d70;">AUDIO SETTINGS</div>
-                    <div class="interface_settings_options" id="interface_settings_option_keybinds">KEYBINDS</div>
-                </div>
-                <!-- SETTINGS MENUS AUDIO / VIDEO / KEYBINDS -->
-                <div class="interface_settings_menu_container">
-                    <div class="img_close" id="settings_close_button"><img src="media/interface/img_close_btn.png" alt="Descripción de la imagen"></div>
-                    <!-- MENU AUDIO -->
-                    <span id="audio_settings_container" >
-                        <div class ="interface_settings_menu">
-                            <label class="menu_label">AUDIO SETTINGS</label>
-                        </div>
-                        <div class="interface_settings_buttons_type1">
-                            <label class="volume_label">GENERAL VOLUME</label>
-                            <input class="volume_slider" type="range" id="slider_general">
-                        </div>
-                        <div class="interface_settings_buttons_type1">
-                            <label class="volume_label">MUSIC VOLUME</label>
-                            <input class="volume_slider" type="range" id="slider_music">
-                        </div>
-                        <div class="interface_settings_buttons_type1">
-                            <label class="volume_label">PEOPLE VOLUME</label>
-                            <input class="volume_slider" type="range" id="slider_people">
-                        </div>
-                        <div class="container">
-                            <div class="interface_settings_buttons_type2">
-                                <label class="audio_device_label">INPUT AUDIO DEVICE</label>
-                                <select class="interface_settings_audio_device" id="input_device"><option value="Que te vote txapote">Que te vote txapote</option></select>
-                            </div>
-                            <div class="interface_settings_buttons_type2">
-                                <label class="audio_device_label">OUTPUT AUDIO DEVICE</label>
-                                <select class="interface_settings_audio_device" id="output_device"><option value="Sanchez rojo socialista">Sanchez rojo socialista</option></select>
-                            </div>
-                        </div>
-                        <div class="interface_settings_buttons_type1">
-                            <label class="volume_label">MICRO VOLUME</label>
-                            <input class="volume_slider" type="range" id="slider_mic">
-                        </div>
-                        <div class="interface_settings_apply_changes" id="settings_apply_changes">APPLY CHANGES</div>
-                    </span>
-                    <span id="video_settings_container" style="display: none;">FUTURE IMPLEMENTATIONS</span>
-                    <span id="keybinds_settings_container" style="display: none;">
-                        <div class ="interface_settings_menu">
-                            <label class="menu_label">KEYBINDS</label>
-                        </div>
-                        <div class="keybind_template"><label class="keybind_action">MACARENA DANCE</label><label class="keybind_shortcut">1</label></div>
-                        <div class="keybind_template"><label class="keybind_action">BREAKDANCE DANCE</label><label class="keybind_shortcut">2</label></div>
-                        <div class="keybind_template"><label class="keybind_action">MOVE FORWARD</label><label class="keybind_shortcut">↑</label></div>
-                        <div class="keybind_template"><label class="keybind_action">MOVE BACKWARDS</label><label class="keybind_shortcut">↓</label></div>
-                        <div class="keybind_template"><label class="keybind_action">ROTATE LEFT</label><label class="keybind_shortcut">←</label></div>
-                        <div class="keybind_template"><label class="keybind_action">ROTATE RIGHT</label><label class="keybind_shortcut">→</label></div>
-                    </span>
-                </div>
-             </div>
-            <!-- LOGUT POPUP -->
-            <div class="logout_menu" id="logout_menu" style="display: none;">
-                <label class="logout_label">¿Are you sure you want to logout?</label>
-                <button class="logout_decision" id="logout_yes">Yes</button>
-                <button class="logout_decision" id="logout_no">No</button>
-            </div>
-            <!-- <div class ="interface_suggest_song" id="interface_suggest_song_id">
-                <div id="interface_suggest_song_title">SUGGEST A SONG!</div> 
-                <div class="interface_search_var">
-                    <img src="media/interface/img_search.png" width="3%" height="3%" alt="Descripción de la imagen" id="search_var_image">
-                    <input type="text" id="search_var_input">
-                </div>
-                <div class="interface_search_result">
-                    <div class="interface_search_result_song">
-                        <label class="interface_search_result_song_name">Chorrito pa las animas</label>
-                        <label class="interface_search_result_song_channel">Feid</label>
-                        <label class="interface_search_result_song_duration">2:48</label>
-                        <img src="media/interface/img_vote_song_1.png" alt="Descripción de la imagen" class="interface_search_result_song_vote">
-                    </div>
-                    <div class="interface_search_result_song">
-                        <label class="interface_search_result_song_name">Normal</label>
-                        <label class="interface_search_result_song_channel">Feid</label>
-                        <label class="interface_search_result_song_duration">2:36</label>
-                        <img src="media/interface/img_vote_song_2.png" alt="Descripción de la imagen" class="interface_search_result_song_vote">
-                    </div>
-                    <div class="interface_search_result_song">
-                        <label class="interface_search_result_song_name">Silly Watch</label>
-                        <label class="interface_search_result_song_channel">Lil Uzi Vert</label>
-                        <label class="interface_search_result_song_duration">3:16</label>
-                        <img src="media/interface/img_vote_song_2.png" alt="Descripción de la imagen" class="interface_search_result_song_vote">
-                    </div>
-                </div>
-                <div class="interface_error_prompt">ERROR PROMPT</div>
-            </div> -->
+            <!--- MENU INTERFACE -->
+            <%- include('partials/interfaces/menu.ejs') %>
+
+            <!--- SEARCH INTERFACE -->
+            <%- include('partials/interfaces/search.ejs') %>
+
+            <!--- VOTE INTERFACE -->
+            <%- include('partials/interfaces/vote.ejs') %>
+
+            <!--- SETTINGS INTERFACE -->
+            <%- include('partials/interfaces/settings.ejs') %>
+
+            <!--- LOGOUT INTERFACE -->
+            <%- include('partials/interfaces/logout.ejs') %>
+
+            <!-- CANVAS -->
+
+        </div>
 
         <!--- Footer -->
         <%- include('partials/footer.ejs') %>

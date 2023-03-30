@@ -1,0 +1,184 @@
+
+/* SETTINGS */
+
+#Selecta h1
+{
+    font-size: 26px;
+}
+
+#Selecta .interface_settings
+{
+    color: white;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 1;
+    background: #202020;
+    width: 60%;
+    margin-top: 5%;
+    margin-left: 20%;
+    height: 72%;
+    overflow: hidden;
+    border-radius: 8px;
+    text-align: center;
+    margin-right: 20%;
+    display: flex;
+}
+
+#Selecta .img_close img 
+{
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    margin-top: 2px;
+    margin-right: 2px;
+    max-width: 2%;
+    max-height: 3%;
+}
+
+#Selecta .interface_settings_apply_changes 
+{
+    background-color: #208d70;
+    border-radius: 8px;
+    position: relative;
+    margin: 0% 40% 2% 40%;
+    overflow: hidden;
+}
+
+/* OPTIONS */
+
+#Selecta .interface_settings_options_container
+{
+    flex: 0.5;
+    margin-top: 2%;
+}
+
+#Selecta .interface_settings_options 
+{
+    color: white;
+    background: #323131;
+    display: block;
+    margin: 0% 5% 20% 5%;
+    border-radius: 8px;
+    text-align: center;
+    padding: 12% 1% 12% 1%;
+    font-size: 20px;
+    font-weight: bold;
+    overflow: hidden;
+}
+
+/* MENU */
+
+#Selecta .interface_settings_menu_container
+{
+    background: #323131;
+    flex: 1;
+    border-radius: 8px;
+    margin: 2% 2% 2% 0%;
+}
+
+#Selecta .interface_settings_menu
+{
+    position: relative;
+    width: 100%;
+    height: 5%;
+}
+
+#Selecta .menu_label
+{
+    font-size: 20px;
+    font-weight: bold;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: inline-block;
+    margin: 2% 0% 1% 0%;
+    width: 100%;
+}
+
+/* MENU KEYBINDS */
+
+#Selecta .keybind_template 
+{
+    background-color: #202020;
+    display: flex;
+    flex-direction: row;
+    border-radius: 8px;
+    padding: 1% 1% 1% 1%;
+    margin: 2% 1% 1% 1%;
+}
+
+#Selecta .keybind_action
+{
+    flex: 1;
+}
+
+#Selecta .keybind_shortcut
+{
+    flex: 1;
+}
+
+/* MENU SETTINGS VOLUME SLIDERS */
+
+#Selecta .interface_settings_buttons_type1 
+{
+    background-color: #202020;
+    width: 90%;
+    margin: 3% 5% 4% 5%;
+    border-radius: 8px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+#Selecta .volume_label 
+{
+    text-align: center;
+    display: inline-block;
+    margin: 1% 41.2% 1% 41.2%;
+    flex-basis: 50%;
+    flex-grow: 0;
+}
+
+#Selecta .volume_slider 
+{
+    margin: 1% 1% 1% 5%;
+    flex-basis: 50%;
+    flex-grow: 0;
+}
+
+/* MENU SETTINGS VOLUME INPUT/OUTPUT */
+
+#Selecta .container 
+{
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+#Selecta .interface_settings_buttons_type2 
+{
+    background-color: #202020;
+    margin: 2% 2% 2% 2%;
+    border-radius: 8px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    max-width: 50%;
+    width: 46.001%;
+}
+
+#Selecta .audio_device_label
+{
+    display: inline-block;
+    margin: 1% 30% 1% 30%;
+    flex-basis: 70%;
+}
+
+#Selecta .interface_settings_audio_device 
+{
+    margin: 2% 2% 2% 2%;
+    flex-basis: 30%;
+}

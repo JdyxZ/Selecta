@@ -3,8 +3,6 @@
 
 const SELECTA = 
 {
-    // TODO...
-
     // CSS variables
     available_height: window.screen.availHeight,
     available_width: window.screen.availWidth,
@@ -59,18 +57,18 @@ const SELECTA =
         this.exit_menu.hide();
 
         // Set callbacks for interactions
-        this.settings_button.when("click",this.onClick.bind(this));
-        this.settings_menu_close.when("click",this.onClick.bind(this));
-        this.settings_apply_changes.when("click",this.settings_menu.hide());
+        this.settings_button.when("click", this.onClick.bind(this));
+        this.settings_menu_close.when("click", this.onClick.bind(this));
+        this.settings_apply_changes.when("click", this.settings_menu.hide());
 
-        this.settings_exit.when("click",() => this.exit_menu.show());
-        this.exit_button_yes.when("click",() => this.settings_exit_button.click());
-        this.exit_button_no.when("click",() => this.exit_menu.hide());
+        this.settings_exit.when("click", () => this.exit_menu.show());
+        this.exit_button_yes.when("click", () => this.settings_exit_button.click());
+        this.exit_button_no.when("click", () => this.exit_menu.hide());
 
         // Callbacks for switching settings menus
-        this.settings_audio_button.when("click",this.switch_menu.bind(this));
-        this.settings_video_button.when("click",this.switch_menu.bind(this));
-        this.settings_keybinds_button.when("click",this.switch_menu.bind(this));
+        this.settings_audio_button.when("click", this.switch_menu.bind(this));
+        this.settings_video_button.when("click", this.switch_menu.bind(this));
+        this.settings_keybinds_button.when("click", this.switch_menu.bind(this));
 
         // Init sliders
         this.init_slider(this.general_volume_slider);
@@ -79,19 +77,15 @@ const SELECTA =
         this.init_slider(this.micro_volume_slider);
 
         // Callbacks for volume control
-        this.music_volume_slider.when("input",this.adjust_volume);
+        this.music_volume_slider.when("input", this.adjust_volume);
         MODEL.player.volume = this.music_volume_slider.value;
 
         // Callback for mute/unmute
-        this.mute_button.when("click",this.input_audio_switch.bind(this));
+        this.mute_button.when("click", this.input_audio_switch.bind(this));
 
         // Init other resources
         CONTROLLER.init();
         CLIENT.init();
-        
-
-        // !!TEMPORAL!!
-        // MODEL.player.play();
     },
 
     init_slider: function(slider)
@@ -169,6 +163,4 @@ const SELECTA =
             console.log("WARNING: onClick function error, element is null");
         }        
     }
-
-    // TODO...
 }

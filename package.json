@@ -43,6 +43,6 @@
     "passport-twitter": "^0.1.5",
     "url": "^0.11.0",
     "websocket": "^1.0.34",
-    "ytdl-core": "^4.11.2"
+    "ytdl-core": "^4.11.3"
   }
 }

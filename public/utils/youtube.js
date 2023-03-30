@@ -183,12 +183,12 @@ const YOUTUBE =
             else if(err.result)
             {
                 console.error(`Youtube Utils Error --> Error upon fetching info of the videos ${videoIDs}`, err.result.error.errors);
-                return null;
+                return [null];
             }
             else
             {
                 console.error(`Youtube Utils Error ---> "${err}" upon fetching info of the videos ${videoIDs}`);
-                return null;
+                return [null];
             }
         }
     },
@@ -250,12 +250,12 @@ const YOUTUBE =
             else if(err.result)
             {
                 console.error(`Youtube Utils Error --> Error upon fetching info of the channels ${channelIDs}`, err.result.error.errors);
-                return null;
+                return [null];
             }
             else
             {
                 console.error(`Youtube Utils Error --> "${err}" upon fetching info of the channels ${channelIDs}`);
-                return null;
+                return [null];
             }
         }
     },
@@ -307,12 +307,12 @@ const YOUTUBE =
             else if(err.result)
             {
                 console.error(`Youtube Utils Error --> Error upon fetching info of the playlists ${playlistIDs}`, err.result.error.errors);
-                return null;
+                return [null];
             }
             else
             {
                 console.error(`Youtube Utils Error --> "${err}" upon fetching info of the playlists ${playlistIDs}`);
-                return null;
+                return [null];
             }
         }
     },

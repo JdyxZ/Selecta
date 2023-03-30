@@ -104,12 +104,12 @@ const VIEW =
     {
         //console.log(MODEL.user_assets[user.id]);
         const id = user.id;
-        console.log("adding a user");
+        //console.log("adding a user");
         
         // Get the corresponding user asset
         var asset = MODEL.raw_user_assets[user.asset];
         //console.log(MODEL.raw_user_assets);
-        console.log(user);
+        //console.log(user);
         // Create the asset instance
         CONTROLLER.createAsset(asset,[-40,-5,0],id);
         

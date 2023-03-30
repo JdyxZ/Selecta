@@ -133,9 +133,49 @@ if(typeof(Document) != "undefined")
 
 /***************** HTML METHODS *****************/
 
+dragElement = function(element, event, available_width, available_height)
+{
+	// Event
+	event = event || window.event;
+	event.preventDefault();
 
+	// Positions
+	var xi, yi, Δx, Δy;
+
+	// Get mouse cursor position at startup
+	xi = event.clientX;
+	yi = event.clientY;
+
+	// Track mouse motion to perform the transition
+	document.onmousemove = (event) => {
+
+		// Event
+		event = event || window.event;
+		event.preventDefault();
+
+		// Displacement
+		Δx = event.clientX - xi;
+		Δy = event.clientY - yi;
+
+		// Set div new position
+		element.style.left = (element.offsetLeft + Δx).clamp(0, available_width - element.offsetWidth - 50) + "px";
+		element.style.top = (element.offsetTop + Δy).clamp(0, available_height - element.offsetHeight - 80) + "px";
+		
+		//Update intial potition to current potition
+		xi = event.clientX;
+		yi = event.clientY;
+
+	};
+
+	// Stop moving when the mouse is released
+	document.onmouseup = () => {
+
+		document.onmouseup = null;
+		document.onmousemove = null;
+	}
+}
 
 if(typeof(window) == "undefined")
 {
- 	module.exports = {};
+ 	module.exports = {dragMenu};
 }

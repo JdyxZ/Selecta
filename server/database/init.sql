@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS selecta_rooms (
     people JSON,
     exits JSON,
     default_model JSON,
-    playlist VARCHAR(255),
+    playlist VARCHAR(255), 
 
     PRIMARY KEY (id)
 );
