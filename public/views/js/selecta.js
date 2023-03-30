@@ -56,10 +56,12 @@ const SELECTA =
     // Votes interface
 
     // Templates
-    song_template: document.get("#Selecta .song"),
+    videoTemplate: document.get("#Selecta .video"),
 
     // Control varibles
     muted: false,
+    searching: false,
+    lastQuery: null,
 
     // Methods
     init: function()
@@ -166,9 +168,33 @@ const SELECTA =
             this.settings_keybinds_container.show(); 
     },
 
-    youtubeSearch: function()
+    youtubeSearch: async function(query)
     {
+        // Check
+        if(this.searching || query === this.lastQuery)
+            return;
+
+        // Search videos related to the query
+        //const search = await YOUTUBE.search(query);
+
+        // Check errors
+        if(search == null) return;
+
+        // Get more information about the searched videos
+        const videos = await YOUTUBE.getVideosInfo("ntCZjb_AAWE");
+        const channels = await YOUTUBE.getChannelsInfo(videos[0].publisherChannel.ID);
+
+        // Check errors
+        if(videos == null || channels == null) return;
+
+        // Clone video template
+
+        // Fill video template with data
         
+        // Show video template
+
+        // Register query
+        this.lastQuery = query;
     },
 
     suggestSong: function()

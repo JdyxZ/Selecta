@@ -1,5 +1,7 @@
-/* SONG TEMPLATE */
-#Selecta .song 
+
+/* VIDEO TEMPLATE */
+
+#Selecta .video
 {
     display: none;
     background-color: rgb(18 19 19);
@@ -12,23 +14,173 @@
     padding: 2px 2px 2px 2px;
 }
 
-#Selecta .song_name
+#Selecta .video .thumbnail
 {
     flex: 20;
 }
 
-#Selecta .song_channel
+#Selecta .video .duration
 {
     flex: 20;
 }
 
-#Selecta .song_duration
+#Selecta .video .title
+{
+    flex: 20;
+}
+
+#Selecta .video .language
 {
     flex: 4;
 }
 
-#Selecta .song_votes
+#Selecta .video .description
 {
-    flex: 1;
-    width: 15px;
+    flex: 20;
 }
+
+/* SPECS */
+
+#Selecta .video .specs
+{
+    flex: 4;
+}
+
+#Selecta .video img.likeCount
+{
+    flex: 4;
+}
+
+#Selecta .video label.likeCount
+{
+    flex: 4;
+}
+
+#Selecta .video img.viewCount
+{
+    flex: 4;
+}
+
+#Selecta .video label.viewCount
+{
+    flex: 4;
+}
+
+#Selecta .video img.voteCount
+{
+    flex: 4;
+}
+
+#Selecta .video label.voteCount
+{
+    flex: 4;
+}
+
+#Selecta .video img.commentCount
+{
+    flex: 4;
+}
+
+#Selecta .video label.commentCount
+{
+    flex: 4;
+}
+
+#Selecta .video img.publicationDate
+{
+    flex: 4;
+}
+
+#Selecta .video label.publicationDate
+{
+    flex: 4;
+}
+
+/* CHANNEL */
+
+#Selecta .video .channel
+{
+    flex: 4;
+}
+
+#Selecta .video .channel .thumbnail
+{
+    flex: 4;
+}
+
+#Selecta .video .channel .title
+{
+    flex: 4;
+}
+
+#Selecta .video .channel .countryFlag
+{
+    flex: 4;
+}
+
+#Selecta .video .channel .subscriberCount
+{
+    flex: 4;
+}
+
+#Selecta .video .channel .viewCount
+{
+    flex: 4;
+}
+
+#Selecta .video .channel .videoCount
+{
+    flex: 4;
+}
+
+#Selecta .video .channel .publicationDate
+{
+    flex: 4;
+}
+
+/* SIMPLIFIED VIDEO TEMPLATE */
+
+#Selecta .simplified_video
+{
+    display: none;
+    background-color: rgb(18 19 19);
+    display: flex;
+    flex-direction: row;
+    margin: 0px 1% 3px 1%;
+    width: auto;
+    color: wheat;
+    border-radius: 10px;
+    padding: 2px 2px 2px 2px;
+}
+
+#Selecta .simplified_video .thumbnail
+{
+    flex: 20;
+}
+
+#Selecta .simplified_video .title
+{
+    flex: 20;
+}
+
+#Selecta .simplified_video .channel
+{
+    flex: 20;
+}
+
+#Selecta .simplified_video .channel .thumbnail
+{
+    flex: 20;
+}
+
+#Selecta .simplified_video .channel .title
+{
+    flex: 20;
+}
+
+#Selecta .simplified_video .channel .flag
+{
+    flex: 20;
+}
+
+
