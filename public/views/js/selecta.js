@@ -8,17 +8,20 @@ const SELECTA =
     available_width: window.screen.availWidth,
 
     // Interfaces
-    search_interface: document.get("#Selecta #interface_search #search_result"),
-    settings_interface: document.get("#interface_settings_id"),
-    exit_interface: document.get("#logout_menu"),
+    search_interface: document.get("#Selecta #interface_search"),
+    votes_interface: document.get("#Selecta #interface_votes"),
+    settings_interface: document.get("#Selecta #interface_settings"),
+    exit_interface: document.get("#Selecta #logout_menu"),
 
     // Interface triggers
-    mute_trigger: document.get("#micro_trigger"),
-    settings_trigger: document.get("#settings_trigger"),
-    exit_trigger: document.get("#logout_trigger"),
+    mute_trigger: document.get("#Selecta #micro_trigger"),
+    search_trigger: document.get("#Selecta #search_trigger"),
+    votes_trigger: document.get("#Selecta #votes_trigger"),
+    settings_trigger: document.get("#Selecta #settings_trigger"),
+    exit_trigger: document.get("#Selecta #logout_trigger"),
 
-    // Mic image
-    mute_img: document.get("#mute_image"),
+    // Micro image
+    mute_img: document.get("#Selecta #mute_image"),
 
     // Settings interactions
     settings_menu_close: document.get("#settings_close_button"),
@@ -49,7 +52,11 @@ const SELECTA =
 
     // Search interface
     search_result: document.get("#Selecta #interface_search #search_result"),
-    song_template: document.get("#Selecta #interface_search .song"),
+
+    // Votes interface
+
+    // Templates
+    song_template: document.get("#Selecta .song"),
 
     // Control varibles
     muted: false,
@@ -79,6 +86,9 @@ const SELECTA =
     {             
         // Triggers
         this.mute_trigger.when("click", this.toggleMute.bind(this));
+        this.search_trigger.when("click", () => this.search_interface.toggleVisibility());
+        this.votes_trigger.when("click" () => this.votes_interface.toggleVisibility());
+        this.search_trigger.when("click", () => this.search_interface.toggleVisibility());
         this.settings_trigger.when("click", () => this.settings_interface.toggleVisibility());
         this.exit_trigger.when("click", () => this.exit_interface.toggleVisibility());
 
@@ -154,7 +164,27 @@ const SELECTA =
         if(event.target.id == "interface_settings_option_video")
             this.settings_video_container.show();
         if(event.target.id == "interface_settings_option_keybinds")
-            this.settings_keybinds_container.show();
+            this.settings_keybinds_container.show(); 
+    },
+
+    youtubeSearch: function()
+    {
         
     },
+
+    suggestSong: function()
+    {
+
+    },
+
+    votesSearch: function()
+    {
+
+    },
+
+    voteSuggestion: function()
+    {
+
+    }
+
 }

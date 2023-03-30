@@ -466,8 +466,9 @@ function Song(data)
     this.description = data.description;
     this.thumbnails = data.thumbnails;
     this.publisherChannel = data.publisherChannel;
-    this.publicationTime = data.publicationTime;
+    this.publicationDate = data.publicationDate;
     this.elapsedTime = data.elapsedTime;
+    this.language = data.language;
     this.duration = data.duration;
     this.viewCount = data.viewCount;
     this.likeCount = data.likeCount;

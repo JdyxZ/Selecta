@@ -1,12 +1,7 @@
 
 /* SETTINGS */
 
-#Selecta h1
-{
-    font-size: 26px;
-}
-
-#Selecta .interface_settings
+#Selecta #interface_settings
 {
     display: none;
     color: white;
@@ -24,6 +19,11 @@
     text-align: center;
     margin-right: 20%;
     display: flex;
+}
+
+#Selecta h1
+{
+    font-size: 26px;
 }
 
 #Selecta .img_close img 
