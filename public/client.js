@@ -89,7 +89,7 @@ var CLIENT =
     {
         // Process message
         const message = JSON.parse(ws_message.data);
-
+        console.log(message)
         switch(message.type)
         {
             case "ROOM":
@@ -186,7 +186,7 @@ var CLIENT =
 
         // Unpack message data
         const users = message.content;
-
+        console.log(users)
         // Callback
         CONTROLLER.onUserJoin(users);
     },
@@ -199,7 +199,7 @@ var CLIENT =
 
         // Unpack message data
         const user_id = message.content;
-        
+        console.log(user_id)
         // Callback
         CONTROLLER.onUserLeft(user_id);
     },
