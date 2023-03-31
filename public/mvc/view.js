@@ -4,6 +4,8 @@ const VIEW =
 {
     // TODO: Aquí va el rendeer loop
     canvas_parent: null,
+    camera_out: false,
+    user_backup: {"position":[0,0,0],"rotation":[0,0,0,1]},
 
     setWalkarea: function()
     {
@@ -36,6 +38,15 @@ const VIEW =
 
     },
 
+    setCameraArea: function()
+    {
+        walkarea = new WalkArea();
+
+		// Pista walkarea
+		walkarea.addRect([-250,0,-190],390,330);
+        MODEL.camarea = walkarea;
+    },
+
     init: function()
     {
         VIEW.canvas_parent = document.get("#Selecta");
@@ -62,7 +73,9 @@ const VIEW =
         // Set the color to clean the scene
         MODEL.bg_color = [0.1,0.1,0.1,1];
 
+        //VIEW.setWalkarea();
         VIEW.setWalkarea();
+        VIEW.setCameraArea();
 
         // Main draw function
 		MODEL.context.ondraw = VIEW.draw;
@@ -109,7 +122,6 @@ const VIEW =
         // Get the corresponding user asset
         var asset = MODEL.raw_user_assets[user.asset];
         //console.log(MODEL.raw_user_assets);
-        console.log("wtf is ak ilojmeteteer")
         console.log(user);
 
         var position = [-40,-5,0];
@@ -149,10 +161,24 @@ const VIEW =
 
         // Obtain avatar and camera positions
         var campos = MODEL.user_assets[MODEL.my_user.id].character_pivot.localToGlobal([0,60,-70]);
-        var camtarget = MODEL.user_assets[MODEL.my_user.id].character_pivot.localToGlobal([0,10,70]);
+        var camtarget = MODEL.user_assets[MODEL.my_user.id].character_pivot.localToGlobal([0,20,70]);
 
         // Compute the smooth camera
         var smoothtarget = vec3.lerp( vec3.create(), MODEL.camera.target, camtarget, 0.02 );
+
+        // Get the parameters to compare
+        const v1 = MODEL.camarea.adjustPosition(campos).map(num => Math.round(num));
+        const v2 = campos.map(num => Math.round(num));
+
+        // Check if the camera is out of boundings
+        if(v1 != v2)
+        {
+            VIEW.camera_out = false;
+            node = MODEL.scene.root.findNode(MODEL.my_user.id);
+            node.position = VIEW.user_backup.position;
+            node.rotation = VIEW.user_backup.rotation;
+            campos = MODEL.camarea.adjustPosition(campos)
+        }
 
         // Update the camera
         MODEL.camera.perspective( 60, gl.canvas.width / gl.canvas.height, 0.1, 1000 );
@@ -169,7 +195,7 @@ const VIEW =
 
     update: function(dt) 
     {
-
+        //console.log(VIEW.camera_out)
         // Check if the my_user is initialized
         if(!MODEL.my_user)
             return
@@ -183,13 +209,18 @@ const VIEW =
 
         // Get the my_user node
         character_pivot_node = MODEL.scene.root.findNode(MODEL.my_user.id);
+        //console.log(character_pivot_node.position)
+        //save the backup
+
+        VIEW.user_backup.position = MODEL.scene.root.findNode(MODEL.my_user.id).position;
+        VIEW.user_backup.rotation = MODEL.scene.root.findNode(MODEL.my_user.id).rotation;
 
         // Necessary data to update
-        var t = getTime();
+        var t = Date.getTime();
         var time_factor = 1;
 
         // Check the keys for moving
-        if(gl.keys["UP"])
+        if(gl.keys["UP"] && !VIEW.camera_out)
         {
 
             // Set the pivot to walk forward
@@ -204,7 +235,7 @@ const VIEW =
             CONTROLLER.sendTick();
         }
 
-        else if(gl.keys["DOWN"])
+        else if(gl.keys["DOWN"] && !VIEW.camera_out)
         {
             // Set the pivot to walk backwards
             character_pivot_node.moveLocal([0,0,-1]);
@@ -233,7 +264,7 @@ const VIEW =
         }
 
         // Check the keys for rotating
-        if(gl.keys["LEFT"])
+        if(gl.keys["LEFT"] && !VIEW.camera_out)
         {
             // Set the pivot to rotate left
             MODEL.user_assets[MODEL.my_user.id].character_pivot.rotate(90*DEG2RAD*dt,[0,1,0]);
@@ -242,7 +273,7 @@ const VIEW =
             CONTROLLER.sendTick();
         }
         
-        else if(gl.keys["RIGHT"])
+        else if(gl.keys["RIGHT"] && !VIEW.camera_out)
         {
             // Set the pivot to rotate right
             MODEL.user_assets[MODEL.my_user.id].character_pivot.rotate(-90*DEG2RAD*dt,[0,1,0]);
@@ -306,7 +337,10 @@ const VIEW =
                 CONTROLLER.sendTick();
             }  
         }
-        
+
+        // Just in case, update the camera out 
+        VIEW.camera_out = false;
+
         // In case the avatar is outside the boundingbox we calculate the near position
         var pos = character_pivot_node.position;
         var nearest_pos = MODEL.walkarea.adjustPosition( pos );

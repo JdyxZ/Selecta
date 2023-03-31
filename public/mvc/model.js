@@ -34,7 +34,8 @@ const MODEL =
     room_scene: null,
     renderer: null,
     camera: null,
-    walarea: null,
+    walkarea: null,
+    camarea: null,
 
     // User Methods
     getUser: function(id)
