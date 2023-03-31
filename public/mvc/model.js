@@ -45,14 +45,15 @@ const MODEL =
 
     addUser: function(user)
     {
-        this.users_obj[user.id] = user;
+        this.users_obj[user.id] = user;user
         this.users_arr.append(user);
     },
 
     addUsers: function(users)
     {
         users.forEach(user => this.users_obj[user.id] = user);
-        users.forEach(user => this.users_obj[user.id].animation = 'idle.skanim');
+        users.forEach(user => { if (this.users_obj[user.id].animation !== null) this.users_obj[user.id].animation = 'idle.skanim';});
+          
         this.users_arr = this.users_arr.concat(users);
     },
 

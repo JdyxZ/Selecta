@@ -139,7 +139,7 @@ const VIEW =
 
     removeUser: function(id)
     {
-        CONTROLLER.scene.root.removeChild( MODEL.user_assets[id].character_pivot );
+        MODEL.scene.root.removeChild( MODEL.user_assets[id].character_pivot );
     },
 
     draw: function()

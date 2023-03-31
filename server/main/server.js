@@ -56,7 +56,6 @@ var SERVER =
     {
         await DATABASE.updateModel(WORLD);
         console.log("EVENT --> Model successfully updated");
-
     },
 
     // Before closing
@@ -221,12 +220,9 @@ var SERVER =
 
         // Get user data
         const user = WORLD.getUser(sender_id);
-
         // Log
         console.log(`EVENT --> User ${user.name} has sent a TICK message`);
 
-        console.log("MODEL")
-        console.log(content.model)
         console.log("ANIMATION")
         console.log(content.animation)
 
@@ -238,7 +234,7 @@ var SERVER =
         // Update the WORLD state
         if(content.model != undefined) user.model = content.model;  
         if(content.animation != undefined) user.animation = content.animation;      
-    
+        
         // Send the message to all the people in the room except the user
         this.sendRoomMessage(message, user.room, user.id);
 

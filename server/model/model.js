@@ -6,12 +6,14 @@ const {isNumber, isString, isArray} = require("../../public/framework/javascript
 
 function User(data)
 {   
+    console.log("updating user??")
+    console.log(data)
     this.id = data == undefined ? -1 : data.id || -1;
     this.name = data == undefined ? "unnamed" : (data.name != undefined ? data.name : data.social.name || "unamed");
     this.model = data == undefined ? {} : data.model || {};
     this.asset = data == undefined ? 0 : data.asset || 0; 
     this.room = data == undefined ? 1 : data.room || 1;
-    this.animation = "idle";
+    this.animation = data == undefined ? "idle.skanim" : data.animation || "idle.skanim";
     this.suggestion = {};
     this.votes = [];
     this.skip = false;
