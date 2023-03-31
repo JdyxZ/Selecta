@@ -7,8 +7,11 @@ const SELECTA =
     available_height: window.screen.availHeight,
     available_width: window.screen.availWidth,
 
+    // Wrappers
+    search_interface_wrapper: document.get("#Selecta #search_interface_wrapper"),
+
     // Interfaces
-    search_interface: document.get("#Selecta #search_interface_wrapper"),
+    search_interface: document.get("#Selecta #search_interface"),
     votes_interface: document.get("#Selecta #votes_interface"),
     settings_interface: document.get("#Selecta #settings_interface"),
     exit_interface: document.get("#Selecta #exit_interface"),
@@ -51,6 +54,8 @@ const SELECTA =
     exit_button_no: document.get("#logout_no"),
 
     // Search interface
+    search_dragger: document.get("#search_interface #drag_menu"),
+    search_closer: document.get("#search_interface #closer"),
     search_input: document.get("#Selecta #search_interface #search_bar input"),
     search_result: document.get("#Selecta #search_interface #search_result"),
 
@@ -89,7 +94,7 @@ const SELECTA =
     {             
         // Triggers
         this.mute_trigger.when("click", this.toggleMute.bind(this));
-        this.search_trigger.when("click", () => this.search_interface.toggleVisibility());
+        this.search_trigger.when("click", () => this.search_interface_wrapper.toggleVisibility());
         this.votes_trigger.when("click", () => this.votes_interface.toggleVisibility());
         this.settings_trigger.when("click", () => this.settings_interface.toggleVisibility());
         this.exit_trigger.when("click", () => this.exit_interface.toggleVisibility());
@@ -108,6 +113,8 @@ const SELECTA =
         this.settings_keybinds_button.when("click", this.switchSettingsMenu.bind(this)); 
 
         // Search interface
+        // this.search_dragger.when("mousedown", (event) => dragElement(event, this.search_interface, this.available_width, this.available_height));
+        this.search_closer.when("click", () => this.search_interface_wrapper.hide());
         this.search_input.when("keydown", this.onKeyDown);
         
         // Callbacks for volume control

@@ -147,7 +147,7 @@ HTMLElement.prototype.change_background_color = function(color)
 
 /***************** HTML METHODS *****************/
 
-dragElement = function(element, event, available_width, available_height)
+dragElement = function(event, element, available_width, available_height)
 {
 	// Event
 	event = event || window.event;

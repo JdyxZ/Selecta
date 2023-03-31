@@ -12,6 +12,7 @@
 
 #Selecta #search_interface
 {
+    position: absolute;
     background: #202020;
     width: 70%;
     height: 90%;
@@ -23,19 +24,27 @@
 
 #Selecta #search_interface #drag_menu
 {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    place-content: center;
     color: white;
     width: 100%;
     height: 2rem;
     background-color: #4f545c;
-    
 }
 
 #Selecta #search_interface #title
 {
     font-size: 15px;
+    margin-left: 45%;
+}
+
+#Selecta #search_interface #closer
+{
+    cursor: pointer;
+    margin-left: auto;
+    margin-right: 0.5rem;
+    object-fit: contain;
+    width: 1.3rem;
 }
 
 #Selecta #search_interface #search_banner
@@ -136,7 +145,7 @@
     width: 90%;
     height: 70%;
     padding: 2rem 0 2rem 5%;
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
 }
 

@@ -9,6 +9,15 @@
     padding: 1rem;
 }
 
+#Selecta .video:hover
+{
+    background-color: #323131;
+    display: grid;
+    grid-template-columns: 374px auto;
+    grid-template-rows: 2.5rem 2.5rem 7rem 5rem;
+    padding: 1rem;
+}
+
 /* WRAPPERS */
 
 #Selecta .video .thumbnail-wrapper
