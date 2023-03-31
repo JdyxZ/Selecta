@@ -1,19 +1,155 @@
+/* MENÚ SEARCH */
 
+#Selecta #vote_interface_wrapper
+{
+    display:grid;
+    position: absolute;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    place-items: center;
+}
 
 #Selecta #votes_interface
 {
     position: absolute;
-    left: 0;
-    top: 0;
-    z-index: 1;
-    background: #696e6e;
-    width: 60%;
-    margin-top: 5%;
-    margin-left: 20%;
-    height: 72%;
+    background: #202020;
+    width: 70%;
+    height: 90%;
     overflow: hidden;
     border-radius: 8px;
     text-align: center;
-    margin-right: 20%;
-    padding-bottom: 20px;
+    margin-left: 8%;
+}
+
+#Selecta #votes_interface #drag_menu
+{
+    display: inline-flex;
+    align-items: center;
+    color: white;
+    width: 100%;
+    height: 2rem;
+    background-color: #4f545c;
+}
+
+#Selecta #votes_interface #title
+{
+    font-size: 15px;
+    margin-left: 45%;
+}
+
+#Selecta #votes_interface #closer
+{
+    cursor: pointer;
+    margin-left: auto;
+    margin-right: 0.5rem;
+    object-fit: contain;
+    width: 1.3rem;
+}
+
+#Selecta #votes_interface #search_banner
+{
+    display: inline-flex;
+    width: 100%;
+    height: 4rem;
+    align-items: center;
+    padding-top: 1rem;
+}
+
+#Selecta #votes_interface #search_bar
+{
+    display: inline-flex;
+    width: inherit;
+    height: 2.5rem;
+    color:white;
+    background-color: #191919;
+    border: 1px solid #5d5d5d;
+    border-radius: 20px;
+    margin-left: 10%;
+    margin-right: 10%;
+    transition: all 2s ease;
+    overflow: hidden;
+}
+
+#Selecta #votes_interface #search_bar input
+{
+    width: inherit;
+    height: 2.5rem;
+    color: white;
+    background-color: #ffffff00;
+    border: none;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+#Selecta #votes_interface #search_icon
+{
+    display: flex;
+    width: 6rem;
+    background-color: #323131;
+    border: 1px solid #5d5d5d;
+    margin: -2px;
+    align-items: center;
+    place-content: center;
+}
+
+#Selecta #votes_interface #search_icon img
+{
+    object-fit: contain;
+    height: 46%;
+    width: 25%;
+}
+
+#Selecta #votes_interface #selecta_logo
+{
+    object-fit: contain;
+    width: 12%;
+    margin-right: 2rem;
+}
+
+#Selecta #votes_interface #search_bar #input 
+{
+    margin: 5px 5px 5px 5px;
+    width: 100%;
+    flex: 100;
+    border-radius: 10px;
+    border: 1px solid black;
+    font-size: 16px;
+    padding: 1px 5px 1px 5px;
+}
+
+#Selecta #votes_interface #search_bar #image
+{
+    flex: 1;
+    margin-top: 1%;
+    height: 100%;
+    margin: 1% 1% 1% 1%;
+    transition: 0.3s;
+}
+
+#Selecta #votes_interface #search_bar #image:hover
+{
+    background-color: #909797;
+}
+
+#Selecta #votes_interface #search_result 
+{
+    width: 90%;
+    height: 70%;
+    padding: 2rem 0 2rem 5%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#Selecta #votes_interface #error_prompt
+{
+    display: flex;
+    color: #e15b5b;
+    width: 90%;
+    height: 4rem;
+    margin-left: 5%;
+    border-radius: 5px;
+    background-color: #191919;
+    justify-content: center;
+    align-items: center;
 }

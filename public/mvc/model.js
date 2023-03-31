@@ -14,6 +14,7 @@ const MODEL =
     users_obj: {},
     users_arr: [],
     suggestions: {},
+    suggestion_counter: 0,
     songs: {},
 
     // Assets data
@@ -87,6 +88,18 @@ const MODEL =
         this.users_arr.splice(index, 1);
     },
 
+    createSuggestion: function(songID,userID,vote_counter)
+    {
+        const suggestion = 
+        {
+            "songID": songID,
+            "userID": userID,
+            "vote_counter": vote_counter
+        }
+
+        return suggestion;
+    },
+
     // Suggestion Methods
     getSuggestion: function(suggestionID)
     {
@@ -98,6 +111,9 @@ const MODEL =
         // Add
         user.suggestion = suggestion;
         this.suggestions[suggestion.songID] = suggestion;
+
+        // Add it to the DOM
+        this.updateSuggestionInterface();
     },
     
     removeSuggestion: function(user, suggestion)
@@ -139,6 +155,49 @@ const MODEL =
         })
     },
 
+    updateSuggestionInterface: function()
+    {
+        // Remove all suggestions
+        SELECTA.vote_result.removeChildren();
+
+        // First add my suggestion
+        if(this.my_suggestion !== null)
+            SELECTA.loadSongToDom(this.my_suggestion);
+
+        // Then all the other suggestions
+        for (sug in MODEL.suggestions) 
+        {
+            if (typeof MODEL.suggestions[sug] !== 'function') {
+              // Cargar la song a la dom
+            }
+        }
+    },
+
+    createSong: function(id,src_image,duration,language,title,viewCount,likeCount,commentCount,publicationDate,channel_src,channel_title,channel_subscriberCount,channel_viewCount,channel_videos,channel_publicationDate,description)
+    {
+        const song = 
+        {
+            "id":id,
+            "thumbnails":src_image,
+            "duration":duration,
+            "language":language,
+            "title":title,
+            "viewCount":viewCount,
+            "likeCount":likeCount,
+            "commentCount":commentCount,
+            "elapsedTime":publicationDate,
+            "channel_thumbnails":channel_src,
+            "channel_title":channel_title,
+            "channel_subscriberCount":channel_subscriberCount,
+            "channel_viewCount":channel_viewCount,
+            "channel_videoCount":channel_videos,
+            "channel_elapsedTime":channel_publicationDate,
+            "description":description,
+        };
+        
+        MODEL.songs[id] = song;
+    },
+
     // Song methods
     getSong: function(songID)
     {
@@ -147,12 +206,13 @@ const MODEL =
 
     addSong: function(song)
     {
-        this.songs[song.ID] = song;
+        this.songs[song.id] = song;
     },
 
     removeSong: function(songID)
     {
-        this.songs.remove(songID);
+        if (this.songs.hasOwnProperty(songID))
+            delete this.songs[songID];
     },
 
     updateSong: function(old_songID, song)

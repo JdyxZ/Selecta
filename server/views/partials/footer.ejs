@@ -28,6 +28,16 @@
 
 <% } %>
 
+<% if (current_view == "signup") { %>
+
+    <!--- Intermediate scripts -->
+    <script type="application/javascript" src="views/js/libs/ejs.js"></script>
+    <script type="application/javascript" src="framework/html.js"></script>
+    <script type="application/javascript" src="views/js/intermediate.js"></script>
+    <script type="application/javascript">INTERMEDIATE.init()</script>
+
+<% } %>
+
 <% if (current_view == appRoute) { %>
 
     <!--- App scripts -->

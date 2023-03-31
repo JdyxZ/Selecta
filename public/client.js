@@ -244,8 +244,8 @@ var CLIENT =
         //console.table(message.content);
 
         // Unpack message data
-        const song = message.content;
-        const suggestion = MODEL.getSuggestion(song.ID);
+        const song = message.content.song;
+        const suggestion = message.content.suggestion;
         const user = MODEL.getUser(suggestion.userID);
 
         // Callback

@@ -9,6 +9,7 @@ const SELECTA =
 
     // Wrappers
     search_interface_wrapper: document.get("#Selecta #search_interface_wrapper"),
+    vote_interface_wrapper: document.get("#Selecta #vote_interface_wrapper"),
 
     // Interfaces
     search_interface: document.get("#Selecta #search_interface"),
@@ -25,6 +26,10 @@ const SELECTA =
 
     // Micro image
     mute_img: document.get("#Selecta #mute_image"),
+
+    // Player
+    player_current_song: document.get("#Selecta .player_container .current_song .player_song"),
+    player_next_song: document.get("#Selecta .player_container .next_song .player_song"),
 
     // Settings interactions
     settings_menu_close: document.get("#settings_close_button"),
@@ -60,10 +65,16 @@ const SELECTA =
     search_result: document.get("#Selecta #search_interface #search_result"),
 
     // Votes interface
+    vote_dragger: document.get("#votes_interface #drag_menu"),
+    vote_closer: document.get("#votes_interface #closer"),
+    vote_input: document.get("#Selecta #votes_interface #search_bar input"),
+    vote_result: document.get("#Selecta #votes_interface #search_result"),
+
 
     // Templates
     videoTemplate: document.get("#Selecta .video"),
-
+    voteVideoTemplate: document.get("#Selecta .vote_video"),
+    videoSelect: null,
     // Control varibles
     muted: false,
     searching: false,
@@ -95,7 +106,7 @@ const SELECTA =
         // Triggers
         this.mute_trigger.when("click", this.toggleMute.bind(this));
         this.search_trigger.when("click", () => this.search_interface_wrapper.toggleVisibility());
-        this.votes_trigger.when("click", () => this.votes_interface.toggleVisibility());
+        this.votes_trigger.when("click", () => this.vote_interface_wrapper.toggleVisibility());
         this.settings_trigger.when("click", () => this.settings_interface.toggleVisibility());
         this.exit_trigger.when("click", () => this.exit_interface.toggleVisibility());
 
@@ -115,6 +126,7 @@ const SELECTA =
         // Search interface
         // this.search_dragger.when("mousedown", (event) => dragElement(event, this.search_interface, this.available_width, this.available_height));
         this.search_closer.when("click", () => this.search_interface_wrapper.hide());
+        this.vote_closer.when("click", () => this.vote_interface_wrapper.hide());
         this.search_input.when("keydown", this.onKeyDown);
         
         // Callbacks for volume control
@@ -190,6 +202,23 @@ const SELECTA =
             this.settings_keybinds_container.show(); 
     },
 
+    removeChildrenUnderCondition: function(parentElement,condition) 
+    {
+        // Get the children
+        const children = parentElement.children;
+        
+        // For each children
+        for (let i = children.length - 1; i >= 0; i--) {
+            const child = children[i];
+            
+            // If the children is under the condition
+            if (child.id !== condition) {
+                child.remove();
+            }
+        }
+    },
+      
+
     youtubeSearch: async function(query)
     {
         // Check
@@ -197,7 +226,8 @@ const SELECTA =
             return;
 
         // Remove previous search elements
-        this.search_result.removeChildren();
+        this.removeChildrenUnderCondition(this.search_result,"selected_song");
+        //this.search_result.removeChildren();
 
         // Search videos related to the query
         const search = await YOUTUBE.search(query);
@@ -300,13 +330,151 @@ const SELECTA =
             videoHTML.show();
         }
 
+        // Update the suggestion SELECTA.videoSelect
+        const selected_videos = document.querySelectorAll('.video');
+        selected_videos.forEach(video => {
+            video.addEventListener('click', this.suggestSong);
+        });
+
         // Register query
         this.lastQuery = query;
     },
 
-    suggestSong: function()
+    loadSongToDom: function(suggestion)
     {
+        // Clone video template
+        const videoHTML = this.videoTemplate.clone();
 
+        // Get wrappers from template
+        const wrapperLanguage = videoHTML.get(".title-wrapper .language");
+
+        // Get video HTML elements from template
+        const videoThumbnail = videoHTML.get(".thumbnail-wrapper .thumbnail");
+        const videoDuration = videoHTML.get(".duration label");
+        const videoTitle = videoHTML.get(".title-wrapper .title");
+        const videoLanguage = videoHTML.get(".language label");
+        const videoLikes = videoHTML.get(".stats-wrapper .likeCount label");
+        const videoViews = videoHTML.get(".stats-wrapper .viewCount label");
+        const videoComments = videoHTML.get(".stats-wrapper .commentCount label");
+        const videoElapsedTime = videoHTML.get(".stats-wrapper .publicationDate label");
+        const videoDescription = videoHTML.get(".description");
+
+        // Get channel HTML elements from template
+        const channelThumbnail = videoHTML.get(".channel-wrapper .thumbnail img");
+        const channelTitle = videoHTML.get(".channel-wrapper .title");
+        const channelCountry = videoHTML.get(".countryFlag");
+        const channelSubs = videoHTML.get(".channel-wrapper .subscriberCount label");
+        const channelViews = videoHTML.get(".channel-wrapper .viewCount label");
+        const channelVideos = videoHTML.get(".channel-wrapper .videoCount label");
+        const channelElapsedTime = videoHTML.get(".channel-wrapper .publicationDate label");
+
+        // Get the song
+        const song = MODEL.getSong(suggestion.songID);
+
+        // Fill video template with video data
+        if(song.thumbnails) videoThumbnail.src = song.thumbnails;
+        if(song.duration) videoDuration.textContent = song.duration; // KK????
+        if(song.title) videoTitle.textContent = song.title;
+        //video.language ? videoLanguage.textContent = video.language.toUpperCase() : wrapperLanguage.hide();
+        if(song.likeCount) videoLikes.textContent = song.likeCount;
+        if(song.viewCount) videoViews.textContent = song.viewCount;
+        if(song.commentCount) videoComments.textContent = song.commentCount;
+        if(song.elapsedTime) videoElapsedTime.textContent = song.elapsedTime;
+        if(song.description) videoDescription.textContent = song.description;
+
+        // Fill video template with channel data
+        if(song.channel_thumbnails) channelThumbnail.src = song.channel_thumbnails;
+        if(song.channel_title) channelTitle.textContent = song.channel_title;
+        if(song.channel_subscriberCount) channelSubs.textContent = song.channel_subscriberCount;
+        if(song.channel_viewCount) channelViews.textContent = song.channel_viewCount;
+        if(song.channel_videoCount) channelVideos.textContent = song.channel_videoCount;
+        if(song.channel_elapsedTime) channelElapsedTime.textContent = song.channel_elapsedTime;
+
+        // Append video template to the search results
+        this.vote_result.appendChild(videoHTML);
+
+        // Show video template
+        videoHTML.show();
+    },
+
+    suggestSong: function(event)
+    {
+        // Get the entry div and the condition
+        var div = event.target;
+        var condition = div.classList[0];
+
+        // Find the parent class
+        while( condition != "video")
+        {
+            div = div.parentNode;
+            condition = div.classList[0];
+        }
+
+        // Change the video background color
+        if(div.id == "selected_song")
+        {
+            div.id = '';
+            div.style.backgroundColor = "#202020";
+
+            // Delete the song
+
+            MODEL.removeSong(MODEL.my_suggestion.songID);
+            MODEL.my_suggestion = null;
+            MODEL.updateSuggestionInterface();
+
+            return
+        }
+        else
+        {
+            // Get the old selected song TODO IF NOT EXISTS
+
+            var old_selected_video = document.get("#selected_song");
+            old_selected_video.id = '';
+            old_selected_video.style.backgroundColor = "#202020";
+            
+            // Update the new selected song
+            div.id = "selected_song";
+            div.style.backgroundColor = "red";
+        }
+
+        // Delete the song
+        if(MODEL.my_suggestion !== null)
+            MODEL.removeSong(MODEL.my_suggestion.songID);
+
+        // Obtain song data from the div
+        console.log(div);
+        MODEL.temp = div;
+ 
+        const videoThumbnail = div.querySelector('.thumbnail-wrapper .thumbnail').src;
+        const videoDuration = div.querySelector('.thumbnail-wrapper .duration label').textContent;
+        const videoTitle = div.querySelector('.title-wrapper .language label').textContent;
+        const videoLanguage = div.querySelector('.title-wrapper').textContent;
+        const videoViews = div.querySelector('.stats-wrapper .viewCount label').textContent;
+        const videoLikes = div.querySelector('.stats-wrapper .likeCount label').textContent;
+        const videoComments = div.querySelector('.stats-wrapper .commentCount label').textContent;
+        const videoElapsedTime = div.querySelector('.stats-wrapper .publicationDate label').textContent;
+        const channelThumbnail = div.querySelector('.channel-wrapper .thumbnail img').src;
+        const channelTitle = div.querySelector('.channel-wrapper .info .title').textContent;
+        const channelSubs = div.querySelector('.channel-wrapper .stats .subscriberCount label').textContent;
+        const channelViews = div.querySelector('.channel-wrapper .stats .viewCount label').textContent;
+        const channelVideos = div.querySelector('.channel-wrapper .stats .videoCount label').textContent;
+        const channelElapsedTime = div.querySelector('.channel-wrapper .stats .publicationDate label').textContent;
+        const videoDescription = div.querySelector('.description-wrapper .description').textContent;
+
+        MODEL.suggestion_counter += MODEL.suggestion_counter;
+        const id = MODEL.suggestion_counter;
+        
+        // Create the song object  
+        MODEL.createSong(id,videoThumbnail,videoDuration,videoTitle,videoViews,videoLikes,videoComments,videoElapsedTime,channelThumbnail,channelTitle,channelSubs,channelViews,channelVideos,channelElapsedTime,videoDescription);
+
+        // Create and add the suggestion
+        MODEL.my_suggestion = MODEL.createSuggestion(id,MODEL.my_user.id,0);
+
+        // Update the DOM
+        MODEL.updateSuggestionInterface();
+        
+        // Send the message to the other users
+        CONTROLLER.sendSuggestion(MODEL.my_suggestion,MODEL.songs[id]);
     },
 
     votesSearch: function()

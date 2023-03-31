@@ -1,18 +1,29 @@
 
-<div id="votes_interface" style="display: none;">
+<div id="vote_interface_wrapper" style="display: none;">
+    <div id="votes_interface">
 
-    <!-- TITLE -->
-    <div id="title">VOTE FOR A SONG!</div> 
+        <!-- DRAGGER -->
+        <div id="drag_menu" class="dragger">
+            <div id="title">Vote</div> 
+            <img id="closer" src="media/interface/closeTrigger.png"></img>
+        </div>
 
-    <!-- SEARCH BAR -->
-    <div class="search_bar">
-        <input type="text" id="input">
+        <!-- SEARCH BANNER -->
+        <div id="search_banner">
+            <div id="search_bar">
+                <input type="text">
+                <div id="search_icon">
+                    <img alt="Search Icon" src="media/interface/youtubeSearch.png"></img>
+                </div>
+            </div>
+            <img id="selecta_logo" alt="Selecta Logo" src="media/selecta/SelectaTitle.png"></img>
+        </div>
+
+        <!-- SEARCH RESULT -->
+        <div id="search_result"></div>
+
+        <!-- ERROR PROMPT -->
+        <div id="error_prompt">ERROR PROMPT</div>
+
     </div>
-
-    <!-- SEARCH RESULT -->
-    <div id="search_result"></div>
-
-    <!-- ERROR PROMPT -->
-    <div id="error_prompt">ERROR PROMPT</div>
-
 </div>

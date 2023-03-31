@@ -159,8 +159,12 @@ const CONTROLLER =
     sendTick: function()
     {
         const message = new Message(MODEL.my_user.id,"TICK", {"model":MODEL.my_user.model,"animation":MODEL.my_user.animation}, getTime());
-        //console.log("sending: ");
-        //console.log(message);
+        CLIENT.sendMessage(message);
+    },
+
+    sendSuggestion: function(suggestion,song)
+    {
+        const message = new Message(MODEL.my_user.id,"SUGGEST", suggestion , getTime());
         CLIENT.sendMessage(message);
     },
 
