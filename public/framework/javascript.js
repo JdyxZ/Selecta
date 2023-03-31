@@ -21,9 +21,13 @@ Number.prototype.toArray = function()
 
 Number.prototype.format = function()
 {
+	if(this < 1000)
+	{
+		return this;
+	}
 	const units = ['K', 'M', 'B', 'T'];
 	let i = 0;
-	let num = this;
+	let num = this / 1000;
 	while (num >= 1000 && i < units.length - 1) {
 		num /= 1000;
 	  	i++;
@@ -419,8 +423,12 @@ function joinTime(obj)
 {
 	const timeUnits = ['years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds'];
 	return timeUnits.reduce((acc, unit) => {
-		if (obj[unit]) {
-		acc.push(obj[unit]);
+		const number = obj[unit]
+		if (number) 
+		{
+			let str = number.toString();
+			if(number < 10) str = "0" + str
+			acc.push(str);
 		}
 		return acc;
 	}, []).join(':');
