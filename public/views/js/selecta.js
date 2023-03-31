@@ -274,6 +274,9 @@ const SELECTA =
             // Clone video template
             const videoHTML = this.videoTemplate.clone();
 
+            // Set data ID to the videoHTML
+            videoHTML.setAttribute('data-id', video.ID);
+
             // Get wrappers from template
             const wrapperLanguage = videoHTML.get(".title-wrapper .language");
 
