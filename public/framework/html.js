@@ -105,6 +105,20 @@ HTMLElement.prototype.getParents = function()
 	return parents;    
 };
 
+HTMLElement.prototype.appendChildren = function(children)
+{
+	try
+	{
+		this.append(...children);
+	}
+	catch(err)
+	{
+		console.error(err);
+		return null;
+	}
+
+}
+
 HTMLElement.prototype.removeChildren = function()
 {
 	this.replaceChildren();
@@ -149,6 +163,7 @@ HTMLElement.prototype.change_background_color = function(color)
 
 dragElement = function(event, element, available_width, available_height)
 {
+
 	// Event
 	event = event || window.event;
 	event.preventDefault();
@@ -170,6 +185,8 @@ dragElement = function(event, element, available_width, available_height)
 		// Displacement
 		Δx = event.clientX - xi;
 		Δy = event.clientY - yi;
+
+		console.log(available_width - element.offsetWidth, available_height - element.offsetHeight);
 
 		// Set div new position
 		element.style.left = (element.offsetLeft + Δx).clamp(0, available_width - element.offsetWidth - 50) + "px";

@@ -262,7 +262,30 @@ const SELECTA =
         // Check errors
         if(channels == null) return;
 
-        // Iterate through the videos of the result of the search
+        // Parse videos to HTML containers
+        const videosHTML = this.parseVideosToHTML(videos, channels);
+
+        // Append video containers to the search results
+        this.search_result.appendChildren(videosHTML);
+
+        // Show video containers
+        videosHTML.forEach(video => video.show());
+
+        // Update the suggestion SELECTA.videoSelect
+        const selected_videos = document.querySelectorAll('.video');
+        selected_videos.forEach(video => {
+            video.addEventListener('click', this.suggestSong);
+        });
+
+        // Register query
+        this.lastQuery = query;
+    },
+
+    parseVideosToHTML(videos, channels)
+    {
+        // Create array of videos
+        let videosHTML = [];
+
         for(const video of videos)
         {
             // Find channel of the video
@@ -326,21 +349,12 @@ const SELECTA =
                 flag.selectByAlpha2(channel.country.toLowerCase());
             }
             
-            // Append video template to the search results
-            this.search_result.appendChild(videoHTML);
-
-            // Show video template
-            videoHTML.show();
+            // Push videoHTML to array
+            videosHTML.push(videoHTML);
         }
 
-        // Update the suggestion SELECTA.videoSelect
-        const selected_videos = document.querySelectorAll('.video');
-        selected_videos.forEach(video => {
-            video.addEventListener('click', this.suggestSong);
-        });
-
-        // Register query
-        this.lastQuery = query;
+        // Output
+        return videosHTML;
     },
 
     loadSongToDom: function(suggestion)
