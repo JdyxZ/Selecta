@@ -3,146 +3,293 @@
 
 #Selecta .video
 {
-    display: none;
-    background-color: rgb(18 19 19);
-    display: flex;
-    flex-direction: row;
-    margin: 0px 1% 3px 1%;
-    width: auto;
-    color: wheat;
+    display: grid;
+    grid-template-columns: 374px auto;
+    grid-template-rows: 2.5rem 2.5rem 7rem 5rem;
+    padding: 1rem;
+}
+
+/* WRAPPERS */
+
+#Selecta .video .thumbnail-wrapper
+{
+    grid-column: 1;
+    grid-row: 1/5;
+}
+
+#Selecta .video .title-wrapper
+{
+    display: inline-flex;
+    align-items: center;
+    grid-column: 2;
+    grid-row: 1;
+    margin-left: 1.5rem;
+}
+
+#Selecta .video .stats-wrapper
+{
+    display: inline-flex;
+    align-items: center;
+    grid-column: 2;
+    grid-row: 2;
+    margin-left: 1.5rem;
+    font-size: 13px;
+    color: #ababab;
+}
+
+#Selecta .video .channel-wrapper
+{
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    grid-template-columns: 80px 1fr;
+    grid-column: 2;
+    grid-row: 3;
+    margin-left: 1.5rem;
+}
+
+#Selecta .video .description-wrapper
+{
+    grid-column: 2;
+    grid-row: 4;
+    margin-left: 1.5rem;
+    text-align: left;
+}
+
+/* THUMBNAIL WRAPPER */
+
+#Selecta .video .thumbnail-wrapper .thumbnail
+{
+    object-fit: cover;
+    height: 280px;
+}
+
+#Selecta .video .thumbnail-wrapper .duration
+{
+    background-color: black;
+    margin-right: 0.3rem;
+    float: right;
+    transform: translate(0px, -2rem);
+    padding: 0.2rem 0.45rem 0.2rem 0.45rem;
     border-radius: 10px;
-    padding: 2px 2px 2px 2px;
 }
 
-#Selecta .video .thumbnail
+#Selecta .video .thumbnail-wrapper .duration label
 {
-    flex: 20;
+    color: white;
 }
 
-#Selecta .video .duration
+/* TITLE WRAPPER */
+
+#Selecta .video .title-wrapper .title
 {
-    flex: 20;
+    color: white;
+    margin-right: 1rem;
 }
 
-#Selecta .video .title
+#Selecta .video .title-wrapper .language
 {
-    flex: 20;
+    background-color: #323131;
+    padding: 0.2rem 0.4rem 0.2rem 0.4rem;
 }
 
-#Selecta .video .language
+#Selecta .video .title-wrapper .language label
 {
-    flex: 4;
+    color: white;
 }
 
-#Selecta .video .description
+
+/* STATS WRAPPER */
+
+#Selecta .video .stats-wrapper .likeCount
 {
-    flex: 20;
+    width: auto;
+    display: inline-flex;
+    margin-right: 1rem;
+    align-items: center;
+    margin-right: 1.5rem;
 }
 
-/* SPECS */
-
-#Selecta .video .specs
+#Selecta .video .stats-wrapper .likeCount img
 {
-    flex: 4;
+    object-fit: initial;
+    width: 40px;
+    margin-bottom: 0.5rem;
+    margin-right: 0.3rem;
 }
 
-#Selecta .video img.likeCount
+#Selecta .video .stats-wrapper .viewCount
 {
-    flex: 4;
+    width: auto;
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    margin-right: 1.5rem;
 }
 
-#Selecta .video label.likeCount
+#Selecta .video .stats-wrapper .viewCount img
 {
-    flex: 4;
+    object-fit: initial;
+    width: 50px;
 }
 
-#Selecta .video img.viewCount
+#Selecta .video .stats-wrapper .commentCount
 {
-    flex: 4;
+    display: inline-flex;
+    margin-right: 1rem;
+    align-items: center;
+    margin-right: 1.5rem;
 }
 
-#Selecta .video label.viewCount
+#Selecta .video .stats-wrapper .commentCount img
 {
-    flex: 4;
+    object-fit: initial;
+    width: 38px;
+    margin-right: 0.3rem;
 }
 
-#Selecta .video img.voteCount
+#Selecta .video .stats-wrapper .publicationDate
 {
-    flex: 4;
+    display: inline-flex;
+    align-items: center;
 }
 
-#Selecta .video label.voteCount
+#Selecta .video .stats-wrapper .publicationDate img
 {
-    flex: 4;
+    object-fit: initial;
+    width: 32px;
+    margin-right: 0.3rem;
 }
 
-#Selecta .video img.commentCount
+/* CHANNEL WRAPPER */
+
+#Selecta .video .channel-wrapper
 {
-    flex: 4;
+    color: white;
 }
 
-#Selecta .video label.commentCount
+#Selecta .video .channel-wrapper .thumbnail
 {
-    flex: 4;
+    display:flex;
+    align-items: center;
+    place-content: center;
+    grid-row: 1/3;
+    grid-column: 1;
 }
 
-#Selecta .video img.publicationDate
+#Selecta .video .channel-wrapper .thumbnail img
 {
-    flex: 4;
+    object-fit: cover;
+    border-radius: 50%;
+    width: 80px;
 }
 
-#Selecta .video label.publicationDate
+#Selecta .video .channel-wrapper .info
 {
-    flex: 4;
+    display: inline-flex;
+    margin-left: 1.2rem;
+    margin-top: auto;
+    margin-bottom: 0.3rem;
+    grid-row: 1;
+    grid-column: 2;
+    align-items: center;
 }
 
-/* CHANNEL */
-
-#Selecta .video .channel
+#Selecta .video .channel-wrapper .title
 {
-    flex: 4;
+    color:white;
+    margin-right: 0.3rem;
 }
 
-#Selecta .video .channel .thumbnail
+#Selecta .video .channel-wrapper .countryFlag
 {
-    flex: 4;
+    color: white;
 }
 
-#Selecta .video .channel .title
+#Selecta .video .channel-wrapper .stats
 {
-    flex: 4;
+    display: inline-flex;
+    margin-left: 1rem;
+    grid-row: 2;
+    grid-column: 2/4;
+    font-size: 13px;
+    color: #ababab;
+    margin-bottom: 1rem;
 }
 
-#Selecta .video .channel .countryFlag
+#Selecta .video .channel-wrapper .subscriberCount
 {
-    flex: 4;
+    display: inline-flex;
+    margin-right: 0.5rem;
+    align-items: center;
+    flex-direction: row;
 }
 
-#Selecta .video .channel .subscriberCount
+#Selecta .video .channel-wrapper .subscriberCount img
 {
-    flex: 4;
+    object-fit: initial;
+    width: 25px;
+    margin-right: 0.4rem;
 }
 
-#Selecta .video .channel .viewCount
+#Selecta .video .channel-wrapper .viewCount
 {
-    flex: 4;
+    display: inline-flex;
+    margin-right: 1rem;
+    align-items: center;
+    flex-direction: row;
 }
 
-#Selecta .video .channel .videoCount
+#Selecta .video .channel-wrapper .viewCount img
 {
-    flex: 4;
+    object-fit: initial;
+    width: 50px;
+    margin-right: 0.1rem;
 }
 
-#Selecta .video .channel .publicationDate
+#Selecta .video .channel-wrapper .videoCount
 {
-    flex: 4;
+    display: inline-flex;
+    margin-right: 0.9rem;
+    flex-direction: row;
+    align-items: center;
+}
+
+#Selecta .video .channel-wrapper .videoCount img
+{
+    object-fit: initial;
+    width: 32px;
+    margin-right: 0.4rem;
+}
+
+#Selecta .video .channel-wrapper .publicationDate
+{
+    display: inline-flex;
+    margin-right: 1rem;
+    align-items: center;
+    flex-direction: row;
+}
+
+#Selecta .video .channel-wrapper .publicationDate img
+{
+    object-fit: initial;
+    width: 32px;
+    margin-right: 0.4rem;
+}
+
+
+/* DESCRIPTION WRAPPER */
+
+#Selecta .video .description-wrapper .description
+{
+    color: #bababa;
+    margin-top: 1rem;
+    font-size: 12px;
 }
 
 /* SIMPLIFIED VIDEO TEMPLATE */
 
 #Selecta .simplified_video
 {
-    display: none;
     background-color: rgb(18 19 19);
     display: flex;
     flex-direction: row;
@@ -155,32 +302,32 @@
 
 #Selecta .simplified_video .thumbnail
 {
-    flex: 20;
+    color: white;
 }
 
 #Selecta .simplified_video .title
 {
-    flex: 20;
+    color: white;
 }
 
 #Selecta .simplified_video .channel
 {
-    flex: 20;
+    color: white;
 }
 
 #Selecta .simplified_video .channel .thumbnail
 {
-    flex: 20;
+    color: white;
 }
 
 #Selecta .simplified_video .channel .title
 {
-    flex: 20;
+    color: white;
 }
 
 #Selecta .simplified_video .channel .flag
 {
-    flex: 20;
+    color: white;
 }
 
 

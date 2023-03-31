@@ -8,6 +8,7 @@ Youtube DATA API action cost: https://developers.google.com/youtube/v3/determine
 Date formats: https://stackoverflow.com/questions/51168022/what-does-pt-prefix-stand-for-in-duration
 Date ISO 8601 formats: https://stackoverflow.com/questions/32044846/regex-for-iso-8601-durations
 Javascript Audio API: https://lenguajejs.com/javascript/multimedia/api-multimedia-nativa/
+Modify image outline in Photoshop: https://www.youtube.com/watch?v=OYFTK7XwSIM 
 
 
 # Sr.OjeteSucio

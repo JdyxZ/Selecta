@@ -1,19 +1,30 @@
 
-<div id="search_interface" style="display: none;">
+<div id="search_interface_wrapper" style="display: none;">
+    <div id="search_interface">
 
-    <!-- TITLE -->
-    <div id="title">SEARCH FOR A SONG!</div> 
+        <!-- DRAGGER -->
+        <div id="drag_menu" class="dragger">
+            <div id="title">Search</div> 
+        </div>
+    
+        <!-- SEARCH BANNER -->
+        <div id="search_banner">
+            <img id="youtube_logo" alt="Youtube Logo" src="media/logos/youtube.png"></img>
+            <div id="search_bar">
+                <input type="text">
+                <div id="search_icon">
+                    <img alt="Search Icon" src="media/interface/youtubeSearch.png"></img>
+                </div>
+            </div>
+            <img id="selecta_logo" alt="Selecta Logo" src="media/selecta/SelectaTitle.png"></img>
+        </div>
 
-    <!-- SEARCH BAR -->
-    <div class="search_bar">
-        <img src="media/interface/img_search.png" width="3%" height="3%" alt="Descripción de la imagen" id="search_var_image">
-        <input type="text" id="input">
+        <!-- SEARCH RESULT -->
+        <div id="search_result"></div>
+    
+        <!-- ERROR PROMPT -->
+        <div id="error_prompt">ERROR PROMPT</div>
+    
     </div>
-
-    <!-- SEARCH RESULT -->
-    <div id="search_result"></div>
-
-    <!-- ERROR PROMPT -->
-    <div id="error_prompt">ERROR PROMPT</div>
-
 </div>
+

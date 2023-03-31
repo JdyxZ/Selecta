@@ -156,7 +156,7 @@ const YOUTUBE =
                 return {   
                     ID: video.id,
                     title: video.snippet.title,
-                    description: video.snippet.description,
+                    description: video.snippet.description.removeLineBreaks(),
                     thumbnails: video.snippet.thumbnails,
                     publisherChannel: {ID: video.snippet.channelId, name: video.snippet.channelTitle}, 
                     publicationDate: video.snippet.publishedAt,
@@ -168,7 +168,7 @@ const YOUTUBE =
                     embeddable: video.status.embeddable,
                     viewCount: video.statistics.viewCount,
                     likeCount: video.statistics.likeCount,
-                    commentCount: video.statistics.songCount
+                    commentCount: video.statistics.commentCount
                 };
             });
     
@@ -222,9 +222,10 @@ const YOUTUBE =
                 return {
                     ID: channel.id,
                     title: channel.snippet.title,
-                    description: channel.snippet.description,
+                    description: channel.snippet.description.removeLineBreaks(),
                     country: channel.snippet.country,
                     publicationTime: channel.snippet.publishedAt,
+                    elapsedTime: Date.elapsedTime(channel.snippet.publishedAt),
                     thumbnails: channel.snippet.thumbnails,
                     viewCount: channel.statistics.viewCount,
                     subscriberCount: channel.statistics.subscriberCount,

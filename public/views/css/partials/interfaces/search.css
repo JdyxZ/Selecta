@@ -1,40 +1,108 @@
 /* MENÚ SEARCH */
 
+#Selecta #search_interface_wrapper
+{
+    display:grid;
+    position: absolute;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    place-items: center;
+}
+
 #Selecta #search_interface
 {
-    position: absolute;
-    left: 0;
-    top: 0;
-    z-index: 1;
-    background: #696e6e;
-    width: 60%;
-    margin-top: 5%;
-    margin-left: 20%;
-    height: 72%;
+    background: #202020;
+    width: 70%;
+    height: 90%;
     overflow: hidden;
     border-radius: 8px;
     text-align: center;
-    margin-right: 20%;
-    padding-bottom: 20px;
+    margin-left: 8%;
+}
+
+#Selecta #search_interface #drag_menu
+{
+    display: flex;
+    align-items: center;
+    place-content: center;
+    color: white;
+    width: 100%;
+    height: 2rem;
+    background-color: #4f545c;
+    
 }
 
 #Selecta #search_interface #title
 {
-    color: wheat;
-    font-size: 20px;
-    margin-top: 15px;
-    font-weight: bold;
+    font-size: 15px;
+}
+
+#Selecta #search_interface #search_banner
+{
+    display: inline-flex;
+    width: 100%;
+    height: 4rem;
+    align-items: center;
+    padding-top: 1rem;
+}
+
+#Selecta #search_interface #youtube_logo
+{
+    object-fit: contain;
+    width: 10%;
+    margin-left: 2rem;
 }
 
 #Selecta #search_interface #search_bar
 {
-    background-color: aliceblue;
-    margin: 2% 5% 3% 5%;
+    display: inline-flex;
+    width: inherit;
+    height: 2.5rem;
+    color:white;
+    background-color: #191919;
+    border: 1px solid #5d5d5d;
+    border-radius: 20px;
+    margin-left: 10%;
+    margin-right: 10%;
+    transition: all 2s ease;
+    overflow: hidden;
+}
+
+#Selecta #search_interface #search_bar input
+{
+    width: inherit;
+    height: 2.5rem;
+    color: white;
+    background-color: #ffffff00;
+    border: none;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+#Selecta #search_interface #search_icon
+{
     display: flex;
-    flex-direction: row;
-    border-radius: 8px;
-    width: auto;
-    height: auto;
+    width: 6rem;
+    background-color: #323131;
+    border: 1px solid #5d5d5d;
+    margin: -2px;
+    align-items: center;
+    place-content: center;
+}
+
+#Selecta #search_interface #search_icon img
+{
+    object-fit: contain;
+    height: 46%;
+    width: 25%;
+}
+
+#Selecta #search_interface #selecta_logo
+{
+    object-fit: contain;
+    width: 12%;
+    margin-right: 2rem;
 }
 
 #Selecta #search_interface #search_bar #input 
@@ -65,13 +133,22 @@
 
 #Selecta #search_interface #search_result 
 {
-    background-color: aliceblue;
-    margin: 2% 5% 2% 5%;
-    height: 75%;
-    padding: 5px 0px 5px 0px;
+    width: 90%;
+    height: 70%;
+    padding: 2rem 0 2rem 5%;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 #Selecta #search_interface #error_prompt
 {
-    color: red;
+    display: flex;
+    color: #e15b5b;
+    width: 90%;
+    height: 4rem;
+    margin-left: 5%;
+    border-radius: 5px;
+    background-color: #191919;
+    justify-content: center;
+    align-items: center;
 }

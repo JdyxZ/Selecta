@@ -105,6 +105,16 @@ HTMLElement.prototype.getParents = function()
 	return parents;    
 };
 
+HTMLElement.prototype.removeChildren = function()
+{
+	this.replaceChildren();
+}
+
+HTMLElement.prototype.clone = function()
+{
+	return this.cloneNode(true);
+}
+
 HTMLElement.prototype.when = function(event, callback)	
 {
 	this.addEventListener(event, callback);

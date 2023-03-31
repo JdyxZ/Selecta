@@ -1,46 +1,78 @@
 
 <!--- VIDEO TEMPLATE -->
-<div class="video">
+<div class="video" style="display:none;">
 
-    <img class="thumbnail"></img>
-    <label class="duration"></label>
+    <div class="thumbnail-wrapper">
+        <img class="thumbnail"></img>
+        <div class="duration">
+            <label></label>
+        </div>
+    </div>
     
-    <label class="title"></label>
-    <label class="language"></label>
-
-    <div class="specs">    
-
-        <img class="likeCount"></img>
-        <label class="likeCount"></label>
-
-        <img class="viewCount"></img>
-        <label class="viewCount"></label>
-
-        <img class="voteCount"></img>
-        <label class="voteCount"></label>
-
-        <img class="commentCount"></img>
-        <label class="commentCount"></label>
-
-        <img class="publicationDate"></img>
-        <label class="publicationDate"></label>
+    <div class="title-wrapper">
+        <label class="title"></label>
+        <div class="language">
+            <label></label>
+        </div>
     </div>
 
-    <div class="channel">
-        <img class="thumbnail"></img>
-        <label class="title"></label>
-        <label class="countryFlag"></label>
-        <label class="subscriberCount"></label>
-        <label class="viewCount"></label>
-        <label class="videoCount"></label>
-        <label class="publicationDate"></label>
+    <div class="stats-wrapper">    
+
+        <div class="viewCount">
+            <img src="media/interface/viewIcon.png"></img>
+            <label></label>
+        </div>
+        <div class="likeCount">
+            <img src="media/interface/likeIcon.png"></img>
+            <label></label>
+        </div>
+        <div class="commentCount">
+            <img src="media/interface/commentIcon.png"></img>
+            <label></label>
+        </div>
+        <div class="publicationDate">
+            <img src="media/interface/timeIcon.png"></img>
+            <label></label>
+        </div>
+    </div>
+
+    <div class="channel-wrapper">
+
+        <div class="thumbnail">
+            <img alt="Channel thumbnail"></img>
+        </div>
+        <div class="info">
+            <label class="title"></label>
+            <div class="countryFlag"></div>
+        </div>
+
+        <div class="stats">
+            <div class="subscriberCount">
+                <img src="media/interface/subIcon.png"></img>
+                <label></label>
+            </div>
+            <div class="viewCount">
+                <img src="media/interface/viewIcon.png"></img>
+                <label></label>
+            </div>
+            <div class="videoCount">
+                <img src="media/interface/videoIcon.png"></img>
+                <label></label>
+            </div>
+            <div class="publicationDate">
+                <img src="media/interface/timeIcon.png"></img>
+                <label></label>
+            </div>
+        </div>
     </div>  
     
-    <p class="description"></p>
+    <div class="description-wrapper">
+        <p class="description"></p>
+    </div>
 </div>
 
 <!--- SIMPLIFIED VIDEO TEMPLATE -->
-<div class="simplified_video">
+<div class="simplified_video" style="display:none;">
 
     <img class="thumbnail"></img>
     <label class="title"></label>
@@ -48,6 +80,6 @@
     <div class="channel">
         <img class="thumbnail"></img>
         <label class="title"></label>
-        <label class="countryFlag"></label>
+        <div class="countryFlag"></div>
     </div>  
 </div>

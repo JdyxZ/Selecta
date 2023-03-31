@@ -19,6 +19,18 @@ Number.prototype.toArray = function()
 	return [this.valueOf()];
 }
 
+Number.prototype.format = function()
+{
+	const units = ['K', 'M', 'B', 'T'];
+	let i = 0;
+	let num = this;
+	while (num >= 1000 && i < units.length - 1) {
+		num /= 1000;
+	  	i++;
+	}
+	return num.toFixed(1).replace(/\.0$/, '') + units[i];
+}
+
 /***************** STRING *****************/
 
 String.prototype.toArray = function()
@@ -29,6 +41,21 @@ String.prototype.toArray = function()
 String.prototype.reverse = function()
 {
 	return [...this].reverse().join("");	
+}
+
+String.prototype.resume = function(num_words)
+{
+	return this.split(' ').slice(0, num_words).join(' ') + '...';
+}
+
+String.prototype.removeLineBreaks = function()
+{
+	return this.replace(/(\r\n|\n|\r)/gm, "");
+}
+
+String.prototype.toNumber = function()
+{
+	return Number(this);
 }
 
 /***************** DATE *****************/
@@ -388,29 +415,30 @@ function isObject(x)
 	return typeof x === 'object' && x !== null && !isArray(x);
 };
 
-/*
-
-check({});
-check(0);
-check(null);
-check(undefined);
-check("");
-check("gol");
-check(() => {});
-check([]);
-check(true);
-check(BigInt(9007199254740991));
-check(Symbol("foo"));
-
-function check(x)
+function joinTime(obj) 
 {
-	console.log(isObject(x));
+	const timeUnits = ['years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds'];
+	return timeUnits.reduce((acc, unit) => {
+		if (obj[unit]) {
+		acc.push(obj[unit]);
+		}
+		return acc;
+	}, []).join(':');
 }
 
-*/
+function getBiggestTime(obj) 
+{
+	const timeUnits = ['years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds'];
+	for (let i = 0; i < timeUnits.length; i++) {
+	  const unit = timeUnits[i];
+	  if (obj[unit] && obj[unit] > 1) {
+		return `${Math.floor(obj[unit])} ${unit}`;
+	  }
+	}
+  }
 
 if(typeof(window) == "undefined")
 {
- 	module.exports = {getKeyFromValue, isNumber, isString, isBoolean, isArray, isFunction, isObject, outOfRange};
+ 	module.exports = {getKeyFromValue, isNumber, isString, isBoolean, isArray, isFunction, isObject, outOfRange, joinTime, getBiggestTime};
 }
  
