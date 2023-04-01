@@ -496,12 +496,12 @@ const SELECTA =
 
     votesSearch: function()
     {
-
+        // TODO
     },
 
     voteSuggestion: function()
     {
-
+        
     }
 
 }

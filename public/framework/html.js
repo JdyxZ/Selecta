@@ -186,8 +186,6 @@ dragElement = function(event, element, available_width, available_height)
 		Δx = event.clientX - xi;
 		Δy = event.clientY - yi;
 
-		console.log(available_width - element.offsetWidth, available_height - element.offsetHeight);
-
 		// Set div new position
 		element.style.left = (element.offsetLeft + Δx).clamp(0, available_width - element.offsetWidth - 50) + "px";
 		element.style.top = (element.offsetTop + Δy).clamp(0, available_height - element.offsetHeight - 80) + "px";
