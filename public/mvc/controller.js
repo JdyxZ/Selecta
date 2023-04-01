@@ -162,7 +162,7 @@ const CONTROLLER =
         CLIENT.sendMessage(message);
     },
 
-    sendSuggestion: function(suggestion,song)
+    sendSuggestion: function(suggestion)
     {
         const message = new Message(MODEL.my_user.id,"SUGGEST", suggestion , getTime());
         CLIENT.sendMessage(message);

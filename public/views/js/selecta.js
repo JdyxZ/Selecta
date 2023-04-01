@@ -479,7 +479,7 @@ const SELECTA =
         const videoDescription = div.querySelector('.description-wrapper .description').textContent;
 
         MODEL.suggestion_counter += MODEL.suggestion_counter;
-        const id = MODEL.suggestion_counter;
+        const id = div.getAttribute('data-id');
         
         // Create the song object  
         MODEL.createSong(id,videoThumbnail,videoDuration,videoTitle,videoViews,videoLikes,videoComments,videoElapsedTime,channelThumbnail,channelTitle,channelSubs,channelViews,channelVideos,channelElapsedTime,videoDescription);
@@ -491,7 +491,7 @@ const SELECTA =
         MODEL.updateSuggestionInterface();
         
         // Send the message to the other users
-        CONTROLLER.sendSuggestion(MODEL.my_suggestion,MODEL.songs[id]);
+        CONTROLLER.sendSuggestion(MODEL.my_suggestion);
     },
 
     votesSearch: function()

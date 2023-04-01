@@ -241,11 +241,11 @@ var CLIENT =
     {
         // Log
         console.log("New SUGGEST message received\n");
-        //console.table(message.content);
+        console.table(message.content);
 
         // Unpack message data
         const song = message.content.song;
-        const suggestion = message.content.suggestion;
+        const suggestion = message.content;
         const user = MODEL.getUser(suggestion.userID);
 
         // Callback

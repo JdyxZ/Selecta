@@ -254,17 +254,18 @@ var SERVER =
 
         // Get suggestion IDs
         const old_songID = user.suggestion.songID;
-        const new_songID = content;
+        const new_songID = content.songID;
 
         // Get suggestion
         const suggestion = user_room.getSuggestion(new_songID);
         
         // Log
         console.log(`EVENT --> User ${user.name} has sent a SUGGEST message`);
+        console.log(content);
 
         // Fetch song data
         const videoData = await YOUTUBE.getVideosInfo(new_songID)[0];
-
+        
         // Do some checkings
         const check = YOUTUBE.checkVideoInfo(videoData);
         if(check != "OK") return [check, true];
