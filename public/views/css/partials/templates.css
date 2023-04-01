@@ -28,7 +28,7 @@
 
 #Selecta .video .title-wrapper
 {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     grid-column: 2;
     grid-row: 1;
@@ -125,6 +125,46 @@
     margin-bottom: 0.5rem;
     margin-right: 0.3rem;
 }
+
+/* VOTES COUNT */
+
+#Selecta .votes
+{
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    flex-grow: 1;
+    justify-content: flex-end;
+}
+
+#Selecta .votes img
+{
+    object-fit: initial;
+    width: 50px;
+}
+
+#Selecta .votes label
+{
+    color: white;
+}
+
+/* SUGGESTION */
+
+#Selecta .suggestion
+{
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    flex-grow: 1;
+    justify-content: flex-end;
+}
+
+#Selecta .suggestion img
+{
+    object-fit: initial;
+    width: 50px;
+}
+
 
 #Selecta .video .stats-wrapper .viewCount
 {

@@ -5,7 +5,7 @@ const MODEL =
     // User data
     my_user: null,
     my_suggestion: null,
-    my_votes: null,
+    my_votes: [],
 
     temp: null,
     
@@ -100,6 +100,8 @@ const MODEL =
             "vote_counter": vote_counter
         }
 
+        MODEL.suggestions[songID] = suggestion;
+
         return suggestion;
     },
 
@@ -176,7 +178,7 @@ const MODEL =
         }
     },
 
-    createSong: function(id,src_image,duration,language,title,viewCount,likeCount,commentCount,publicationDate,channel_src,channel_title,channel_subscriberCount,channel_viewCount,channel_videos,channel_publicationDate,description)
+    createSong: function(id,src_image,duration,title,viewCount,likeCount,commentCount,publicationDate,channel_src,channel_title,channel_subscriberCount,channel_viewCount,channel_videos,channel_publicationDate,description,language)
     {
         const song = 
         {

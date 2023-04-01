@@ -168,6 +168,12 @@ const CONTROLLER =
         CLIENT.sendMessage(message);
     },
 
+    sendVote: function(song_id)
+    {
+        const message = new Message(MODEL.my_user.id,"VOTE", song_id , getTime());
+        CLIENT.sendMessage(message);
+    },
+
     onTick: function(user, model, animation)
     {
         if(user)
