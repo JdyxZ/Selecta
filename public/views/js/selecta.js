@@ -7,6 +7,18 @@ const SELECTA =
     available_height: window.screen.availHeight,
     available_width: window.screen.availWidth,
 
+    // Selecta
+    selecta: document.get("#Selecta"),
+
+    // Loading screen
+    loading_screen: document.get("#loading_screen"),
+
+    // Loading button
+    loading_screen_bttn: document.get("#loading_screen .loop_container #start_button"),
+
+    // Loading loop
+    loading_screen_loop: document.get("#loading_screen .loop_container #loading_loop"),
+
     // Wrappers
     search_interface_wrapper: document.get("#Selecta #search_interface_wrapper"),
     vote_interface_wrapper: document.get("#Selecta #vote_interface_wrapper"),
@@ -75,6 +87,7 @@ const SELECTA =
     videoTemplate: document.get("#Selecta .video"),
     voteVideoTemplate: document.get("#Selecta .vote_video"),
     videoSelect: null,
+
     // Control varibles
     muted: false,
     searching: false,
@@ -99,10 +112,20 @@ const SELECTA =
         // Init other resources
         CONTROLLER.init();
         CLIENT.init();
+
+        // Hide selecta and show the loading screen
+        this.selecta.hide();
+        //this.loading_screen.show();
+
+        // Start the loading timeout
+        setTimeout(this.loading_over.bind(this), 3000);
     },
 
     addEventListeners: function()
-    {             
+    {         
+        // Start Selecta
+        this.loading_screen_bttn.when("click", this.start.bind(this));
+
         // Triggers
         this.mute_trigger.when("click", this.toggleMute.bind(this));
         this.search_trigger.when("click", () => this.search_interface_wrapper.toggleVisibility());
@@ -162,6 +185,18 @@ const SELECTA =
     setVolume: function(event)
     {
         MODEL.player.volume = event.target.value;
+    },
+
+    start: function()
+    {
+        this.selecta.show();
+        this.loading_screen.hide();
+    },
+
+    loading_over: function()
+    {
+        this.loading_screen_bttn.show();
+        this.loading_screen_loop.hide();
     },
 
     toggleMute: function()
