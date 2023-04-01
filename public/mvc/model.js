@@ -15,12 +15,15 @@ const MODEL =
     users_arr: [],
     suggestions: {},
     suggestion_counter: 0,
-    songs: {},
 
     // Assets data
     raw_user_assets: {}, // User assets templates
     user_assets : {}, // User skins
     object_assets: {}, // Furniture and scene assets of all the rooms (they must identify the room they belong to)
+
+    // Interface data
+    // current_search: [],
+    songs: [], // suggested_videos
 
     // Audio playback
     current_song: null,

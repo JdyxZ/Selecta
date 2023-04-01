@@ -202,97 +202,15 @@ const SELECTA =
             this.settings_keybinds_container.show(); 
     },
 
-    removeChildrenUnderCondition: function(parentElement,condition) 
-    {
-        // Get the children
-        const children = parentElement.children;
-        
-        // For each children
-        for (let i = children.length - 1; i >= 0; i--) {
-            const child = children[i];
-            
-            // If the children is under the condition
-            if (child.id !== condition) {
-                child.remove();
-            }
-        }
-    },
-      
-
-    youtubeSearch: async function(query)
-    {
-        // Check
-        if(this.searching || query === this.lastQuery)
-            return;
-
-        // Remove previous search elements
-        this.removeChildrenUnderCondition(this.search_result,"selected_song");
-        //this.search_result.removeChildren();
-
-        // Search videos related to the query
-        const search = await YOUTUBE.search(query);
-
-        // Check errors
-        if(search == null) return;
-
-        // Map videosIDs
-        const videosIDs = search.map(video => video.ID);
-
-        // Get more information about the searched videos
-        const videos = await YOUTUBE.getVideosInfo(videosIDs);
-
-        // Check errors
-        if(videos == null) return;
-
-        const channelsIDs = videos.reduce((acc, video) => {
-            
-            // Declare channel ID
-            const channelID = video.publisherChannel.ID;
-
-            // If is not included, push it
-            if(!acc.includes(channelID))
-                acc.push(channelID);
-
-            return acc;
-        }, []);
-
-        // Get info about the channels
-        const channels = await YOUTUBE.getChannelsInfo(channelsIDs);
-
-        // Check errors
-        if(channels == null) return;
-
-        // Parse videos to HTML containers
-        const videosHTML = this.parseVideosToHTML(videos, channels);
-
-        // Append video containers to the search results
-        this.search_result.appendChildren(videosHTML);
-
-        // Show video containers
-        videosHTML.forEach(video => video.show());
-
-        // Update the suggestion SELECTA.videoSelect
-        const selected_videos = document.querySelectorAll('.video');
-        selected_videos.forEach(video => {
-            video.addEventListener('click', this.suggestSong);
-        });
-
-        // Register query
-        this.lastQuery = query;
-    },
-
-    parseVideosToHTML(videos, channels)
+    parseVideosToHTML(videos)
     {
         // Create array of videos
         let videosHTML = [];
 
         for(const video of videos)
         {
-            // Find channel of the video
-            const channel = channels.getObject({ID: video.publisherChannel.ID});
-
             // Check
-            if(channel == null) continue;
+            if(video.publisherChannel == null) continue;
             
             // Clone video template
             const videoHTML = this.videoTemplate.clone();
@@ -335,18 +253,18 @@ const SELECTA =
             if(video.description) videoDescription.textContent = video.description.resume(20);
 
             // Fill video template with channel data
-            if(channel.thumbnails) channelThumbnail.src = channel.thumbnails.medium.url;
-            if(channel.title) channelTitle.textContent = channel.title;
-            if(channel.subscriberCount) channelSubs.textContent = channel.subscriberCount.toNumber().format();
-            if(channel.viewCount) channelViews.textContent = channel.viewCount.toNumber().format();
-            if(channel.videoCount) channelVideos.textContent = channel.videoCount.toNumber().format();
-            if(channel.elapsedTime) channelElapsedTime.textContent = getBiggestTime(channel.elapsedTime);
+            if(video.publisherChannel.thumbnails) channelThumbnail.src = video.publisherChannel.thumbnails.medium.url;
+            if(video.publisherChannel.title) channelTitle.textContent = video.publisherChannel.title;
+            if(video.publisherChannel.subscriberCount) channelSubs.textContent = video.publisherChannel.subscriberCount.toNumber().format();
+            if(video.publisherChannel.viewCount) channelViews.textContent = video.publisherChannel.viewCount.toNumber().format();
+            if(video.publisherChannel.videoCount) channelVideos.textContent = video.publisherChannel.videoCount.toNumber().format();
+            if(video.publisherChannel.elapsedTime) channelElapsedTime.textContent = getBiggestTime(video.publisherChannel.elapsedTime);
 
             // Create and initialize flag instance
-            if(channel.country)
+            if(video.publisherChannel.country)
             {
                 const flag = new CountryFlag(channelCountry);
-                flag.selectByAlpha2(channel.country.toLowerCase());
+                flag.selectByAlpha2(video.publisherChannel.country.toLowerCase());
             }
             
             // Push videoHTML to array
@@ -355,63 +273,72 @@ const SELECTA =
 
         // Output
         return videosHTML;
-    },
+    },      
 
-    loadSongToDom: function(suggestion)
+    youtubeSearch: async function(query)
     {
-        // Clone video template
-        const videoHTML = this.videoTemplate.clone();
+        // Check
+        if(this.searching || query === this.lastQuery)
+            return;
 
-        // Get wrappers from template
-        const wrapperLanguage = videoHTML.get(".title-wrapper .language");
+        // Get suggested HTML elements
+        const suggested_videos = [];
+        if(MODEL.my_suggestion) suggested_videos.push(MODEL.my_suggestion.ID);
+        
+        // Remove previous search elements except suggested ones
+        this.search_result.replaceChildren(...suggested_videos);
 
-        // Get video HTML elements from template
-        const videoThumbnail = videoHTML.get(".thumbnail-wrapper .thumbnail");
-        const videoDuration = videoHTML.get(".duration label");
-        const videoTitle = videoHTML.get(".title-wrapper .title");
-        const videoLanguage = videoHTML.get(".language label");
-        const videoLikes = videoHTML.get(".stats-wrapper .likeCount label");
-        const videoViews = videoHTML.get(".stats-wrapper .viewCount label");
-        const videoComments = videoHTML.get(".stats-wrapper .commentCount label");
-        const videoElapsedTime = videoHTML.get(".stats-wrapper .publicationDate label");
-        const videoDescription = videoHTML.get(".description");
+        // Search videos related to the query
+        const search = await YOUTUBE.search(query);
 
-        // Get channel HTML elements from template
-        const channelThumbnail = videoHTML.get(".channel-wrapper .thumbnail img");
-        const channelTitle = videoHTML.get(".channel-wrapper .title");
-        const channelCountry = videoHTML.get(".countryFlag");
-        const channelSubs = videoHTML.get(".channel-wrapper .subscriberCount label");
-        const channelViews = videoHTML.get(".channel-wrapper .viewCount label");
-        const channelVideos = videoHTML.get(".channel-wrapper .videoCount label");
-        const channelElapsedTime = videoHTML.get(".channel-wrapper .publicationDate label");
+        // Check errors
+        if(search == null) return;
 
-        // Get the song
-        const song = MODEL.getSong(suggestion.songID);
+        // Map videosIDs
+        const videosIDs = search.map(video => video.ID);
 
-        // Fill video template with video data
-        if(song.thumbnails) videoThumbnail.src = song.thumbnails;
-        if(song.duration) videoDuration.textContent = song.duration; // KK????
-        if(song.title) videoTitle.textContent = song.title;
-        //video.language ? videoLanguage.textContent = video.language.toUpperCase() : wrapperLanguage.hide();
-        if(song.likeCount) videoLikes.textContent = song.likeCount;
-        if(song.viewCount) videoViews.textContent = song.viewCount;
-        if(song.commentCount) videoComments.textContent = song.commentCount;
-        if(song.elapsedTime) videoElapsedTime.textContent = song.elapsedTime;
-        if(song.description) videoDescription.textContent = song.description;
+        // Get more information about the searched videos
+        let videos = await YOUTUBE.getVideosInfo(videosIDs);
 
-        // Fill video template with channel data
-        if(song.channel_thumbnails) channelThumbnail.src = song.channel_thumbnails;
-        if(song.channel_title) channelTitle.textContent = song.channel_title;
-        if(song.channel_subscriberCount) channelSubs.textContent = song.channel_subscriberCount;
-        if(song.channel_viewCount) channelViews.textContent = song.channel_viewCount;
-        if(song.channel_videoCount) channelVideos.textContent = song.channel_videoCount;
-        if(song.channel_elapsedTime) channelElapsedTime.textContent = song.channel_elapsedTime;
+        // Check errors
+        if(videos == null) return;
 
-        // Append video template to the search results
-        this.vote_result.appendChild(videoHTML);
+        // Get IDs of the channels of the videos
+        const channelsIDs = videos.map(video => video.publisherChannel.ID);
 
-        // Show video template
-        videoHTML.show();
+        // Get info about the channels
+        const channels = await YOUTUBE.getChannelsInfo(channelsIDs);
+
+        // Check errors
+        if(channels == null) return;
+
+        // Append info about the channels to the videos
+        videos.forEach(video => {
+            
+            // Find channel of the video
+            const channel = channels.getObject({ID: video.publisherChannel.ID});
+
+            // Append channel
+            video.publisherChannel = channel;
+        })
+
+        // Parse videos to HTML containers
+        const videosHTML = this.parseVideosToHTML(videos);
+
+        // Append video containers to the search results
+        this.search_result.appendChildren(videosHTML);
+
+        // Show video containers
+        videosHTML.forEach(video => video.show());
+
+        // Update the suggestion SELECTA.videoSelect
+        const selected_videos = document.querySelectorAll('.video');
+        selected_videos.forEach(video => {
+            video.addEventListener('click', this.suggestSong);
+        });
+
+        // Register query
+        this.lastQuery = query;
     },
 
     suggestSong: function(event)

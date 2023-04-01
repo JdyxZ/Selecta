@@ -276,13 +276,72 @@ setArrayProperty("getObjectsIndexes", function(constraint) {
 
 });
 
-setArrayProperty("toObject", function(prefix) { 
+setArrayProperty("contains", function(constraints) 
+{ 
+	// Set proper format
+	if(!isArray(constraints)) constraints = [constraints];
 
-	return this.reduce((obj, element, index) => {
-		obj[`${prefix}${index}`] = element;
-		return obj;
-	}, {})
+	// Arrays
+	let functions = [];
+	let literals = [];
 
+	// Split constraints into an array of functions and an array of elements
+	for(const element of this)
+	{
+		if(isFunction(element)) functions.push(element.prototype);
+		else
+		{
+			literals.push(element);
+			functions.push(element.__proto__);
+		} 
+	}
+
+	// Iterate through the elements of the array
+	for(const constraint of constraints)
+	{
+		// Set auxiliar booleans
+		const compareFunctions = isFunction(constraint) && !functions.includes(constraint.prototype);
+		const compareLiterals = !isFunction(constraint) && !literals.includes(constraint);
+
+		// Return false if constraints doesn't apply
+		if(compareFunctions || compareLiterals)
+			return false;
+	}
+
+	// Otherwise return true
+	return true;
+});
+
+setArrayProperty("containsStrict", function(elements) 
+{ 
+	// Set proper format
+	if(!isArray(constraints)) constraints = [constraints];
+
+	// Arrays
+	let functions = [];
+	let literals = [];
+
+	// Split constraints into an array of functions and an array of elements
+	for(const constraint of constraints)
+	{
+		if(isFunction(constraint)) functions.push(constraint.prototype);
+		else literals.push(constraint)
+	}
+
+	// Iterate through the elements of the array
+	for(const element of this)
+	{
+		// Set auxiliar booleans
+		const compareFunctions = isFunction(element) && !functions.includes(element.prototype);
+		const compareLiterals = !isFunction(element) && !literals.includes(element) && !functions.includes(element.__proto__);
+
+		// Return false if constraints doesn't apply
+		if(compareFunctions || compareLiterals)
+			return false;
+	}
+
+	// Otherwise return true
+	return true;
 });
 
 setArrayProperty("remove", function(elements) { 
@@ -300,6 +359,20 @@ setArrayProperty("remove", function(elements) {
 	// Output
 	return this;
 
+});
+
+setArrayProperty("toObject", function(prefix) { 
+
+	return this.reduce((obj, element, index) => {
+		obj[`${prefix}${index}`] = element;
+		return obj;
+	}, {})
+
+});
+
+setArrayProperty("pushSafe", function(element) {
+	if(!this.includes(element))
+		this.push(element);
 });
 
 setArrayProperty("isEmpty", function() {
