@@ -335,75 +335,36 @@
     font-size: 12px;
 }
 
-/* SIMPLIFIED VIDEO TEMPLATE */
-
-#Selecta .simplified_video
-{
-    background-color: rgb(18 19 19);
-    display: flex;
-    flex-direction: row;
-    margin: 0px 1% 3px 1%;
-    width: auto;
-    color: wheat;
-    border-radius: 10px;
-    padding: 2px 2px 2px 2px;
-}
-
-#Selecta .simplified_video .thumbnail
-{
-    color: white;
-}
-
-#Selecta .simplified_video .title
-{
-    color: white;
-}
-
-#Selecta .simplified_video .channel
-{
-    color: white;
-}
-
-#Selecta .simplified_video .channel .thumbnail
-{
-    color: white;
-}
-
-#Selecta .simplified_video .channel .title
-{
-    color: white;
-}
-
-#Selecta .simplified_video .channel .flag
-{
-    color: white;
-}
-
 /* PLAYER SONG */
 
-#Selecta .player_video{
+#Selecta .player_video
+{
     display: flex;
 	flex-wrap: wrap;
 	align-items: center;
 }
 
-#Selecta .player_video .thumbnail{
+#Selecta .player_video .thumbnail
+{
     flex-basis: 20%;
     text-align: right;
     margin: 1% 10% 1% 10%;
     width: 8%;
 }
 
-#Selecta .player_video .text_container{
+#Selecta .player_video .text_container
+{
     flex-basis: 50%;
 }
 
-#Selecta .player_video .title{
+#Selecta .player_video .title
+{
     overflow: hidden;
     font-weight: bold;
 }
 
-#Selecta .player_video .duration{
+#Selecta .player_video .duration
+{
     overflow: hidden;
     font-size: 12px;
 }

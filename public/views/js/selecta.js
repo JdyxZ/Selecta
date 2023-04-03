@@ -73,12 +73,14 @@ const SELECTA =
     search_closer: document.get("#search_interface #closer"),
     search_input: document.get("#Selecta #search_interface #search_bar input"),
     search_result: document.get("#Selecta #search_interface #search_result"),
+    search_error_prompt: document.get("#Selecta #search_interface #error_prompt"),
 
     // Votes interface
     vote_dragger: document.get("#votes_interface #drag_menu"),
     vote_closer: document.get("#votes_interface #closer"),
     vote_input: document.get("#Selecta #votes_interface #search_bar input"),
     vote_result: document.get("#Selecta #votes_interface #search_result"),
+    vote_error_prompt: document.get("#Selecta #votes_interface #error_prompt"),
 
     // Templates
     videoTemplate: document.get("#Selecta .video"),
@@ -326,6 +328,9 @@ const SELECTA =
         if(this.searching || query === this.lastQuery)
             return;
 
+        // Reset error prompt
+        this.search_error_prompt.innerHTML = ""
+
         // Get suggested HTML elements
         const suggested_videos = [];
         if(MODEL.my_suggestion) suggested_videos.push(MODEL.my_suggestion.ID);
@@ -400,9 +405,23 @@ const SELECTA =
             }
         }
 
+        // Get suggestion
+        const suggestion = MODEL.getSuggestion(videoID);
+
         // Checkings
-        if(!videoHTML || (MODEL.my_suggestion && MODEL.my_suggestion.songID !== videoID && MODEL.getSuggestion(videoID)))
+        if(!videoHTML)
+        {
             return;
+        }
+        else if (suggestion && suggestion.userID != MODEL.my_user.id)
+        {
+            this.search_error_prompt.innerHTML = "Song already suggested!";
+            return;
+        }
+        else
+        {
+            this.search_error_prompt.innerHTML = "";
+        }
 
         // Fetch suggestion icon
         const suggestionIcon = videoHTML.get(".title-wrapper .suggestion img");
@@ -466,8 +485,19 @@ const SELECTA =
         }
 
         // Checkings
-        if(!videoHTML || (MODEL.my_suggestion && MODEL.my_suggestion.songID === videoID))
+        if(!videoHTML)
+        {
             return;
+        }
+        else if (MODEL.my_suggestion && MODEL.my_suggestion.songID === videoID)
+        {
+            this.vote_error_prompt.innerHTML = "You cannot vote your own suggestion!";
+            return;
+        }
+        else
+        {
+            this.vote_error_prompt.innerHTML = ""
+        }
 
         // Fetch suggestion icon
         const votesIcon = videoHTML.get(".title-wrapper .votes img");
