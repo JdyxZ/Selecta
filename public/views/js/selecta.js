@@ -474,18 +474,18 @@ const SELECTA =
             // Toggle vote icon image
             // TODO
 
-            // Decrease the counter
-            MODEL.suggestions[videoID].vote_counter--;
+            // Remove vote
             MODEL.my_votes.remove(videoID);
+            MODEL.suggestions[videoID].vote_counter--;
         }
         else
         {
             // Toggle vote icon image
             // TODO
 
-            // Increase the counter
+            // Add vote
+            MODEL.my_votes = [...MODEL.my_votes, videoID];
             MODEL.suggestions[videoID].vote_counter++;
-            MODEL.my_votes.push(videoID);
         }
 
         // Update the DOM
