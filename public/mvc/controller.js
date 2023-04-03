@@ -287,6 +287,12 @@ const CONTROLLER =
         CLIENT.sendMessage(message);
     },
 
+    sendSkip: function()
+    {
+        const message = new Message(MODEL.my_user.id, "SKIP", MODEL.current_song.ID, getTime());
+        CLIENT.sendMessage(message);
+    }
+
     /***************** ACTIONS *****************/
 
     // DRAW

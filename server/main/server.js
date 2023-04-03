@@ -433,16 +433,16 @@ var SERVER =
 
         // Set timers
         room.timers.chooseNextSong = setTimeout(() => {
-            this.chooseNextSong(roomID)
+            this.chooseNextSong(roomID);
         }, song_duration - WORLD.loading_duration);
 
         room.timers.playSong = setTimeout(() => {
-            this.playSong(roomID, room.next_song)
+            this.playSong(roomID, room.next_song);
         }, song_duration);
         
         // Set intervals
         room.intervals.playbackTime = setInterval(() => {
-            room.playback_time += WORLD.playback_update_frequency / 1000
+            room.playback_time += WORLD.playback_update_frequency / 1000;
         }, WORLD.playback_update_frequency);
     },
 

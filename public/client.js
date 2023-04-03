@@ -9,6 +9,7 @@ var CLIENT =
     socket: null,
     debug: null,
     
+    // Init
     init: async function()
     {
         // Fetch server settings
