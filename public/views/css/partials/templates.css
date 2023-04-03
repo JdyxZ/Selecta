@@ -379,4 +379,31 @@
     color: white;
 }
 
+/* PLAYER SONG */
 
+#Selecta .player_video{
+    display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+}
+
+#Selecta .player_video .thumbnail{
+    flex-basis: 20%;
+    text-align: right;
+    margin: 1% 10% 1% 10%;
+    width: 8%;
+}
+
+#Selecta .player_video .text_container{
+    flex-basis: 50%;
+}
+
+#Selecta .player_video .title{
+    overflow: hidden;
+    font-weight: bold;
+}
+
+#Selecta .player_video .duration{
+    overflow: hidden;
+    font-size: 12px;
+}
