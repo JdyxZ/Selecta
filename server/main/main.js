@@ -92,7 +92,7 @@ async function main()
     const server = http.createServer(app); // Instead of passing a custom function to manage requests, we pass the express app and let it process the requests for us
 
     // Launch the server
-    server.listen(app.get('server_port'), () => SERVER.onReady(app.get('server_port')));
+    server.listen(app.get('server_port'), () => SERVER.onListening(app.get('server_port')));
 
     // Update database on exit and periodically
     require("../utils/update.js");

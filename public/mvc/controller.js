@@ -55,7 +55,6 @@ const CONTROLLER =
         });
 
         // Create a mesh for the avatar
-       
         var avat = new RD.SceneNode({
             scaling: 0.3,
             mesh: "user_assets/"+ asset.folder + "/" + asset.mesh,
@@ -245,7 +244,7 @@ const CONTROLLER =
 
             // Play song
             MODEL.player.src = song.audioStream.url;
-            MODEL.player.time = playbackTime;
+            MODEL.player.currentTime = playbackTime / 1000; // [s]
             MODEL.player.play();
         }
         // Schedule the next song
@@ -271,6 +270,12 @@ const CONTROLLER =
     },
 
     // Send methods
+    sendReady:function()
+    {
+        const message = new Message(MODEL.my_user.id, "READY", "", getTime());
+        CLIENT.sendMessage(message);
+    },
+
     sendTick: function()
     {
         const message = new Message(MODEL.my_user.id, "TICK", {"model":MODEL.my_user.model,"animation":MODEL.my_user.animation}, getTime());

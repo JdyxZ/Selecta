@@ -129,8 +129,7 @@ var CLIENT =
             case "ERROR":
                 this.onError(message);
                 break;
-        }        
-        
+        }         
     },
     
     // Message callbacks
@@ -278,8 +277,8 @@ var CLIENT =
 
         // Unpack message data
         const song = content.song;
-        const playbackTime = content.playbackTime;
-        const timestamp = message.time;
+        const playbackTime = content.playbackTime; // [ms]
+        const timestamp = message.time; // [ms]
 
        // Callback
        CONTROLLER.onPlaySong(song, playbackTime, timestamp);

@@ -144,20 +144,18 @@ const VIEW =
 
     draw: function()
     {
-    
         // Shape data from the canvas
         gl.canvas.width = VIEW.canvas_parent.offsetWidth;
         gl.canvas.height = VIEW.canvas_parent.offsetHeight;
         gl.viewport(0,0,gl.canvas.width,gl.canvas.height);
         
-        
         // Check if the my_user is initialized
         if(!MODEL.my_user)
-        return
+            return;
         
         // Check if the assets are loaded
         if(!MODEL.user_assets[MODEL.my_user.id])
-            return  
+            return; 
 
         // Obtain avatar and camera positions
         var campos = MODEL.user_assets[MODEL.my_user.id].character_pivot.localToGlobal([0,60,-70]);
@@ -177,12 +175,12 @@ const VIEW =
             node = MODEL.scene.root.findNode(MODEL.my_user.id);
             node.position = VIEW.user_backup.position;
             node.rotation = VIEW.user_backup.rotation;
-            campos = MODEL.area_camera.adjustPosition(campos)
+            campos = MODEL.area_camera.adjustPosition(campos);
         }
 
         // Update the camera
-        MODEL.camera.perspective( 60, gl.canvas.width / gl.canvas.height, 0.1, 1000 );
-        MODEL.camera.lookAt( campos, smoothtarget, [0,1,0] );
+        MODEL.camera.perspective( 60, gl.canvas.width / gl.canvas.height, 0.1, 1000);
+        MODEL.camera.lookAt( campos, smoothtarget, [0,1,0]);
 
         // Clear the scene
         MODEL.renderer.clear(MODEL.bg_color);
@@ -190,7 +188,7 @@ const VIEW =
         // Set the sceneanimation
         
         //console.log(MODEL.room_scene);
-        MODEL.renderer.render(MODEL.scene, MODEL.camera, null, 0b11 );
+        MODEL.renderer.render(MODEL.scene, MODEL.camera, null, 0b11);
     },
 
     update: function(dt) 
@@ -198,11 +196,11 @@ const VIEW =
         //console.log(VIEW.camera_out)
         // Check if the my_user is initialized
         if(!MODEL.my_user)
-            return
+            return;
 
         // Check if the assets are loaded
         if(!MODEL.user_assets[MODEL.my_user.id])
-            return      
+            return;
         
         // Just in case
         MODEL.scene.update(dt);

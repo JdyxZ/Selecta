@@ -11,7 +11,7 @@ var SERVER =
     port: null,
     clients : {},
     last_id : 0,
-    messages_types: ["TICK", "SUGGEST", "VOTE", "SKIP", "SONG_READY", "EXIT"],
+    messages_types: ["READY", "TICK", "SUGGEST", "VOTE", "SKIP", "SONG_READY", "EXIT"],
 
     /***************** HTTP SERVER CALLBACKS *****************/
 
@@ -39,7 +39,7 @@ var SERVER =
     },
 
     // Ready callback
-    onReady: function(port)
+    onListening: function(port)
     {
         console.log("\n*********** SERVER INFO *********** \n");
         console.log(`Serving with pid ${process.pid}`); // Good practice to know my process pid
@@ -179,10 +179,6 @@ var SERVER =
         // Check the sender id and the connection user id matches
         if (message.sender != user_id)
             return ["SENDER_MATCH_ERROR", false];
-        
-        // Check message content is not empty
-        if(message.content.length == 0)
-            return ["MESSAGE_EMPTY_ERROR", true];
 
         // Output
         return ["OK", false];
@@ -196,6 +192,8 @@ var SERVER =
         // Route message        
         switch(message.type)
         {
+            case "READY":
+                return this.onReady(message);
             case "TICK":
                 return this.onTick(message);
             case "SUGGEST":
@@ -211,20 +209,49 @@ var SERVER =
         }
     },
 
-    onTick: function(message)
+    onReady: function(message)
     {
-        
+        // Get message data
+        const sender_id = message.sender;
+
+        // Get user data
+        const user = WORLD.getUser(sender_id);
+        const user_room = WORLD.getRoom(user.room);
+
+        // Log
+        console.log(`EVENT --> User ${user.name} has sent a READY message`);
+
+        // Send to the new user info about the room current playback
+        if(user_room.current_song)
+        {
+            const playbackInfo = this.getPlaybackInfo(user_room, user_room.current_song);
+            message = new Message("system", "PLAY_SONG", JSON.stringify(playbackInfo), Date.getTime());
+            this.sendPrivateMessage(message, sender_id);
+        };
+
+        // Send to the new user info about the room future playback
+        if(user_room.next_song)
+        {
+            const playbackInfo = this.getPlaybackInfo(user_room, user_room.next_song);
+            message = new Message("system", "PLAY_SONG", JSON.stringify(playbackInfo), Date.getTime());
+            this.sendPrivateMessage(message, sender_id);
+        }
+
+        // Output status
+        return ["OK", false];
+    },
+
+    onTick: function(message)
+    {   
         // Get message data
         const sender_id = message.sender;
         const content = message.content;
 
         // Get user data
         const user = WORLD.getUser(sender_id);
+
         // Log
         console.log(`EVENT --> User ${user.name} has sent a TICK message`);
-
-        console.log("ANIMATION")
-        console.log(content.animation)
 
         // Do some checkings
         if(content.model == undefined && content.animation == undefined) return ["TICK_WRONG_CONTENT", true];
@@ -261,7 +288,6 @@ var SERVER =
         
         // Log
         console.log(`EVENT --> User ${user.name} has sent a SUGGEST message`);
-        console.log(content);
 
         // Fetch song data
         const videoData = await YOUTUBE.getVideosInfo(new_songID)[0];
@@ -427,10 +453,6 @@ var SERVER =
         // Set aux vars
         const song_duration = song.duration.totalMiliseconds;
 
-        // Clear intervals
-        clearInterval(room.intervals.playbackTime);
-        room.playback_time = 0.0;
-
         // Set timers
         room.timers.chooseNextSong = setTimeout(() => {
             this.chooseNextSong(roomID);
@@ -439,10 +461,17 @@ var SERVER =
         room.timers.playSong = setTimeout(() => {
             this.playSong(roomID, room.next_song);
         }, song_duration);
+
+        // Clear intervals
+        clearInterval(room.intervals.playbackTime);
+
+        // Set intervals data
+        room.reference_time = performance.now();
+        room.playback_time = 0; // [ms]
         
         // Set intervals
         room.intervals.playbackTime = setInterval(() => {
-            room.playback_time += WORLD.playback_update_frequency / 1000;
+            room.playback_time = performance.now() - room.reference_time;
         }, WORLD.playback_update_frequency);
     },
 
@@ -677,22 +706,6 @@ var SERVER =
         // Send to the current/new room active users data of the new user
         message = new Message("system", "USER_JOIN", [user.toJSON()], Date.getTime());
         this.sendRoomMessage(message, user.room, user.id); 
-        
-        // Send to the new user info about the room current playback
-        if(user_room.current_song)
-        {
-            const playbackInfo = this.getPlaybackInfo(user_room, user_room.current_song);
-            message = new Message("system", "PLAY_SONG", JSON.stringify(playbackInfo), Date.getTime());
-            this.sendPrivateMessage(message, user_id);
-        };
-
-        // Send to the new user info about the room future playback
-        if(user_room.next_song)
-        {
-            const playbackInfo = this.getPlaybackInfo(user_room, user_room.next_song);
-            message = new Message("system", "PLAY_SONG", JSON.stringify(playbackInfo), Date.getTime());
-            this.sendPrivateMessage(message, user_id);
-        }
     },
 
     filterActiveUsers(users_id)

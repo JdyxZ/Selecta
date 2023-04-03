@@ -91,6 +91,7 @@ function Room(data)
     this.skipping_time = 0;
     this.current_song = {};
     this.next_song = {};
+    this.reference_time = 0;
     this.playback_time = 0;
     this.num_people = 0;
     this.playlist_items = [];

@@ -111,10 +111,6 @@ const SELECTA =
         CONTROLLER.init();
         CLIENT.init();
 
-        // Hide selecta menu and show the loading screen
-        this.menu_interface.hide();
-        //this.loading_screen.show();
-
         // Start the loading timeout
         setTimeout(this.loadingOver.bind(this), 3500);
     },
@@ -190,17 +186,22 @@ const SELECTA =
         MODEL.player.volume = event.target.value;
     },
 
-    start: function()
-    {
-        this.menu_interface.hide();
-        this.loading_screen.hide();
-    },
-
     loadingOver: function()
     {
-        this.loading_screen_button.show();
         this.loading_screen_loop.hide();
+        this.loading_screen_button.show();
     },
+
+    start: function()
+    {
+        // Toggle screens
+        this.loading_screen.hide();
+        this.menu_interface.show();
+
+        // Send ready message to the server
+        CONTROLLER.sendReady();
+    },
+
 
     toggleMute: function()
     {
@@ -372,6 +373,11 @@ const SELECTA =
         this.lastQuery = query;
     },
 
+    votesSearch: function()
+    {
+        // TODO
+    },
+
     suggestSong: function(event)
     {
         // Get node element of the event
@@ -392,14 +398,14 @@ const SELECTA =
         }
 
         // Checkings
-        if(!videoHTML || (my_suggestion.songID !== videoID && MODEL.suggestions.getObjectIndex({songID: videoID}) !== -1))
+        if(!videoHTML || (MODEL.my_suggestion && MODEL.my_suggestion.songID !== videoID && MODEL.suggestions.getObjectIndex({songID: videoID}) !== -1))
             return;
 
         // Fetch suggestion icon
         const suggestionIcon = videoHTML.get(".title-wrapper .suggestion img");
 
         // If the video has already been suggested by the user
-        if(videoID == my_suggestion.songID)
+        if(MODEL.my_suggestion && videoID == MODEL.my_suggestion.songID)
         {
             // Toggle the suggestion icon
             suggestionIcon.src = "media/interface/img_suggest_off.png";
@@ -414,7 +420,7 @@ const SELECTA =
         else
         {
             // Get old video data
-            const oldVideoID = MODEL.my_suggestion.songID;
+            const oldVideoID = MODEL.my_suggestion == undefined ? undefined : MODEL.my_suggestion.songID;
             const oldVideoHTML = oldVideoID == undefined ? undefined : this.search_result.get(`[data-id='${oldVideoID}']`);
             const oldSuggestionIcon =  oldVideoHTML == undefined ? oldVideoHTML : oldVideoHTML.get(".title-wrapper .suggestion img");
 
@@ -427,7 +433,7 @@ const SELECTA =
 
             // Create new song and suggestion objects
             const song = MODEL.current_search.getObject({ID: videoID})
-            const suggestion = new MODEL.Suggestion(videoID, MODEL.my_user.id, 0);
+            const suggestion = new Suggestion(videoID, MODEL.my_user.id, 0);
             
             // Update MODEL state
             oldVideoID == undefined ? MODEL.addSong(song) : MODEL.updateSong(oldVideoID, song);
@@ -436,11 +442,6 @@ const SELECTA =
             // Send a SUGGESTION message with the selected videoID to others users
             CONTROLLER.sendSuggestion(videoID);
         }     
-    },
-
-    votesSearch: function()
-    {
-        // TODO
     },
 
     voteSuggestion: function(event)
