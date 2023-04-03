@@ -10,13 +10,9 @@ const SELECTA =
     // Selecta
     selecta: document.get("#Selecta"),
 
-    // Loading screen
+     // Loading
     loading_screen: document.get("#loading_screen"),
-
-    // Loading button
-    loading_screen_bttn: document.get("#loading_screen .loop_container #start_button"),
-
-    // Loading loop
+    loading_screen_button: document.get("#loading_screen .loop_container #start_button"),
     loading_screen_loop: document.get("#loading_screen .loop_container #loading_loop"),
 
     // Wrappers
@@ -58,7 +54,8 @@ const SELECTA =
     settings_keybinds_container: document.get("#keybinds_settings_container"),
 
     // Sliders
-    sliders: {
+    sliders: 
+    {
         general_volume: document.get("#slider_general"),
         music_volume: document.get("#slider_music"),
         people_volume: document.get("#slider_people"),
@@ -82,7 +79,6 @@ const SELECTA =
     vote_input: document.get("#Selecta #votes_interface #search_bar input"),
     vote_result: document.get("#Selecta #votes_interface #search_result"),
 
-
     // Templates
     videoTemplate: document.get("#Selecta .video"),
     voteVideoTemplate: document.get("#Selecta .vote_video"),
@@ -92,6 +88,7 @@ const SELECTA =
     muted: false,
     searching: false,
     lastQuery: null,
+    debug: null,
 
     // Methods
     init: function()
@@ -118,13 +115,13 @@ const SELECTA =
         //this.loading_screen.show();
 
         // Start the loading timeout
-        setTimeout(this.loading_over.bind(this), 3000);
+        setTimeout(this.loadingOver.bind(this), 3000);
     },
 
     addEventListeners: function()
-    {         
+    {             
         // Start Selecta
-        this.loading_screen_bttn.when("click", this.start.bind(this));
+        this.loading_screen_button.when("click", this.start.bind(this));
 
         // Triggers
         this.mute_trigger.when("click", this.toggleMute.bind(this));
@@ -151,6 +148,11 @@ const SELECTA =
         this.search_closer.when("click", () => this.search_interface_wrapper.hide());
         this.vote_closer.when("click", () => this.vote_interface_wrapper.hide());
         this.search_input.when("keydown", this.onKeyDown);
+        this.search_result.when("click", this.suggestSong.bind(this));
+
+        // Votes interface
+        this.votes_trigger.when("click", this.updateVotesInterface.bind(this));
+        this.vote_result.when('click', this.voteSuggestion.bind(this));
         
         // Callbacks for volume control
         this.sliders.music_volume.when("input", this.setVolume);
@@ -193,9 +195,9 @@ const SELECTA =
         this.loading_screen.hide();
     },
 
-    loading_over: function()
+    loadingOver: function()
     {
-        this.loading_screen_bttn.show();
+        this.loading_screen_button.show();
         this.loading_screen_loop.hide();
     },
 
@@ -250,14 +252,11 @@ const SELECTA =
             // Clone video template
             const videoHTML = this.videoTemplate.clone();
 
-            // Display the suggest icon
-            videoHTML.get(".title-wrapper .suggestion").style.display = "flex";
-
             // Set data ID to the videoHTML
             videoHTML.setAttribute('data-id', video.ID);
 
             // Get wrappers from template
-            const wrapperLanguage = videoHTML.get(".title-wrapper .language");
+            const languageWrapper = videoHTML.get(".title-wrapper .language");
 
             // Get video HTML elements from template
             const videoThumbnail = videoHTML.get(".thumbnail-wrapper .thumbnail");
@@ -279,16 +278,19 @@ const SELECTA =
             const channelVideos = videoHTML.get(".channel-wrapper .videoCount label");
             const channelElapsedTime = videoHTML.get(".channel-wrapper .publicationDate label");
 
+            // Display the suggest icon
+            videoHTML.get(".title-wrapper .suggestion").style.display = "flex";
+
             // Fill video template with video data
             if(video.thumbnails) videoThumbnail.src = video.thumbnails.high.url;
             if(video.duration) videoDuration.textContent = joinTime(video.duration);
             if(video.title) videoTitle.textContent = video.title;
-            video.language ? videoLanguage.textContent = video.language.toUpperCase() : wrapperLanguage.hide();
+            video.language ? videoLanguage.textContent = video.language.toUpperCase() : languageWrapper.hide();
             if(video.likeCount) videoLikes.textContent = video.likeCount.toNumber().format();
             if(video.viewCount) videoViews.textContent = video.viewCount.toNumber().format();
             if(video.commentCount) videoComments.textContent = video.commentCount.toNumber().format();
             if(video.elapsedTime) videoElapsedTime.textContent = getBiggestTime(video.elapsedTime);
-            if(video.description) videoDescription.textContent = video.description.resume(20);
+            if(video.description) videoDescription.textContent = video.description.resumeByChars(200);
 
             // Fill video template with channel data
             if(video.publisherChannel.thumbnails) channelThumbnail.src = video.publisherChannel.thumbnails.medium.url;
@@ -319,36 +321,15 @@ const SELECTA =
         if(this.searching || query === this.lastQuery)
             return;
 
-        // Display the vote icon
-        videoHTML.get(".title-wrapper .votes").style.display = "flex";
+        // Get suggested HTML elements
+        const suggested_videos = [];
+        if(MODEL.my_suggestion) suggested_videos.push(MODEL.my_suggestion.ID);
+        
+        // Remove previous search elements except suggested ones
+        this.search_result.replaceChildren(...suggested_videos);
 
-        // Add the callback
-        videoHTML.when('click', this.voteSuggestion);
-
-        // Get wrappers from template
-        const wrapperLanguage = videoHTML.get(".title-wrapper .language");
-
-        // The id of the song
-        videoHTML.setAttribute('data-id', suggestion.songID);
-
-        // Draw the correspodent icon
-        if(MODEL.my_votes.includes(suggestion.songID))
-            videoHTML.get(".title-wrapper .votes img").src = "media/interface/img_heart_on.png"
-        else
-            videoHTML.get(".title-wrapper .votes img").src = "media/interface/img_heart_off.png"
-        if(MODEL.my_suggestion.songID === suggestion.songID)
-            videoHTML.get(".title-wrapper .votes img").src = "media/interface/img_heart_my.png"
-
-        // Get video HTML elements from template
-        const videoThumbnail = videoHTML.get(".thumbnail-wrapper .thumbnail");
-        const videoDuration = videoHTML.get(".duration label");
-        const videoTitle = videoHTML.get(".title-wrapper .title");
-        const videoLanguage = videoHTML.get(".language label");
-        const videoLikes = videoHTML.get(".stats-wrapper .likeCount label");
-        const videoViews = videoHTML.get(".stats-wrapper .viewCount label");
-        const videoComments = videoHTML.get(".stats-wrapper .commentCount label");
-        const videoElapsedTime = videoHTML.get(".stats-wrapper .publicationDate label");
-        const videoDescription = videoHTML.get(".description");
+        // Search videos related to the query
+        const search = await YOUTUBE.search(query);
 
         // Check errors
         if(search == null) return;
@@ -356,20 +337,8 @@ const SELECTA =
         // Map videosIDs
         const videosIDs = search.map(video => video.ID);
 
-        // Add the number of votes of the song
-        const count = suggestion.vote_counter;
-        videoHTML.get(".title-wrapper .votes #vote_counter").textContent = count;
-
-        // Fill video template with video data
-        if(song.thumbnails) videoThumbnail.src = song.thumbnails;
-        if(song.duration) videoDuration.textContent = song.duration; // KK????
-        if(song.title) videoTitle.textContent = song.title;
-        //video.language ? videoLanguage.textContent = video.language.toUpperCase() : wrapperLanguage.hide();
-        if(song.likeCount) videoLikes.textContent = song.likeCount;
-        if(song.viewCount) videoViews.textContent = song.viewCount;
-        if(song.commentCount) videoComments.textContent = song.commentCount;
-        if(song.elapsedTime) videoElapsedTime.textContent = song.elapsedTime;
-        if(song.description) videoDescription.textContent = song.description;
+        // Get more information about the searched videos
+        let videos = await YOUTUBE.getVideosInfo(videosIDs);
 
         // Check errors
         if(videos == null) return;
@@ -384,14 +353,7 @@ const SELECTA =
         if(channels == null) return;
 
         // Append info about the channels to the videos
-        videos.forEach(video => {
-            
-            // Find channel of the video
-            const channel = channels.getObject({ID: video.publisherChannel.ID});
-
-            // Append channel
-            video.publisherChannel = channel;
-        })
+        videos.forEach(video => video.publisherChannel = channels.getObject({ID: video.publisherChannel.ID}));
 
         // Parse videos to HTML containers
         const videosHTML = this.parseVideosToHTML(videos);
@@ -402,11 +364,8 @@ const SELECTA =
         // Show video containers
         videosHTML.forEach(video => video.show());
 
-        // Update the suggestion SELECTA.videoSelect
-        const selected_videos = document.querySelectorAll('.video');
-        selected_videos.forEach(video => {
-            video.addEventListener('click', this.suggestSong);
-        });
+        // Update MODEL with the current search results
+        MODEL.current_search = videos;
 
         // Register query
         this.lastQuery = query;
@@ -414,89 +373,68 @@ const SELECTA =
 
     suggestSong: function(event)
     {
-        // Get the entry div and the condition
-        var div = event.target;
-        var condition = div.classList[0];
+        // Get node element of the event
+        const node = event.srcElement;
 
-        // Find the parent class
-        while( condition != "video")
+        // Get parents
+        const parents = node.getParents();
+
+        // Get videoHTML and videoID
+        let videoHTML, videoID;
+        for(const parent of parents)
         {
-            div = div.parentNode;
-            condition = div.classList[0];
+            if(parent.classList && parent.classList.contains("video")) 
+            {
+                videoHTML = parent;
+                videoID = videoHTML.getAttribute('data-id');
+            }
         }
 
-        // Get the image icon
-        const icon = div.get(".title-wrapper .suggestion img");
+        // Checkings
+        if(!videoHTML || (my_suggestion.songID !== videoID && MODEL.suggestions.getObjectIndex({songID: videoID}) !== -1))
+            return;
 
-        const id = div.getAttribute('data-id');
+        // Fetch suggestion icon
+        const suggestionIcon = videoHTML.get(".title-wrapper .suggestion img");
 
-        // Change the video background color
-        if(div.id == "selected_song")
+        // If the video has already been suggested by the user
+        if(videoID == my_suggestion.songID)
         {
-            div.id = '';
-            icon.src = "media/interface/img_suggest_off.png";
+            // Toggle the suggestion icon
+            suggestionIcon.src = "media/interface/img_suggest_off.png";
 
-            // Delete the song
-            MODEL.removeSong(MODEL.my_suggestion.songID);
-            delete MODEL.suggestions[id];
-            MODEL.my_suggestion = null;
-            MODEL.updateSuggestionInterface();
+            // Update MODEL state
+            MODEL.removeSong(videoID);
+            MODEL.removeSuggestion(MODEL.my_user, videoID);
 
-            return
+            // Send a SUGGESTION message with the selected videoID to others users
+            CONTROLLER.sendSuggestion(videoID);
         }
         else
         {
-            // Get the old selected song TODO IF NOT EXISTS
+            // Get old video data
+            const oldVideoID = MODEL.my_suggestion.songID;
+            const oldVideoHTML = oldVideoID == undefined ? undefined : this.search_result.get(`[data-id='${oldVideoID}']`);
+            const oldSuggestionIcon =  oldVideoHTML == undefined ? oldVideoHTML : oldVideoHTML.get(".title-wrapper .suggestion img");
 
-            var old_selected_video = document.get("#selected_song");
-            old_selected_video.id = '';
-            old_selected_video.get(".title-wrapper .suggestion img").src = "media/interface/img_suggest_off.png";
+            // Toggle the suggestion icon
+            suggestionIcon.src = "media/interface/img_suggest_on.png";
+
+            // Change the previous suggestion icon
+            if(oldSuggestionIcon != undefined)
+                oldSuggestionIcon.src = "media/interface/img_suggest_off.png";
+
+            // Create new song and suggestion objects
+            const song = MODEL.current_search.getObject({ID: videoID})
+            const suggestion = new MODEL.Suggestion(videoID, MODEL.my_user.id, 0);
             
-            // Update the new selected song
-            div.id = "selected_song";
-            icon.src = "media/interface/img_suggest_on.png";
-        }
+            // Update MODEL state
+            oldVideoID == undefined ? MODEL.addSong(song) : MODEL.updateSong(oldVideoID, song);
+            oldVideoID == undefined ? MODEL.addSuggestion(MODEL.my_user, suggestion) : MODEL.updateSuggestion(MODEL.my_suggestion, videoID);
 
-        // Delete the song
-        if(MODEL.my_suggestion !== null)
-        {
-            MODEL.removeSong(MODEL.my_suggestion.songID);
-            delete MODEL.suggestions[id];
-        }
-            
-
-        // Obtain song data from the div
-        MODEL.temp = div;
- 
-        const videoThumbnail = div.querySelector('.thumbnail-wrapper .thumbnail').src;
-        const videoDuration = div.querySelector('.thumbnail-wrapper .duration label').textContent;
-        const videoTitle = div.querySelector('.title-wrapper').textContent;
-        const videoLanguage = div.querySelector('.title-wrapper .language label').textContent;
-        const videoViews = div.querySelector('.stats-wrapper .viewCount label').textContent;
-        const videoLikes = div.querySelector('.stats-wrapper .likeCount label').textContent;
-        const videoComments = div.querySelector('.stats-wrapper .commentCount label').textContent;
-        const videoElapsedTime = div.querySelector('.stats-wrapper .publicationDate label').textContent;
-        const channelThumbnail = div.querySelector('.channel-wrapper .thumbnail img').src;
-        const channelTitle = div.querySelector('.channel-wrapper .info .title').textContent;
-        const channelSubs = div.querySelector('.channel-wrapper .stats .subscriberCount label').textContent;
-        const channelViews = div.querySelector('.channel-wrapper .stats .viewCount label').textContent;
-        const channelVideos = div.querySelector('.channel-wrapper .stats .videoCount label').textContent;
-        const channelElapsedTime = div.querySelector('.channel-wrapper .stats .publicationDate label').textContent;
-        const videoDescription = div.querySelector('.description-wrapper .description').textContent;
-
-        MODEL.suggestion_counter += MODEL.suggestion_counter;
-        
-        // Create the song object  
-        MODEL.createSong(id,videoThumbnail,videoDuration,videoTitle,videoViews,videoLikes,videoComments,videoElapsedTime,channelThumbnail,channelTitle,channelSubs,channelViews,channelVideos,channelElapsedTime,videoDescription,videoLanguage);
-
-        // Create and add the suggestion
-        MODEL.my_suggestion = MODEL.createSuggestion(id,MODEL.my_user.id,0);
-
-        // Update the DOM
-        MODEL.updateSuggestionInterface();
-        
-        // Send the message to the other users
-        CONTROLLER.sendSuggestion(MODEL.my_suggestion);
+            // Send a SUGGESTION message with the selected videoID to others users
+            CONTROLLER.sendSuggestion(videoID);
+        }     
     },
 
     votesSearch: function()
@@ -504,48 +442,82 @@ const SELECTA =
         // TODO
     },
 
-    voteSuggestion: function()
+    voteSuggestion: function(event)
     {
-        // Get the entry div and the condition
-        var div = event.target;
-        var condition = div.classList[0];
+        // Get node element of the event
+        const node = event.srcElement;
 
-        // Find the parent class
-        while( condition != "video")
+        // Get parents
+        const parents = node.getParents();
+
+        // Get videoHTML and videoID
+        let videoHTML, videoID;
+        for(const parent of parents)
         {
-            div = div.parentNode;
-            condition = div.classList[0];
+            if(parent.classList && parent.classList.contains("video")) 
+            {
+                videoHTML = parent;
+                videoID = videoHTML.getAttribute('data-id');
+            }
         }
 
-        // Get the image icon
-        const icon = div.get(".title-wrapper .votes img");
+        // Checkings
+        if(!videoHTML || MODEL.my_suggestion.songID === videoID)
+            return;
 
-        // Get the video id
-        const id = div.getAttribute('data-id');
-        
-        //If its my suggestion
-        if(MODEL.my_suggestion.songID === id)
-            return
+        // Fetch suggestion icon
+        const votesIcon = videoHTML.get(".title-wrapper .votes img");
 
-        // If I already voted the video
-        if(MODEL.my_votes.includes(id))
+        // If the user has already voted the video
+        if(MODEL.my_votes.includes(videoID))
         {
-            // I already voted so I unvote
-            MODEL.suggestions[id].vote_counter -= 1;
-            MODEL.my_votes.pop(id);
+            // Toggle vote icon image
+            // TODO
+
+            // Decrease the counter
+            MODEL.suggestions[videoID].vote_counter--;
+            MODEL.my_votes.remove(videoID);
         }
         else
         {
-            // I haven't voted yet, so I proceed
-            MODEL.suggestions[id].vote_counter += 1;
-            MODEL.my_votes.push(id);
+            // Toggle vote icon image
+            // TODO
+
+            // Increase the counter
+            MODEL.suggestions[videoID].vote_counter++;
+            MODEL.my_votes.push(videoID);
         }
-        console.log(icon.src);
+
         // Update the DOM
-        MODEL.updateSuggestionInterface();
+        MODEL.updateVotesInterface();
         
         // Send the message to the other users
-        CONTROLLER.sendVote(id);
-    }
+        CONTROLLER.sendVote(videoID);  
+    },
 
+    updateSuggestionInterface: function()
+    {
+        // TODO
+    },
+
+    updateVotesInterface: function()
+    {
+        // Remove old suggestions
+        this.vote_result.removeChildren();
+
+        // Get sorted array of songs
+        const sorted_songs = MODEL.suggested_songs.values().sort(MODEL.songSorter);
+
+        // Append vote counter to containers
+        sorted_songs.forEach(song => song.voteCount = MODEL.suggestions[song.ID].vote_counter);
+
+        // Parse videos to HTML containers
+        const videosHTML = parseVideosToHTML(sorted_songs);
+
+        // Append video containers to the search results
+        this.vote_result.appendChildren(videosHTML);
+
+        // Show video containers
+        videosHTML.forEach(video => video.show());        
+    }
 }

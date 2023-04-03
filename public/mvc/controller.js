@@ -156,24 +156,6 @@ const CONTROLLER =
         VIEW.removeUser(user_id);
     },
 
-    sendTick: function()
-    {
-        const message = new Message(MODEL.my_user.id,"TICK", {"model":MODEL.my_user.model,"animation":MODEL.my_user.animation}, getTime());
-        CLIENT.sendMessage(message);
-    },
-
-    sendSuggestion: function(suggestion)
-    {
-        const message = new Message(MODEL.my_user.id,"SUGGEST", suggestion , getTime());
-        CLIENT.sendMessage(message);
-    },
-
-    sendVote: function(song_id)
-    {
-        const message = new Message(MODEL.my_user.id,"VOTE", song_id , getTime());
-        CLIENT.sendMessage(message);
-    },
-
     onTick: function(user, model, animation)
     {
         if(user)
@@ -284,6 +266,25 @@ const CONTROLLER =
                 MODEL.player = aux_player;
             }, -playbackTime);
         }
+    },
+
+    // Send methods
+    sendTick: function()
+    {
+        const message = new Message(MODEL.my_user.id, "TICK", {"model":MODEL.my_user.model,"animation":MODEL.my_user.animation}, getTime());
+        CLIENT.sendMessage(message);
+    },
+
+    sendSuggestion: function(videoID)
+    {
+        const message = new Message(MODEL.my_user.id, "SUGGEST", videoID, getTime());
+        CLIENT.sendMessage(message);
+    },
+
+    sendVote: function(videoID)
+    {
+        const message = new Message(MODEL.my_user.id, "VOTE", videoID, getTime());
+        CLIENT.sendMessage(message);
     },
 
     /***************** ACTIONS *****************/
