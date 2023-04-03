@@ -24,6 +24,7 @@ const SELECTA =
     vote_interface_wrapper: document.get("#Selecta #vote_interface_wrapper"),
 
     // Interfaces
+    menu_interface: document.get("#menu_interface"),
     search_interface: document.get("#Selecta #search_interface"),
     votes_interface: document.get("#Selecta #votes_interface"),
     settings_interface: document.get("#Selecta #settings_interface"),
@@ -113,12 +114,12 @@ const SELECTA =
         CONTROLLER.init();
         CLIENT.init();
 
-        // Hide selecta and show the loading screen
-        this.selecta.hide();
+        // Hide selecta menu and show the loading screen
+        this.menu_interface.hide();
         //this.loading_screen.show();
 
         // Start the loading timeout
-        setTimeout(this.loading_over.bind(this), 3000);
+        setTimeout(this.loading_over.bind(this), 4000);
     },
 
     addEventListeners: function()
@@ -189,7 +190,7 @@ const SELECTA =
 
     start: function()
     {
-        this.selecta.show();
+        this.menu_interface.hide();
         this.loading_screen.hide();
     },
 
