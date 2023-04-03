@@ -322,7 +322,7 @@ var DATABASE = {
         {
             // Wrap values into an array
             const values = rooms.values().reduce((values, room) => {
-                const objects_json = JSON.stringify({model: room.objects});
+                const objects_json = JSON.stringify(room.objects);
                 const people_json = JSON.stringify(room.people.toObject("user"));
                 values.push([room.id, objects_json, people_json]);
                 return values;
