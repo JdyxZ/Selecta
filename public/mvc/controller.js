@@ -2,8 +2,8 @@
 
 const CONTROLLER = 
 {
-
     // Vars
+    loading: true,
 
     /***************** INIT *****************/
 
@@ -43,7 +43,7 @@ const CONTROLLER =
         // Create the material for the avatar
         var mat = new RD.Material({
             textures: {
-            color: "user_assets/"+asset.folder + "/" + asset.texture }
+            color: "user_assets/" + asset.folder + "/" + asset.texture }
             });
         
         mat.register(asset.folder);
@@ -58,7 +58,7 @@ const CONTROLLER =
        
         var avat = new RD.SceneNode({
             scaling: 0.3,
-            mesh: "user_assets/"+asset.folder + "/" + asset.mesh,
+            mesh: "user_assets/"+ asset.folder + "/" + asset.mesh,
             material: "girl2"
         });
         avat.id = "avat";
@@ -240,7 +240,8 @@ const CONTROLLER =
             // Update model
             MODEL.current_song = song;
 
-            // TODO: Force update visuals
+            // Force update visuals
+            SELECTA.updatePlaybackInterface();
 
             // Play song
             MODEL.player.src = song.audioStream.url;
@@ -253,7 +254,8 @@ const CONTROLLER =
             // Update model
             MODEL.next_song = song;
 
-            // TODO: Force update visuals
+            // Force update visuals
+            SELECTA.updatePlaybackInterface();
 
             // Preload the song in an auxiliar player
             const aux_player = new Audio(song.audioStream.url);

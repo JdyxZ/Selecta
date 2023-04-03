@@ -44,7 +44,7 @@ const VIEW =
 
 		// Pista walkarea
 		walkarea.addRect([-250,0,-190],390,330);
-        MODEL.camarea = walkarea;
+        MODEL.area_camera = walkarea;
     },
 
     init: function()
@@ -167,7 +167,7 @@ const VIEW =
         var smoothtarget = vec3.lerp( vec3.create(), MODEL.camera.target, camtarget, 0.02 );
 
         // Get the parameters to compare
-        const v1 = MODEL.camarea.adjustPosition(campos).map(num => Math.round(num));
+        const v1 = MODEL.area_camera.adjustPosition(campos).map(num => Math.round(num));
         const v2 = campos.map(num => Math.round(num));
 
         // Check if the camera is out of boundings
@@ -177,7 +177,7 @@ const VIEW =
             node = MODEL.scene.root.findNode(MODEL.my_user.id);
             node.position = VIEW.user_backup.position;
             node.rotation = VIEW.user_backup.rotation;
-            campos = MODEL.camarea.adjustPosition(campos)
+            campos = MODEL.area_camera.adjustPosition(campos)
         }
 
         // Update the camera

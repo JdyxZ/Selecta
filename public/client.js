@@ -90,7 +90,7 @@ var CLIENT =
     {
         // Process message
         const message = JSON.parse(ws_message.data);
-        console.log(message)
+
         switch(message.type)
         {
             case "ROOM":
@@ -145,7 +145,6 @@ var CLIENT =
 
         // Callback
         CONTROLLER.setRoom(room);
-
     },
 
     setMyUser: function(message)
@@ -272,7 +271,7 @@ var CLIENT =
     {
         // Log
         console.log("New PLAY_SONG message received\n");
-        // console.table(message.content);
+        console.table(message.content);
 
         // Parse message content
         const content = JSON.parse(message.content);

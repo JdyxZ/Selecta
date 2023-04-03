@@ -519,5 +519,10 @@ const SELECTA =
 
         // Show video containers
         videosHTML.forEach(video => video.show());        
+    },
+
+    updatePlaybackInterface:function()
+    {
+        // TODO
     }
 }

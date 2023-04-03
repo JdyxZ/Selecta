@@ -6,8 +6,6 @@ const MODEL =
     my_user: null,
     my_suggestion: null,
     my_votes: [],
-
-    temp: null,
     
     // Room data
     current_room: null,
@@ -29,7 +27,6 @@ const MODEL =
     current_song: null,
     next_song: null, 
     playback_time: null, // Playback time of the current song
-    skipping_time: null, // Song time when the skip action should be performed
     player: new Audio(),
 
     // Scene data
@@ -37,9 +34,12 @@ const MODEL =
     scene: null,
     room_scene: null,
     renderer: null,
-    camera: null,
     walkarea: null,
-    camarea: null,
+    area_camera: null,
+    camera: null,
+
+    // Debug
+    debug: null,
 
     // User Methods
     getUser: function(id)
