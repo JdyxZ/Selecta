@@ -19,6 +19,9 @@ const CONTROLLER =
     {
         // Assign new room
         MODEL.current_room = room;
+
+        // Assign suggestions
+        MODEL.suggestions = MODEL.suggestions.concat(room.suggestions);        
     },
 
     setMyUser: function(user)
@@ -184,7 +187,7 @@ const CONTROLLER =
         // TODO
     },
 
-    onSuggest: function(user, suggestion, song)
+    onSuggest: function(user, song)
     {
         // Get suggestion IDs
         const old_songID = user.suggestion.songID;
@@ -193,19 +196,22 @@ const CONTROLLER =
         // Update the MODEL state
         if(old_songID == undefined)
         {
-            MODEL.addSuggestion(user, suggestion);
+            MODEL.addSuggestion(user, new_songID);
             MODEL.addSong(song);
         }
         else if(new_songID == old_songID)
         {
-            MODEL.removeSuggestion(user, suggestion);
+            MODEL.removeSuggestion(user, new_songID);
             MODEL.removeSong(new_songID);
         }
         else
         {
-            MODEL.updateSuggestion(suggestion, new_songID);
+            MODEL.updateSuggestion(user, old_songID, new_songID);
             MODEL.updateSong(old_songID, song);
         }
+
+        // Force update visuals
+        SELECTA.updateVotesInterface();
     },
 
     onVote: function(user, songID)

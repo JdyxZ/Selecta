@@ -137,7 +137,7 @@ var CLIENT =
     {
         // Log
         console.log("New ROOM message received\n");
-        //console.table(message.content);
+        console.table(message.content);
 
         // Unpack message data
         const room = message.content;
@@ -243,12 +243,11 @@ var CLIENT =
         console.table(message.content);
 
         // Unpack message data
-        const song = message.content.song;
-        const suggestion = message.content;
-        const user = MODEL.getUser(suggestion.userID);
+        const user = MODEL.getUser(message.sender);
+        const song = message.content;
 
         // Callback
-        CONTROLLER.onSuggest(user, suggestion, song);
+        CONTROLLER.onSuggest(user, song);
     },
 
     onVote: function(message)
@@ -297,7 +296,7 @@ var CLIENT =
     {
         // Log
         console.log("New ERROR message received\n");
-        //console.table(message.content);
+        console.table(message.content);
 
         // TODO
     },

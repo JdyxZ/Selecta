@@ -68,7 +68,7 @@ var SERVER =
 
     /***************** WEBSOCKET CALLBACKS *****************/
 
-    onMessage: function(connection, ws_message)
+    onMessage: async function(connection, ws_message)
     {
         try {
             // Parse message
@@ -82,7 +82,7 @@ var SERVER =
             if(message.time == null) message.time = Date.getTime();
 
             // Eventually, message has passed general checkings and is ready to be routed!
-            const status = this.routeMessage(message);
+            const status = await this.routeMessage(message);
             if (status[0] != "OK") throw status;
         } 
         // Catch errors
@@ -281,7 +281,7 @@ var SERVER =
 
         // Get suggestion IDs
         const old_songID = user.suggestion.songID;
-        const new_songID = content.songID;
+        const new_songID = content;
 
         // Get suggestion
         const suggestion = user_room.getSuggestion(new_songID);
@@ -290,7 +290,7 @@ var SERVER =
         console.log(`EVENT --> User ${user.name} has sent a SUGGEST message`);
 
         // Fetch song data
-        const videoData = await YOUTUBE.getVideosInfo(new_songID)[0];
+        const videoData = (await YOUTUBE.getVideosInfo(new_songID))[0];
         
         // Do some checkings
         const check = YOUTUBE.checkVideoInfo(videoData);
@@ -298,7 +298,7 @@ var SERVER =
         if(suggestion != undefined && suggestion.userID != sender_id) return ["SUGGEST_SONG_ALREADY_SUGGESTED", true];
 
         // Fetch channel's song data from Youtube API
-        const channelData = await YOUTUBE.getChannelsInfo(videoData.publisherChannel.ID)[0];
+        const channelData = (await YOUTUBE.getChannelsInfo(videoData.publisherChannel.ID))[0];
         if(channelData) videoData.publisherChannel = channelData;
 
         // Update the WORLD state
@@ -307,7 +307,7 @@ var SERVER =
         else if(new_songID == old_songID)
             WORLD.removeSuggestion(user_room, user, new_songID);
         else
-            WORLD.updateSuggestion(user_room, old_songID, new_songID);
+            WORLD.updateSuggestion(user_room, user, old_songID, new_songID);
 
         // Fill the content of the message with the video data
         message.content = videoData;
@@ -504,7 +504,7 @@ var SERVER =
         }
         
         // Fetch channel's song data with Youtube API
-        const channelData = await YOUTUBE.getChannelsInfo(videoData.publisherChannel.ID)[0];
+        const channelData = (await YOUTUBE.getChannelsInfo(videoData.publisherChannel.ID))[0];
         if(channelData) videoData.publisherChannel = channelData;
 
         // Fetch audioStream with Youtube Downloading module

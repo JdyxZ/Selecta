@@ -373,7 +373,7 @@ var WORLD = {
         user.suggestion = {};
     },
 
-    updateSuggestion: function(room, old_songID, new_songID)
+    updateSuggestion: function(room, user, old_songID, new_songID)
     {
         // Get suggestion
         const suggestion = room.getSuggestion(old_songID);
@@ -381,11 +381,11 @@ var WORLD = {
         // Check
         if(suggestion == undefined) return;
 
-        // Remove votes
-        this.removeSuggestionVotes(room, suggestion);
+        // Remove old suggestion
+        this.removeSuggestion(room, user, old_songID);
 
-        // Update
-        suggestion.songID = new_songID;
+        // Add new suggestion
+        this.addSuggestion(room, user, new_songID);
     },
 
     removeSuggestionVotes(room, suggestion)
@@ -393,11 +393,18 @@ var WORLD = {
         // Check
         if(suggestion == undefined) return;
 
+        // Get songID
+        const songID =  suggestion.songID;
+
         // Reset counter
         suggestion.vote_counter = 0;
 
         // Remove votes
-        room.people.forEach(user => {
+        room.people.forEach(userID => {
+            // Get user and songID
+            const user = this.getUser(userID);
+            
+            // Remove
             user.votes.remove(songID);
         })
     },

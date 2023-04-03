@@ -79,12 +79,7 @@ const MODEL =
 
         // Remove user suggestion
         if(suggestion.songID)
-            this.suggestions.remove(suggestion.songID);
-
-        // Remove user votes
-        user.votes.forEach(vote => {
-            this.suggestions[vote].vote_counter--;
-        });
+            this.removeSuggestion(suggestion.songID);
 
         // Remove user 
         this.users_obj.remove(id);
@@ -97,11 +92,14 @@ const MODEL =
         return this.suggestions[suggestionID];
     },
 
-    addSuggestion: function(user, suggestion)
+    addSuggestion: function(user, songID)
     {
+        // Create suggestion
+        const suggestion = new Suggestion(songID, user.id, 0);
+
         // Add
         user.suggestion = suggestion;
-        this.suggestions[suggestion.songID] = suggestion;
+        this.suggestions[songID] = suggestion;
 
         // Add to local user
         if(this.my_user == user)
@@ -111,8 +109,11 @@ const MODEL =
         this.suggestion_counter++;
     },
     
-    removeSuggestion: function(user, suggestion)
+    removeSuggestion: function(user, songID)
     {
+        // Get suggestion
+        const suggestion = this.getSuggestion(songID);
+
         // Check
         if(suggestion == undefined) return;
 
@@ -131,16 +132,16 @@ const MODEL =
         this.suggestion_counter--;
     },
 
-    updateSuggestion: function(suggestion, new_songID)
+    updateSuggestion: function(user, old_songID, new_songID)
     {
         // Check
-        if(suggestion == undefined) return;
+        if(new_songID == undefined) return;
 
-        // Remove votes
-        this.removeSuggestionVotes(suggestion);
+        // Remove old suggestion
+        this.removeSuggestion(user, old_songID);
 
-        // Update
-        suggestion.songID = new_songID;
+        // Add new suggestion
+        this.addSuggestion(user, new_songID);
     },
 
     removeSuggestionVotes(suggestion)
@@ -160,18 +161,22 @@ const MODEL =
     // Song methods
     getSong: function(songID)
     {
-        return this.suggested_songs[songID];
+        return this.suggested_songs.getObject({songID});
     },
 
     addSong: function(song)
     {
-        this.suggested_songs[song.id] = song;
+        this.suggested_songs.push(song);
     },
 
     removeSong: function(songID)
     {
-        if (this.suggested_songs.hasOwnProperty(songID))
-            delete this.suggested_songs[songID];
+        // Get index of the song
+        const index = this.suggested_songs.getObjectIndex({ID: songID});
+
+        // Remove
+        if(index != -1)
+            this.suggested_songs.splice(index, 1);
     },
 
     updateSong: function(old_songID, song)

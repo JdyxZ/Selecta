@@ -49,12 +49,22 @@ String.prototype.reverse = function()
 
 String.prototype.resumeByChars = function(num_chars)
 {
-	return this.slice(0, num_chars).trimEnd()  + '...';
+	if(this.length > num_chars)
+		return this.slice(0, num_chars).trimEnd()  + '...';
+	else
+		return this;
 }
 
 String.prototype.resumeByWords = function(num_words)
 {
-	return this.split(' ').slice(0, num_words).join(' ').trimEnd() + '...';
+	// Split the string
+	const splitted_string = this.split(' ');
+
+	// Operate
+	if(splitted_string.length > num_words)
+		return this.split(' ').slice(0, num_words).join(' ').trimEnd() + '...';
+	else
+		return this;
 }
 
 String.prototype.removeLineBreaks = function()

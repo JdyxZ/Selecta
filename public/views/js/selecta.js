@@ -17,7 +17,7 @@ const SELECTA =
 
     // Wrappers
     search_interface_wrapper: document.get("#Selecta #search_interface_wrapper"),
-    vote_interface_wrapper: document.get("#Selecta #vote_interface_wrapper"),
+    vote_interface_wrapper: document.get("#Selecta #votes_interface_wrapper"),
 
     // Interfaces
     menu_interface: document.get("#menu_interface"),
@@ -92,7 +92,7 @@ const SELECTA =
     debug: null,
 
     // Methods
-    init: function()
+    init: async function()
     {
         // Set CSS variables
         document.documentElement.style.setProperty('--screen_width', this.available_width + "px");
@@ -109,7 +109,7 @@ const SELECTA =
 
         // Init other resources
         CONTROLLER.init();
-        CLIENT.init();
+        await CLIENT.init();
 
         // Start the loading timeout
         setTimeout(this.loadingOver.bind(this), 3500);
@@ -246,6 +246,8 @@ const SELECTA =
         // Create array of videos
         let videosHTML = [];
 
+        this.debug = videos;
+
         for(const video of videos)
         {
             // Check
@@ -286,7 +288,7 @@ const SELECTA =
             // Fill video template with video data
             if(video.thumbnails) videoThumbnail.src = video.thumbnails.high.url;
             if(video.duration) videoDuration.textContent = joinTime(video.duration);
-            if(video.title) videoTitle.textContent = video.title;
+            if(video.title) videoTitle.textContent = video.title.resumeByChars(75);
             video.language ? videoLanguage.textContent = video.language.toUpperCase() : languageWrapper.hide();
             if(video.likeCount) videoLikes.textContent = video.likeCount.toNumber().format();
             if(video.viewCount) videoViews.textContent = video.viewCount.toNumber().format();
@@ -398,7 +400,7 @@ const SELECTA =
         }
 
         // Checkings
-        if(!videoHTML || (MODEL.my_suggestion && MODEL.my_suggestion.songID !== videoID && MODEL.suggestions.getObjectIndex({songID: videoID}) !== -1))
+        if(!videoHTML || (MODEL.my_suggestion && MODEL.my_suggestion.songID !== videoID && MODEL.getSuggestion(videoID)))
             return;
 
         // Fetch suggestion icon
@@ -412,7 +414,7 @@ const SELECTA =
 
             // Update MODEL state
             MODEL.removeSong(videoID);
-            MODEL.removeSuggestion(MODEL.my_user, videoID);
+            MODEL.removeSuggestion(MODEL.my_user, MODEL.my_suggestion.songID);
 
             // Send a SUGGESTION message with the selected videoID to others users
             CONTROLLER.sendSuggestion(videoID);
@@ -431,13 +433,12 @@ const SELECTA =
             if(oldSuggestionIcon != undefined)
                 oldSuggestionIcon.src = "media/interface/img_suggest_off.png";
 
-            // Create new song and suggestion objects
+            // Get song object
             const song = MODEL.current_search.getObject({ID: videoID})
-            const suggestion = new Suggestion(videoID, MODEL.my_user.id, 0);
             
             // Update MODEL state
             oldVideoID == undefined ? MODEL.addSong(song) : MODEL.updateSong(oldVideoID, song);
-            oldVideoID == undefined ? MODEL.addSuggestion(MODEL.my_user, suggestion) : MODEL.updateSuggestion(MODEL.my_suggestion, videoID);
+            oldVideoID == undefined ? MODEL.addSuggestion(MODEL.my_user, videoID) : MODEL.updateSuggestion(MODEL.my_user, MODEL.my_suggestion.songID, videoID);
 
             // Send a SUGGESTION message with the selected videoID to others users
             CONTROLLER.sendSuggestion(videoID);
@@ -464,7 +465,7 @@ const SELECTA =
         }
 
         // Checkings
-        if(!videoHTML || MODEL.my_suggestion.songID === videoID)
+        if(!videoHTML || (MODEL.my_suggestion && MODEL.my_suggestion.songID === videoID))
             return;
 
         // Fetch suggestion icon
@@ -491,7 +492,7 @@ const SELECTA =
         }
 
         // Update the DOM
-        MODEL.updateVotesInterface();
+        this.updateVotesInterface();
         
         // Send the message to the other users
         CONTROLLER.sendVote(videoID);  
@@ -508,13 +509,15 @@ const SELECTA =
         this.vote_result.removeChildren();
 
         // Get sorted array of songs
-        const sorted_songs = MODEL.suggested_songs.values().sort(MODEL.songSorter);
+        const sorted_songs = MODEL.suggested_songs.sort(MODEL.songSorter);
+
+        console.log(MODEL.suggested_songs);
 
         // Append vote counter to containers
         sorted_songs.forEach(song => song.voteCount = MODEL.suggestions[song.ID].vote_counter);
 
         // Parse videos to HTML containers
-        const videosHTML = parseVideosToHTML(sorted_songs);
+        const videosHTML = this.parseVideosToHTML(sorted_songs);
 
         // Append video containers to the search results
         this.vote_result.appendChildren(videosHTML);
