@@ -82,6 +82,7 @@ const SELECTA =
 
     // Templates
     videoTemplate: document.get("#Selecta .video"),
+    playerVideoTemplate: document.get("#Selecta .player_video"),
     voteVideoTemplate: document.get("#Selecta .vote_video"),
     videoSelect: null,
 
@@ -525,6 +526,46 @@ const SELECTA =
 
     updatePlaybackInterface:function()
     {
-        // TODO
+        console.log("ENTRO EN UPDATE PLAYBACK");
+        // Get the simplefied video template
+        const current_song_interface = this.playerVideoTemplate.clone();
+
+        // Visible
+        current_song_interface.show();
+
+        // Get ???
+        const video_thumbnail = current_song_interface.get(".player_video .thumbnail");
+        const video_title = current_song_interface.get(".player_video .title");
+        const duration = current_song_interface.get(".player_video .duration");
+
+        // Fill the current_song interface with the current song
+        if(MODEL.current_song.thumbnails && MODEL.current_song.thumbnails.high && MODEL.current_song.thumbnails.high.url) video_thumbnail.src = MODEL.current_song.thumbnails.high.url;
+        if(MODEL.current_song.title) video_title.textContent = MODEL.current_song.title;
+        if(MODEL.current_song.duration && MODEL.current_song.duration.minutes && MODEL.current_song.duration.seconds) duration.textContent = MODEL.current_song.duration.minutes + ":" + MODEL.current_song.duration.seconds;
+
+        // Add the children
+        this.player_current_song.replaceChildren(current_song_interface);
+
+        // If there is next song
+        if(MODEL.next_song !== null)
+        {
+            const next_song_interface = this.playerVideoTemplate.clone();
+
+            // Visible
+            next_song_interface.show();
+
+            // Get ???
+            const video_thumbnail = next_song_interface.get(".player_video .thumbnail");
+            const video_title = next_song_interface.get(".player_video .title");
+            const duration = next_song_interface.get(".player_video .duration");
+
+            // Fill the current_song interface with the current song
+            if(MODEL.next_song.thumbnails && MODEL.next_song.thumbnails.high && MODEL.next_song.thumbnails.high.url) video_thumbnail.src = MODEL.next_song.thumbnails.high.url;
+            if(MODEL.next_song.title) video_title.textContent = MODEL.next_song.title;
+            if(MODEL.next_song.duration && MODEL.next_song.duration.minutes && MODEL.next_song.duration.seconds) duration.textContent = MODEL.next_song.duration.minutes + ":" + MODEL.next_song.duration.seconds;
+
+            // Add the children
+            this.player_next_song.replaceChildren(next_song_interface);
+        }
     }
 }
