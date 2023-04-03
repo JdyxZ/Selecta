@@ -6,8 +6,6 @@ const MODEL =
     my_user: null,
     my_suggestion: null,
     my_votes: [],
-
-    temp: null,
     
     // Room data
     current_room: null,
@@ -22,14 +20,13 @@ const MODEL =
     object_assets: {}, // Furniture and scene assets of all the rooms (they must identify the room they belong to)
 
     // Interface data
-    // current_search: [],
-    songs: [], // suggested_videos
+    current_search: [],
+    suggested_songs: [],
 
     // Audio playback
     current_song: null,
     next_song: null, 
     playback_time: null, // Playback time of the current song
-    skipping_time: null, // Song time when the skip action should be performed
     player: new Audio(),
 
     // Scene data
@@ -37,9 +34,12 @@ const MODEL =
     scene: null,
     room_scene: null,
     renderer: null,
-    camera: null,
     walkarea: null,
-    camarea: null,
+    area_camera: null,
+    camera: null,
+
+    // Debug
+    debug: null,
 
     // User Methods
     getUser: function(id)
@@ -91,20 +91,6 @@ const MODEL =
         this.users_arr.splice(index, 1);
     },
 
-    createSuggestion: function(songID,userID,vote_counter)
-    {
-        const suggestion = 
-        {
-            "songID": songID,
-            "userID": userID,
-            "vote_counter": vote_counter
-        }
-
-        MODEL.suggestions[songID] = suggestion;
-
-        return suggestion;
-    },
-
     // Suggestion Methods
     getSuggestion: function(suggestionID)
     {
@@ -117,8 +103,12 @@ const MODEL =
         user.suggestion = suggestion;
         this.suggestions[suggestion.songID] = suggestion;
 
-        // Add it to the DOM
-        this.updateSuggestionInterface();
+        // Add to local user
+        if(this.my_user == user)
+            this.my_suggestion = suggestion;
+
+        // Update counter
+        this.suggestion_counter++;
     },
     
     removeSuggestion: function(user, suggestion)
@@ -132,6 +122,13 @@ const MODEL =
         // Remove
         this.suggestions.remove(suggestion.songID);
         user.suggestion = {};
+
+        // Remove from local user
+        if(this.my_user == user)
+            this.my_suggestion = null; 
+
+        // Update counter
+        this.suggestion_counter--;
     },
 
     updateSuggestion: function(suggestion, new_songID)
@@ -160,71 +157,47 @@ const MODEL =
         })
     },
 
-    updateSuggestionInterface: function()
-    {
-        // Remove all suggestions
-        SELECTA.vote_result.removeChildren();
-
-        // First add my suggestion
-        if(this.my_suggestion !== null)
-            SELECTA.loadSongToDom(this.my_suggestion);
-
-        // Then all the other suggestions
-        for (sug in MODEL.suggestions) 
-        {
-            if (typeof MODEL.suggestions[sug] !== 'function') {
-              // Cargar la song a la dom
-            }
-        }
-    },
-
-    createSong: function(id,src_image,duration,title,viewCount,likeCount,commentCount,publicationDate,channel_src,channel_title,channel_subscriberCount,channel_viewCount,channel_videos,channel_publicationDate,description,language)
-    {
-        const song = 
-        {
-            "id":id,
-            "thumbnails":src_image,
-            "duration":duration,
-            "language":language,
-            "title":title,
-            "viewCount":viewCount,
-            "likeCount":likeCount,
-            "commentCount":commentCount,
-            "elapsedTime":publicationDate,
-            "channel_thumbnails":channel_src,
-            "channel_title":channel_title,
-            "channel_subscriberCount":channel_subscriberCount,
-            "channel_viewCount":channel_viewCount,
-            "channel_videoCount":channel_videos,
-            "channel_elapsedTime":channel_publicationDate,
-            "description":description,
-        };
-        
-        MODEL.songs[id] = song;
-    },
-
     // Song methods
     getSong: function(songID)
     {
-        return this.songs[songID];
+        return this.suggested_songs[songID];
     },
 
     addSong: function(song)
     {
-        this.songs[song.id] = song;
+        this.suggested_songs[song.id] = song;
     },
 
     removeSong: function(songID)
     {
-        if (this.songs.hasOwnProperty(songID))
-            delete this.songs[songID];
+        if (this.suggested_songs.hasOwnProperty(songID))
+            delete this.suggested_songs[songID];
     },
 
     updateSong: function(old_songID, song)
     {
         this.removeSong(old_songID);
         this.addSong(song);
-    }
+    },
+
+    songSorter: function(song1, song2)
+    {
+        if(MODEL.suggestions[song1.ID].vote_counter > MODEL.suggestions[song2.ID].vote_counter)
+            return -1;
+        else if(MODEL.suggestions[song1.ID].vote_counter < MODEL.suggestions[song2.ID].vote_counter)
+            return 1;
+        else
+            return song1.title.localeCompare(song2.title, undefined, { numeric: true });
+    },
+}
+
+/***************** SUGGESTION *****************/
+
+function Suggestion(songID, userID, vote_counter)
+{
+    this.songID = songID;
+    this.userID = userID;
+    this.vote_counter = vote_counter;
 }
 
 /***************** MESSAGE *****************/

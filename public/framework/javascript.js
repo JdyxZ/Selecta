@@ -47,9 +47,14 @@ String.prototype.reverse = function()
 	return [...this].reverse().join("");	
 }
 
-String.prototype.resume = function(num_words)
+String.prototype.resumeByChars = function(num_chars)
 {
-	return this.split(' ').slice(0, num_words).join(' ') + '...';
+	return this.slice(0, num_chars).trimEnd()  + '...';
+}
+
+String.prototype.resumeByWords = function(num_words)
+{
+	return this.split(' ').slice(0, num_words).join(' ').trimEnd() + '...';
 }
 
 String.prototype.removeLineBreaks = function()
@@ -494,8 +499,11 @@ function isObject(x)
 
 function joinTime(obj) 
 {
+	// Time units
 	const timeUnits = ['years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds'];
-	return timeUnits.reduce((acc, unit) => {
+	
+	// Reduce
+	let time = timeUnits.reduce((acc, unit) => {
 		const number = obj[unit]
 		if (number) 
 		{
@@ -505,6 +513,12 @@ function joinTime(obj)
 		}
 		return acc;
 	}, []).join(':');
+
+	// Last check
+	if(time.length == 2) time = "00:" + time;
+
+	// Output
+	return time;
 }
 
 function getBiggestTime(obj) 
