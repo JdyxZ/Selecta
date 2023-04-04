@@ -356,7 +356,7 @@ var SERVER =
         if(suggestion.userID == sender_id) return ["VOTE_SONG_BELONGS_TO_THE_USER", true];
 
         // Set aux var
-        const already_voted = songID in user.votes;
+        const already_voted = user.votes.includes(songID);
 
         // Update the WORLD state
         if(already_voted)
@@ -369,6 +369,7 @@ var SERVER =
             user.votes = [...user.votes, songID];
             suggestion.vote_counter++;
         }
+        console.log(user_room.suggestions);
 
         // Redirect the message to the active room users
         this.sendRoomMessage(message, user.room, sender_id);

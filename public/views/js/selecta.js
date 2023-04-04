@@ -247,8 +247,6 @@ const SELECTA =
         // Create array of videos
         let videosHTML = [];
 
-        this.debug = videos;
-
         for(const video of videos)
         {
             // Check
@@ -512,27 +510,18 @@ const SELECTA =
         // Get suggestion
         const suggestion = MODEL.suggestions[videoID];
 
-        // Fetch suggestion icon
-        const votesIcon = videoHTML.get(".title-wrapper .votes img");
-
         // If the user has already voted the video
         if(MODEL.my_votes.includes(videoID))
         {
             // Remove vote
             MODEL.my_votes.remove(videoID);
             suggestion.vote_counter--;
-
-            // Toggle vote icon image
-            votesIcon.src = "media/interface/img_heart_off.png"
         }
         else
         {
             // Add vote
             MODEL.my_votes = [...MODEL.my_votes, videoID];
             suggestion.vote_counter++;
-
-            // Toggle vote icon image
-            votesIcon.src = "media/interface/img_heart_on.png"
         }      
 
         // Update the DOM
@@ -597,12 +586,20 @@ const SELECTA =
             // Display the vote icon
             video.get(".title-wrapper .votes").style.display = "flex";
 
-            // Set a different vote icon image for the client votes
-            if(MODEL.my_song && MODEL.my_song.ID === videoID)
+            // Get tags
+            const votesIcon = video.get(".title-wrapper .votes img");
+            const voteCount = video.get(".title-wrapper .votes #vote_counter");
+
+            // Set icon image for each case
+            if(MODEL.my_song && MODEL.my_song.ID === videoID) // Client owns the suggestion
                 video.get(".title-wrapper .votes img").src = "media/interface/img_heart_my.png"
+            else if(MODEL.my_votes.includes(videoID)) // Client has voted the suggestion
+                votesIcon.src = "media/interface/img_heart_on.png";
+            else // Client hasn't voted yet
+                votesIcon.src = "media/interface/img_heart_off.png"
 
             // Add the number of votes of the song
-            video.get(".title-wrapper .votes #vote_counter").textContent = MODEL.suggestions[videoID].vote_counter;
+            voteCount.textContent = MODEL.suggestions[videoID].vote_counter;
 
             // Show container
             video.show()

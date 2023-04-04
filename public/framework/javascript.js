@@ -544,10 +544,22 @@ function getBiggestTime(obj)
 		return `${Math.floor(obj[unit])} ${unit}`;
 	  }
 	}
-  }
+}
+
+function loadImage(HTMLImage, path)
+{
+	// Create image
+	var img = new Image();
+
+	// Set event listener for when image is loaded
+	img.onload = () =>	HTMLImage.src = img.src;
+
+	// Set path
+	img.src = path;
+}
 
 if(typeof(window) == "undefined")
 {
- 	module.exports = {getKeyFromValue, isNumber, isString, isBoolean, isArray, isFunction, isObject, outOfRange, joinTime, getBiggestTime};
+ 	module.exports = {getKeyFromValue, isNumber, isString, isBoolean, isArray, isFunction, isObject, outOfRange, joinTime, getBiggestTime, loadImage};
 }
  

@@ -231,7 +231,7 @@ const CONTROLLER =
     onVote: function(user, songID)
     {
         // Set aux vars
-        const already_voted = songID in user.votes;
+        const already_voted = user.votes.includes(songID);
         const suggestion = MODEL.getSuggestion(songID);
 
         // Update MODEL state
