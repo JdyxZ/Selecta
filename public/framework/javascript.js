@@ -362,7 +362,7 @@ setArrayProperty("containsStrict", function(elements)
 setArrayProperty("remove", function(elements) { 
 
 	// Checkings
-	if (isNumber(elements) || isString(elements)) elements = elements.toArray();
+	if (!isArray(elements)) elements = elements.toArray();
 
 	// Filter
 	elements.forEach( element =>
@@ -451,6 +451,10 @@ setObjectProperty("isEmpty", function() {
     }
 
     return true;
+});
+
+setObjectProperty("toArray", function() { 
+	return [this];
 });
 
  /***************** FUNCTIONS *****************/

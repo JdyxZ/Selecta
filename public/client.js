@@ -150,7 +150,7 @@ var CLIENT =
     {
         // Log
         console.log("New YOUR_INFO message received\n");
-        //console.table(message.content);
+        console.table(message.content);
 
         // Unpack message data
         const users = message.content
@@ -185,7 +185,7 @@ var CLIENT =
 
         // Unpack message data
         const users = message.content;
-        console.log(users)
+
         // Callback
         CONTROLLER.onUserJoin(users);
     },
@@ -198,7 +198,7 @@ var CLIENT =
 
         // Unpack message data
         const user_id = message.content;
-        console.log(user_id)
+
         // Callback
         CONTROLLER.onUserLeft(user_id);
     },
@@ -240,7 +240,7 @@ var CLIENT =
     {
         // Log
         console.log("New SUGGEST message received\n");
-        console.table(message.content);
+        // console.table(message.content);
 
         // Unpack message data
         const user = MODEL.getUser(message.sender);
@@ -269,7 +269,7 @@ var CLIENT =
     {
         // Log
         console.log("New PLAY_SONG message received\n");
-        console.table(message.content);
+        // console.table(message.content);
 
         // Parse message content
         const content = JSON.parse(message.content);
@@ -297,8 +297,6 @@ var CLIENT =
         // Log
         console.log("New ERROR message received\n");
         console.table(message.content);
-
-        // TODO
     },
 
     // Methods

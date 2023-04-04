@@ -10,6 +10,6 @@ Date ISO 8601 formats: https://stackoverflow.com/questions/32044846/regex-for-is
 Javascript Audio API: https://lenguajejs.com/javascript/multimedia/api-multimedia-nativa/
 Modify image outline in Photoshop: https://www.youtube.com/watch?v=OYFTK7XwSIM 
 Get HTML elements by data component: https://stackoverflow.com/questions/7084557/select-all-elements-with-a-data-xxx-attribute-without-using-jquery 
-
+Mutate an array within forEach clause: https://stackoverflow.com/questions/24812930/how-to-remove-element-from-array-in-foreach-loop 
 
 # Sr.OjeteSucio

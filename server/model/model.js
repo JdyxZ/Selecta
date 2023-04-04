@@ -6,22 +6,21 @@ const {isNumber, isString, isArray} = require("../../public/framework/javascript
 
 function User(data)
 {   
-    console.log("updating user??")
-    console.log(data)
     this.id = data == undefined ? -1 : data.id || -1;
     this.name = data == undefined ? "unnamed" : (data.name != undefined ? data.name : data.social.name || "unamed");
     this.model = data == undefined ? {} : data.model || {};
     this.asset = data == undefined ? 0 : data.asset || 0; 
     this.room = data == undefined ? 1 : data.room || 1;
     this.animation = data == undefined ? "idle.skanim" : data.animation || "idle.skanim";
-    this.suggestion = {};
+    this.suggestion = null;
+    this.song = null;
     this.votes = [];
     this.skip = false;
 }
 
 User.prototype.toJSON = function()
 {
-    const{ id, name, model, asset, room, animation, suggestion, votes, skip } = this;
+    const{ id, name, model, asset, room, animation, suggestion, song, votes, skip } = this;
 
     const user_json =
     {
@@ -32,6 +31,7 @@ User.prototype.toJSON = function()
         room,
         animation,
         suggestion,
+        song,
         votes,
         skip
     }
@@ -86,11 +86,12 @@ function Room(data)
     this.default_model = data == undefined ? [] : data.default_model || [];
     this.playlist = data == undefined ? null : data.playlist || null;
     this.suggestions = {};
+    this.songs = {};
     this.skip_counter = 0;
     this.skipping = false;
     this.skipping_time = 0;
-    this.current_song = {};
-    this.next_song = {};
+    this.current_song = null;
+    this.next_song = null;
     this.reference_time = 0;
     this.playback_time = 0;
     this.num_people = 0;
@@ -132,7 +133,7 @@ Room.prototype.removeUser = function(user)
 
 Room.prototype.toJSON = function()
 {
-    const{ id, name, objects, people, exits, default_model, suggestions, num_people } = this;
+    const{ id, name, objects, people, exits, default_model, suggestions, songs, num_people } = this;
 
     const room_json =
     {
@@ -143,6 +144,7 @@ Room.prototype.toJSON = function()
         exits,
         default_model,
         suggestions,
+        songs,
         num_people
     }
 
@@ -370,7 +372,7 @@ var WORLD = {
 
         // Remove
         room.suggestions.remove(songID);
-        user.suggestion = {};
+        user.suggestion = null;
     },
 
     updateSuggestion: function(room, user, old_songID, new_songID)
@@ -407,6 +409,39 @@ var WORLD = {
             // Remove
             user.votes.remove(songID);
         })
+    },
+
+    getSong: function(room, songID)
+    {
+        return room.songs[songID];
+    },
+
+    addSong: function(room, user, song)
+    {
+        // Check
+        if(!song)
+            return;
+
+        // Add 
+        room.songs[song.ID] = song;
+        user.song = song;
+    },
+
+    removeSong: function(room, user, song)
+    {
+        // Check
+        if(!song)
+            return;
+
+        // Remove
+        delete room.songs[song.ID];
+        user.song = null;
+    },
+
+    updateSong: function(room, user, oldSong, newSong)
+    {
+        this.removeSong(room, user, oldSong);
+        this.addSong(room, user, newSong);
     },
 
     fromJSON: function(world_json)

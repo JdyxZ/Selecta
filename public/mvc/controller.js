@@ -17,23 +17,36 @@ const CONTROLLER =
 
     setRoom: function(room)
     {
-        // Assign new room
+        // Save new room data
         MODEL.current_room = room;
 
-        // Assign suggestions
-        MODEL.suggestions = MODEL.suggestions.concat(room.suggestions);        
+        // Save suggestions
+        MODEL.suggestions = MODEL.suggestions.concat(room.suggestions); 
+
+        // Save songs
+        MODEL.songs = MODEL.songs.concat(room.songs.values());
     },
 
-    setMyUser: function(user)
+    setMyUser: async function(user)
     {
-        // Assign my user info to my_user
+        // Add user info to the MODEL
         MODEL.my_user = user;
+        MODEL.my_suggestion = user.suggestion;
+        MODEL.my_votes = user.votes;
+        MODEL.my_song = user.song;
+
+        // Animation
         MODEL.my_user.animation = 'idle.skanim'
 
+        // Append user to the VIEW render
         if(!((typeof MODEL.raw_user_assets[user.id] === 'undefined')))
         {
             VIEW.addUser(user);
         }
+
+        // Force update visuals
+        if(MODEL.my_song)
+            SELECTA.updateSuggestionInterface();
     },
 
     createAsset: function(user_asset,user_position,user_rotation,id)
@@ -105,12 +118,9 @@ const CONTROLLER =
 
         for(user_id in MODEL.users_obj)
         {
-            console.log(MODEL.users_obj[user_id]);
-
             if((typeof MODEL.users_obj[user_id] === 'undefined'))
                 return
 
-            console.log(MODEL.users_obj[user_id]);
             VIEW.addUser(MODEL.users_obj[user_id]);
         }
     },
@@ -189,25 +199,29 @@ const CONTROLLER =
 
     onSuggest: function(user, song)
     {
-        // Get suggestion IDs
-        const old_songID = user.suggestion.songID;
-        const new_songID = song.ID;
+        // Get songs
+        const oldSong = user.song;
+        const newSong = song;
+
+        // Get songs IDs
+        const oldSongID = oldSong == undefined ? undefined : oldSong.ID;
+        const newSongID = newSong.ID;
 
         // Update the MODEL state
-        if(old_songID == undefined)
+        if(oldSongID == undefined)
         {
-            MODEL.addSuggestion(user, new_songID);
-            MODEL.addSong(song);
+            MODEL.addSuggestion(user, newSongID);
+            MODEL.addSong(user, newSong);
         }
-        else if(new_songID == old_songID)
+        else if(oldSongID == newSongID)
         {
-            MODEL.removeSuggestion(user, new_songID);
-            MODEL.removeSong(new_songID);
+            MODEL.removeSuggestion(user, newSongID);
+            MODEL.removeSong(user, newSong);
         }
         else
         {
-            MODEL.updateSuggestion(user, old_songID, new_songID);
-            MODEL.updateSong(old_songID, song);
+            MODEL.updateSuggestion(user, oldSongID, newSongID);
+            MODEL.updateSong(user, oldSong, newSong);
         }
 
         // Force update visuals
@@ -231,6 +245,8 @@ const CONTROLLER =
             user.votes = [...user.votes, songID];
             suggestion.vote_counter++;
         }
+
+        SELECTA.updateVotesInterface();
     },
 
     onPlaySong: function(song, playbackTime, timestamp)

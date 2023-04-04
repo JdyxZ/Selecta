@@ -122,7 +122,6 @@ const VIEW =
         // Get the corresponding user asset
         var asset = MODEL.raw_user_assets[user.asset];
         //console.log(MODEL.raw_user_assets);
-        console.log(user);
 
         var position = [-40,-5,0];
         var rotation = [0,0,0];

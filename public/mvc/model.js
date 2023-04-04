@@ -5,6 +5,7 @@ const MODEL =
     // User data
     my_user: null,
     my_suggestion: null,
+    my_song: null,
     my_votes: [],
     
     // Room data
@@ -12,6 +13,7 @@ const MODEL =
     users_obj: {},
     users_arr: [],
     suggestions: {},
+    songs: [],
     suggestion_counter: 0,
 
     // Assets data
@@ -21,7 +23,6 @@ const MODEL =
 
     // Interface data
     current_search: [],
-    suggested_songs: [],
 
     // Audio playback
     current_song: null,
@@ -49,7 +50,7 @@ const MODEL =
 
     addUser: function(user)
     {
-        this.users_obj[user.id] = user;user
+        this.users_obj[user.id] = user;
         this.users_arr.append(user);
     },
 
@@ -78,7 +79,7 @@ const MODEL =
         const suggestion = user.suggestion;
 
         // Remove user suggestion
-        if(suggestion.songID)
+        if(suggestion)
             this.removeSuggestion(suggestion.songID);
 
         // Remove user 
@@ -122,7 +123,7 @@ const MODEL =
 
         // Remove
         this.suggestions.remove(suggestion.songID);
-        user.suggestion = {};
+        user.suggestion = null;
 
         // Remove from local user
         if(this.my_user == user)
@@ -161,28 +162,44 @@ const MODEL =
     // Song methods
     getSong: function(songID)
     {
-        return this.suggested_songs.getObject({songID});
+        return this.songs.getObject({ID: songID});
     },
 
-    addSong: function(song)
+    addSong: function(user, song)
     {
-        this.suggested_songs.push(song);
+        // Check
+        if(!song)
+            return;
+
+        // Add
+        this.songs.push(song);
+        user.song = song;
+
+        // Add to local user
+        if(this.my_user == user)
+            this.my_song = song;
     },
 
-    removeSong: function(songID)
+    removeSong: function(user, song)
     {
-        // Get index of the song
-        const index = this.suggested_songs.getObjectIndex({ID: songID});
-
+        // Check
+        if(!song)
+            return;
+            
         // Remove
-        if(index != -1)
-            this.suggested_songs.splice(index, 1);
+        this.songs.remove(song);
+        user.song = null;
+
+        // Remove from local user
+        if(this.my_user == user)
+            this.my_song = null; 
     },
 
-    updateSong: function(old_songID, song)
+    updateSong: function(user, oldSong, newSong)
     {
-        this.removeSong(old_songID);
-        this.addSong(song);
+        // Update
+        this.removeSong(user, oldSong);
+        this.addSong(user, newSong);
     },
 
     songSorter: function(song1, song2)

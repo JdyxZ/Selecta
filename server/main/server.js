@@ -280,7 +280,7 @@ var SERVER =
         const user_room = WORLD.getRoom(user.room);
 
         // Get suggestion IDs
-        const old_songID = user.suggestion.songID;
+        const old_songID = user.song == undefined ? undefined : user.song.ID;
         const new_songID = content;
 
         // Get suggestion
@@ -301,16 +301,29 @@ var SERVER =
         const channelData = (await YOUTUBE.getChannelsInfo(videoData.publisherChannel.ID))[0];
         if(channelData) videoData.publisherChannel = channelData;
 
+        // Get & Create song data
+        const oldSong = WORLD.getSong(user_room, old_songID);
+        const newSong = new Song(videoData);
+
         // Update the WORLD state
         if(old_songID == undefined)
+        {
             WORLD.addSuggestion(user_room, user, new_songID);
+            WORLD.addSong(user_room, user, newSong);
+        }
         else if(new_songID == old_songID)
+        {
             WORLD.removeSuggestion(user_room, user, new_songID);
+            WORLD.removeSong(user_room, user, newSong);
+        }
         else
+        {
             WORLD.updateSuggestion(user_room, user, old_songID, new_songID);
+            WORLD.updateSong(user_room, user, oldSong, newSong);
+        }
 
         // Fill the content of the message with the video data
-        message.content = videoData;
+        message.content = newSong;
 
         // Redirect the message to the active room users
         this.sendRoomMessage(message, user.room, sender_id);
@@ -517,7 +530,7 @@ var SERVER =
         // Assign url info
         videoData.audioStream = audioStream[1];
 
-        // Create new instance ofSong with song data
+        // Create new instance of the class Song with song data
         const next_song = new Song(videoData); 
         
         // Get selected suggestion's user
