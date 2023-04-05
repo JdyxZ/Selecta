@@ -20,6 +20,7 @@ Run server with nodemon: npm run server
 - Create an avatar table and adapt everything towards it.
 - Change require module import to the new way of importing modules with "import" clause.
 - Admin type accounts.
+- Room playback ready, send message.
 - Play videos instead of songs and place a canvas inside the 3D world to show the video to the people in the room.
 
 

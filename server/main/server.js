@@ -607,6 +607,9 @@ var SERVER =
             // Start song cycle
             await this.chooseNextSong(roomID);
         }
+
+        // Notify the initialization of the playback of the rooms is done
+        console.log(`EVENT ---> Room playback ready`);
     },
 
     getPlaybackInfo: function(room, song)

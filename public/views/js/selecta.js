@@ -630,16 +630,17 @@ const SELECTA =
                 let duration = "00:00:00";
                 if(MODEL.current_song)
                 {
-                    const hours = MODEL.current_song.duration.hours ? MODEL.current_song.duration.hours : "00";
-                    const minutes = MODEL.current_song.duration.minutes ? MODEL.current_song.duration.minutes : "00";
-                    const seconds = MODEL.current_song.duration.seconds ? MODEL.current_song.duration.seconds : "00";
-                    duration = `${hours}:${minutes}:${seconds}`;
+                    const hours = MODEL.current_song.duration.hours ? MODEL.current_song.duration.hours : "0";
+                    const minutes = MODEL.current_song.duration.minutes ? MODEL.current_song.duration.minutes : "0";
+                    const seconds = MODEL.current_song.duration.seconds ? MODEL.current_song.duration.seconds : "0";
+                    
+                    duration = `${hours < 10 ? "0" + hours : hours}:${minutes < 10 ? "0" + minutes : minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
                 }
         
                 // Fill song elements with current song data
                 songThumbnail.src = MODEL.current_song ? MODEL.current_song.thumbnails.medium.url : "media/interface/no_song.png";
-                songTitle.textContent = MODEL.current_song ? MODEL.current_song.title.resumeByChars(75) : "Current song";
-                songArtist.textContent = MODEL.current_song ? MODEL.current_song.publisherChannel.title.resumeByChars(75) : "Song artist";
+                songTitle.textContent = MODEL.current_song ? MODEL.current_song.title.resumeByChars(26) : "Current song";
+                songArtist.textContent = MODEL.current_song ? MODEL.current_song.publisherChannel.title.resumeByChars(26) : "Song artist";
                 
                 // Fill player elements with current song data
                 songPlayerThumbnail.src = MODEL.current_song ? MODEL.current_song.thumbnails.medium.url : "media/interface/no_song.png";
@@ -655,8 +656,8 @@ const SELECTA =
         
                 // Fill elements with current song data
                 songThumbnail.src = MODEL.next_song ? MODEL.next_song.thumbnails.medium.url : "media/interface/no_song.png";
-                songTitle.textContent = MODEL.next_song ? MODEL.next_song.title.resumeByChars(75) : "Next song";
-                songArtist.textContent = MODEL.next_song ? MODEL.next_song.publisherChannel.title.resumeByChars(75) : "Song artist";
+                songTitle.textContent = MODEL.next_song ? MODEL.next_song.title.resumeByChars(26) : "Next song";
+                songArtist.textContent = MODEL.next_song ? MODEL.next_song.publisherChannel.title.resumeByChars(26) : "Song artist";
             }            
         } 
         catch (error) 

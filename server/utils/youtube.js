@@ -265,7 +265,8 @@ const YOUTUBE =
             // Execute
             const response = await this.Youtube.playlistItems.list({
                 part: ["snippet", "contentDetails", "id", "status"],
-                playlistId: playlistID
+                playlistId: playlistID,
+                maxResults: 50
             });
 
             // Set aux var
