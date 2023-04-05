@@ -31,10 +31,42 @@ body
 /* APP */
 #Selecta
 {
+    position: absolute;
     width: 100%;
     height: 100%;
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: 87% 13%;
+    overflow: auto;
+}
+
+#Selecta #interface_wrapper
+{
     display: flex;
-    place-items:center;
+    place-content: center;
+    grid-column: 1;
+    grid-row: 1;
+    overflow: hidden;
+}
+
+#Selecta #player_wrapper
+{
+    position: relative;
+    display: inline-flex;
+    place-content: center;
+    grid-column: 1;
+    grid-row: 2;
+    overflow: hidden;
+    z-index: 1;
+}
+
+#Selecta #canvas_wrapper
+{
+    width: 100%;
+    display: flex;
+    grid-column: 1;
+    grid-row: 1/3;
+    overflow-x: hidden;
 }
 
 #Selecta .dragger

@@ -157,6 +157,19 @@ Date.toDate = function(ms)
 	return response;
 }
 
+Date.toTime = function(ms)
+{
+	let seconds = ms == 0 ? 0 : Math.floor((duration / 1000) % 60);
+	let minutes = ms == 0 ? 0 : Math.floor((duration / (1000 * 60)) % 60);
+	let hours = ms == 0 ? 0 : Math.floor((duration / (1000 * 60 * 60)) % 24);
+	  
+	seconds = (seconds < 10) ? "0" + seconds : seconds;
+	minutes = (minutes < 10) ? "0" + minutes : minutes;
+	hours = (hours < 10) ? "0" + hours : hours;
+	  
+	return hours + ":" + minutes + ":" + seconds;
+}
+
 Date.elapsedTime = function(time)
 {
 	return Date.toDate(new Date() - new Date(time));

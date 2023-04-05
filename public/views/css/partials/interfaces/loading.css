@@ -21,7 +21,7 @@
 
 #loading_screen .image_container #selecta_logo
 {
-    width: 40%;
+    width: 30%;
     object-fit: contain;
     padding: 7% 0% 3% 0%;
 }

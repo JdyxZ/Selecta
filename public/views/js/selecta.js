@@ -32,13 +32,10 @@ const SELECTA =
     votes_trigger: document.get("#Selecta #votes_trigger"),
     settings_trigger: document.get("#Selecta #settings_trigger"),
     exit_trigger: document.get("#Selecta #logout_trigger"),
+    player_wrapper: document.get("#Selecta #player_wrapper"),
 
     // Micro image
     mute_img: document.get("#Selecta #mute_image"),
-
-    // Player
-    player_current_song: document.get("#Selecta .player_container .current_song .player_song"),
-    player_next_song: document.get("#Selecta .player_container .next_song .player_song"),
 
     // Settings interactions
     settings_menu_close: document.get("#settings_close_button"),
@@ -82,9 +79,13 @@ const SELECTA =
     vote_result: document.get("#Selecta #votes_interface #search_result"),
     vote_error_prompt: document.get("#Selecta #votes_interface #error_prompt"),
 
+    // Player
+    current_song: document.get("#player_container #current_song"),
+    player: document.get("#player_container #player"),
+    next_song: document.get("#player_container #current_song"),
+
     // Templates
     videoTemplate: document.get("#Selecta .video"),
-    playerVideoTemplate: document.get("#Selecta .player_video"),
 
     // Control varibles
     muted: false,
@@ -197,7 +198,7 @@ const SELECTA =
     {
         // Toggle screens
         this.loading_screen.hide();
-        this.menu_interface.show();
+        this.selecta.show();
 
         // Send ready message to the server
         CONTROLLER.sendReady();
@@ -606,48 +607,61 @@ const SELECTA =
         });    
     },
 
-    updatePlaybackInterface:function()
+    updatePlaybackInterface:function(update)
     {
-        console.log("ENTRO EN UPDATE PLAYBACK");
-        // Get the simplefied video template
-        const current_song_interface = this.playerVideoTemplate.clone();
-
-        // Visible
-        current_song_interface.show();
-
-        // Get ???
-        const video_thumbnail = current_song_interface.get(".player_video .thumbnail");
-        const video_title = current_song_interface.get(".player_video .title");
-        const duration = current_song_interface.get(".player_video .duration");
-
-        // Fill the current_song interface with the current song
-        if(MODEL.current_song.thumbnails && MODEL.current_song.thumbnails.high && MODEL.current_song.thumbnails.high.url) video_thumbnail.src = MODEL.current_song.thumbnails.high.url;
-        if(MODEL.current_song.title) video_title.textContent = MODEL.current_song.title;
-        if(MODEL.current_song.duration && MODEL.current_song.duration.minutes && MODEL.current_song.duration.seconds) duration.textContent = MODEL.current_song.duration.minutes + ":" + MODEL.current_song.duration.seconds;
-
-        // Add the children
-        this.player_current_song.replaceChildren(current_song_interface);
-
-        // If there is next song
-        if(MODEL.next_song !== null)
+        try 
         {
-            const next_song_interface = this.playerVideoTemplate.clone();
+            if(update == "current" || update == "both")
+            {    
+                // Get current song elements
+                const songThumbnail = this.current_song.get(".thumbnail");
+                const songTitle = this.current_song.get(".title");
+                const songArtist = this.current_song.get(".artist");
 
-            // Visible
-            next_song_interface.show();
+                // Get player elements
+                const songPlayerThumbnail = this.player.get(".thumbnail");
+                const songCurrentTime = this.player.get("#current-time")
+                const songDuration = this.player.get("#duration");
 
-            // Get ???
-            const video_thumbnail = next_song_interface.get(".player_video .thumbnail");
-            const video_title = next_song_interface.get(".player_video .title");
-            const duration = next_song_interface.get(".player_video .duration");
+                // Format current playback time
+                const currentTime = Date.toTime(MODEL.player.currentTime);
 
-            // Fill the current_song interface with the current song
-            if(MODEL.next_song.thumbnails && MODEL.next_song.thumbnails.high && MODEL.next_song.thumbnails.high.url) video_thumbnail.src = MODEL.next_song.thumbnails.high.url;
-            if(MODEL.next_song.title) video_title.textContent = MODEL.next_song.title;
-            if(MODEL.next_song.duration && MODEL.next_song.duration.minutes && MODEL.next_song.duration.seconds) duration.textContent = MODEL.next_song.duration.minutes + ":" + MODEL.next_song.duration.seconds;
-
-            // Add the children
-            this.player_next_song.replaceChildren(next_song_interface);
+                // Format song duration
+                let duration = "00:00:00";
+                if(MODEL.current_song)
+                {
+                    const hours = MODEL.current_song.duration.hours ? MODEL.current_song.duration.hours : "00";
+                    const minutes = MODEL.current_song.duration.minutes ? MODEL.current_song.duration.minutes : "00";
+                    const seconds = MODEL.current_song.duration.seconds ? MODEL.current_song.duration.seconds : "00";
+                    duration = `${hours}:${minutes}:${seconds}`;
+                }
+        
+                // Fill song elements with current song data
+                songThumbnail.src = MODEL.current_song ? MODEL.current_song.thumbnails.medium.url : "media/interface/no_song.png";
+                songTitle.textContent = MODEL.current_song ? MODEL.current_song.title.resumeByChars(75) : "Current song";
+                songArtist.textContent = MODEL.current_song ? MODEL.current_song.publisherChannel.title.resumeByChars(75) : "Song artist";
+                
+                // Fill player elements with current song data
+                songPlayerThumbnail.src = MODEL.current_song ? MODEL.current_song.thumbnails.medium.url : "media/interface/no_song.png";
+                songCurrentTime.textContent = currentTime;
+                songDuration.textContent = duration;
+            }
+            if(update == "next" || update == "both")
+            {
+                // Get current song elements
+                const songThumbnail = this.next_song.get(".thumbnail");
+                const songTitle = this.next_song.get(".title");
+                const songArtist = this.next_song.get(".artist");
+        
+                // Fill elements with current song data
+                songThumbnail.src = MODEL.next_song ? MODEL.next_song.thumbnails.medium.url : "media/interface/no_song.png";
+                songTitle.textContent = MODEL.next_song ? MODEL.next_song.title.resumeByChars(75) : "Next song";
+                songArtist.textContent = MODEL.next_song ? MODEL.next_song.publisherChannel.title.resumeByChars(75) : "Song artist";
+            }            
+        } 
+        catch (error) 
+        {
+            console.error(error);
         }
     }
 }

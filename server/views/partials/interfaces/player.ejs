@@ -1,14 +1,30 @@
-<div class="player_container" >
-    <div class="current_song">
-        <div class="player_content">
-            <div class="player_song"></div>
-            <label class="player_label">CURRENT SONG</label>
+<div id="player_container" >
+    <div id="current_song">
+        <img class="thumbnail" alt="Thumbnail" src="media/interface/no_song.png"></img>
+        <div class="text_container">
+            <label class="title">Current song</label>
+            <label class="artist">Song artist</label>
         </div>
     </div>
-    <div class="next_song">
-        <div class="player_content">
-            <div class="player_song"></div>
-            <label class="player_label">NEXT SONG</label>
+    <div id="player">
+        <div class="cover">
+            <img class="thumbnail" alt="Thumbnail"></img>
+            <img id="skip-button" src="media/interface/skip_button_off.png"></img>
+            <label id="skip-info"></label>
         </div>
+        <div class="progress">
+            <label id="current-time"></label>
+            <div class="progress-bar-container">
+                <div class="progress-bar"></div>
+            </div>
+            <label id="duration"></label>
+        </div>
+    </div>
+    <div id="next_song">
+        <div class="text_container">
+            <label class="title">Next song</label>
+            <label class="artist">Song artist</label>
+        </div>
+        <img class="thumbnail" src="media/interface/no_song.png"></img>
     </div>
   </div>

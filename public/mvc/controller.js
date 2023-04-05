@@ -255,18 +255,21 @@ const CONTROLLER =
         const latency = Date.getTime() - timestamp;
         playbackTime += latency;
 
+        // Update parameter
+        const update = playbackTime >= 0 ? "current" : "next";
+
         // Play current song
-        if(playbackTime > 0)
+        if(playbackTime >= 0)
         {
             // Update model
             MODEL.current_song = song;
 
             // Force update visuals
-            SELECTA.updatePlaybackInterface();
+            SELECTA.updatePlaybackInterface(update);
 
             // Play song
             MODEL.player.src = song.audioStream.url;
-            MODEL.player.currentTime = playbackTime / 1000; // [s]
+            MODEL.player.currentTime = playbackTime == 0 ? playbackTime : playbackTime / 1000; // [s]
             MODEL.player.play();
         }
         // Schedule the next song
@@ -276,7 +279,7 @@ const CONTROLLER =
             MODEL.next_song = song;
 
             // Force update visuals
-            SELECTA.updatePlaybackInterface();
+            SELECTA.updatePlaybackInterface(update);
 
             // Preload the song in an auxiliar player
             const aux_player = new Audio(song.audioStream.url);
@@ -284,9 +287,15 @@ const CONTROLLER =
 
             // Schedule playback
             setTimeout(() => {
+
+                // Start and set new player
                 MODEL.player.pause();
                 aux_player.play();
                 MODEL.player = aux_player;
+
+                // Force update visuals
+                SELECTA.updatePlaybackInterface("both");
+
             }, -playbackTime);
         }
     },

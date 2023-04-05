@@ -11,30 +11,42 @@
         <%- include('partials/interfaces/loading.ejs') %>
 
         <!-- SELECTA -->
-        <div id="Selecta">
+        <div id="Selecta" style="display:none;">
 
-            <!-- MENU INTERFACE -->
-            <%- include('partials/interfaces/menu.ejs') %>
+            <div id="interface_wrapper">
+                
+                <!-- MENU INTERFACE -->
+                <%- include('partials/interfaces/menu.ejs') %>
+    
+                <!-- SEARCH INTERFACE -->
+                <%- include('partials/interfaces/search.ejs') %>
+    
+                <!-- VOTE INTERFACE -->
+                <%- include('partials/interfaces/vote.ejs') %>
+    
+                <!-- SETTINGS INTERFACE -->
+                <%- include('partials/interfaces/settings.ejs') %>
+    
+                <!-- LOGOUT INTERFACE -->
+                <%- include('partials/interfaces/logout.ejs') %>
 
-            <!-- SEARCH INTERFACE -->
-            <%- include('partials/interfaces/search.ejs') %>
+            </div>
 
-            <!-- VOTE INTERFACE -->
-            <%- include('partials/interfaces/vote.ejs') %>
+            <div id="player_wrapper">
+                
+                <!-- PLAYER -->
+                <%- include('partials/interfaces/player.ejs') %>
 
-            <!-- SETTINGS INTERFACE -->
-            <%- include('partials/interfaces/settings.ejs') %>
+            </div>
 
-            <!-- LOGOUT INTERFACE -->
-            <%- include('partials/interfaces/logout.ejs') %>
+            <div id="canvas_wrapper">
 
-            <!-- PLAYER INTERFACE -->
-            <%- include('partials/interfaces/player.ejs') %>
+                <!-- CANVAS -->
+
+            </div>
 
             <!-- TEMPLATES -->
             <%- include('partials/templates.ejs') %>
-
-            <!-- CANVAS -->
 
         </div>
 

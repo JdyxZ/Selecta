@@ -49,7 +49,7 @@ const VIEW =
 
     init: function()
     {
-        VIEW.canvas_parent = document.get("#Selecta");
+        VIEW.canvas_parent = document.get("#Selecta #canvas_wrapper");
         MODEL.context = GL.create({width: window.innerWidth, height:window.innerHeight});
 
         // Create the renderer instance
