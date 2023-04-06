@@ -249,28 +249,19 @@ const CONTROLLER =
         SELECTA.updateVotesInterface();
     },
 
-    onPlaySong: function(song, playbackTime, timestamp)
+    onPlaySong: function(song)
     {
-        // Adjust latency
-        const latency = Date.getTime() - timestamp;
-        playbackTime += latency;
-
-        // Update parameter
-        const update = playbackTime >= 0 ? "current" : "next";
-
         // Play current song
-        if(playbackTime >= 0)
+        if(song.playbackTime >= 0)
         {
             // Update model
             MODEL.current_song = song;
+            
+            // Set a loading callback
+            MODEL.player.oncanplaythrough = this.playCurrentSong;
 
-            // Force update visuals
-            SELECTA.updatePlaybackInterface(update);
-
-            // Play song
+            // Start loading the song
             MODEL.player.src = song.audioStream.url;
-            MODEL.player.currentTime = playbackTime == 0 ? playbackTime : playbackTime / 1000; // [s]
-            MODEL.player.play();
         }
         // Schedule the next song
         else if (playbackTime < 0)
@@ -279,28 +270,36 @@ const CONTROLLER =
             MODEL.next_song = song;
 
             // Force update visuals
-            SELECTA.updatePlaybackInterface(update);
+            SELECTA.updatePlaybackInterface("next");
 
-            // Preload the song in an auxiliar player
-            const aux_player = new Audio(song.audioStream.url);
-            aux_player.load();
+            // Initialize aux player to start prelaoding the song
+            MODEL.aux_player = new Audio();
+            
+            // Start preloading the song 
+            MODEL.aux_player.src = song.audioStream.url;
 
             // Schedule playback
-            setTimeout(() => {
+            setTimeout(() => 
+            {
+                // The song is ready
+                if(aux_player.readyState == 4)
+                {
+                    // Play next song
+                    this.playNextSong();
+                }
+                // The song is not ready yet
+                else
+                {
+                    // Set a loading callback
+                    MODEL.aux_player.oncanplaythrough = this.playNextSong;
+                }
 
-                // Start and set new player
-                MODEL.player.pause();
-                aux_player.play();
-                MODEL.player = aux_player;
-
-                // Force update visuals
-                SELECTA.updatePlaybackInterface("both");
-
-            }, -playbackTime);
+            }, -song.playbackTime);
         }
     },
 
-    // Send methods
+    /***************** SEND METHODS *****************/
+
     sendReady:function()
     {
         const message = new Message(MODEL.my_user.id, "READY", "", getTime());
@@ -329,16 +328,51 @@ const CONTROLLER =
     {
         const message = new Message(MODEL.my_user.id, "SKIP", MODEL.current_song.ID, getTime());
         CLIENT.sendMessage(message);
+    },
+
+    /***************** AUXILIAR METHODS *****************/
+
+    playCurrentSong: function()
+    {
+        // Deactive callback to avoid bugs
+        MODEL.player.oncanplaythrough = null;
+
+        // Set song time
+        const loadingTime = performance.now() - MODEL.current_song.arrivalTime;
+        const time = (MODEL.current_song.playbackTime + loadingTime) / 1000;  // [s]
+        MODEL.player.currentTime = time;
+
+        // Play song
+        MODEL.player.play();
+
+        // Force update visuals
+        SELECTA.updatePlaybackInterface("current");  
+    },
+    
+    playNextSong: function()
+    {
+        // Deactive callback to avoid bugs
+        MODEL.aux_player.oncanplaythrough = null;
+
+        // Set next song to current
+        MODEL.current_song = MODEL.next_song;
+        MODEL.next_song = null;
+
+        // Set song time
+        const loadingTime = performance.now() - MODEL.current_song.arrivalTime + MODEL.current_song.playbackTime;
+        const time = loadingTime / 1000; // [s]
+        MODEL.player.currentTime = time; 
+
+        // Pause old player and start new one
+        MODEL.player.pause();
+        MODEL.aux_player.play();
+
+        // Assign new player
+        MODEL.player = MODEL.aux_player;
+        MODEL.aux_player = null;
+
+        // Force update visuals
+        SELECTA.updatePlaybackInterface("both");
     }
-
-    /***************** ACTIONS *****************/
-
-    // DRAW
-
-    // UPDATE
-
-    // UPDATE USER
-
-    // ON MOUSE
 
 }

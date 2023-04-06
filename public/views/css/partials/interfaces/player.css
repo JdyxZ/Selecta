@@ -18,6 +18,7 @@
     width: 25%;
     height:auto;
     align-items: center;
+    overflow: hidden;
 }
 
 #Selecta #next_song
@@ -28,6 +29,7 @@
     flex-direction: row;
     justify-content: flex-end;
     align-items: center;
+    overflow: hidden;
 }
 
 #Selecta #current_song .thumbnail

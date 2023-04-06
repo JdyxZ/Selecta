@@ -11,7 +11,7 @@ var SERVER =
     port: null,
     clients : {},
     last_id : 0,
-    messages_types: ["READY", "TICK", "SUGGEST", "VOTE", "SKIP", "SONG_READY", "EXIT"],
+    messages_types: ["READY", "TICK", "SUGGEST", "VOTE", "SKIP", "SONG_READY", "EXIT", "TEST"],
 
     /***************** HTTP SERVER CALLBACKS *****************/
 
@@ -204,6 +204,8 @@ var SERVER =
                 return this.onSkip(message);
             case "EXIT":
                 return this.onExit(message);
+            case "TEST":
+                return this.onTest(message);
             default:
                 return ["WTF", false];
         }
@@ -447,6 +449,20 @@ var SERVER =
         return ["OK", false];
     },
 
+    onTest: function(message)
+    {
+        // Estimate latency 
+        const arrivalTime = message.time;
+        const latency = Date.getTime() - arrivalTime;
+
+        // Show
+        const room = WORLD.getRoom(1);
+        console.log(latency, room.playback_time);
+
+        // Output status
+        return ["OK", false];
+    },
+
     /***************** SERVER ACTIONS *****************/
 
     playSong: function(roomID, song)
@@ -466,6 +482,10 @@ var SERVER =
 
         // Set aux vars
         const song_duration = song.duration.totalMiliseconds;
+
+        // Clear timers
+        clearTimeout(room.timers.chooseNextSong);
+        clearTimeout(room.timers.playSong);
 
         // Set timers
         room.timers.chooseNextSong = setTimeout(() => {
@@ -520,8 +540,6 @@ var SERVER =
         // Fetch channel's song data with Youtube API
         const channelData = (await YOUTUBE.getChannelsInfo(videoData.publisherChannel.ID))[0];
         if(channelData) videoData.publisherChannel = channelData;
-
-        debugger;
 
         // Fetch audioStream with Youtube Downloading module
         const audioStream = await YOUTUBE.fetchAudioStreams(next_songID);

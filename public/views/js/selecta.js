@@ -629,7 +629,7 @@ const SELECTA =
                 const songDuration = this.player.get("#duration");
 
                 // Format current playback time
-                const currentTime = Date.toTime(MODEL.player.currentTime);
+                const currentTime = Date.toTime(MODEL.player.currentTime * 1000);
 
                 // Format song duration
                 let duration = "00:00:00";
@@ -680,9 +680,9 @@ const SELECTA =
 
         // Progress bar
         const progressPercent = currentTime > duration ? 100 : (currentTime / duration) * 100;
-        progress_bar.style.width = `${progressPercent}%`;
+        this.progress_bar.style.width = `${progressPercent}%`;
 
         // Timer
-        playback_timer.textContent = Date.toTime(currentTime);
+        this.playback_timer.textContent = Date.toTime(currentTime * 1000);
     }
 }

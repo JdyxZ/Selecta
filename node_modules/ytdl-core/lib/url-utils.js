@@ -24,16 +24,16 @@ const validQueryDomains = new Set([
 ]);
 const validPathDomains = /^https?:\/\/(youtu\.be\/|(www\.)?youtube\.com\/(embed|v|shorts)\/)/;
 exports.getURLVideoID = link => {
-  const parsed = new URL(link.trim());
+  const parsed = new URL(link);
   let id = parsed.searchParams.get('v');
-  if (validPathDomains.test(link.trim()) && !id) {
+  if (validPathDomains.test(link) && !id) {
     const paths = parsed.pathname.split('/');
     id = parsed.host === 'youtu.be' ? paths[1] : paths[2];
   } else if (parsed.hostname && !validQueryDomains.has(parsed.hostname)) {
     throw Error('Not a YouTube domain');
   }
   if (!id) {
-    throw Error(`No video id found: "${link}"`);
+    throw Error(`No video id found: ${link}`);
   }
   id = id.substring(0, 11);
   if (!exports.validateID(id)) {
@@ -57,7 +57,7 @@ const urlRegex = /^https?:\/\//;
 exports.getVideoID = str => {
   if (exports.validateID(str)) {
     return str;
-  } else if (urlRegex.test(str.trim())) {
+  } else if (urlRegex.test(str)) {
     return exports.getURLVideoID(str);
   } else {
     throw Error(`No video id found: ${str}`);
@@ -72,7 +72,7 @@ exports.getVideoID = str => {
  * @return {boolean}
  */
 const idRegex = /^[a-zA-Z0-9-_]{11}$/;
-exports.validateID = id => idRegex.test(id.trim());
+exports.validateID = id => idRegex.test(id);
 
 
 /**

@@ -27,8 +27,8 @@ const MODEL =
     // Audio playback
     current_song: null,
     next_song: null, 
-    playback_time: null, // Playback time of the current song
     player: new Audio(),
+    aux_player: null,
 
     // Scene data
     context: null,

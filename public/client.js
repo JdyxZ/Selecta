@@ -276,11 +276,22 @@ var CLIENT =
 
         // Unpack message data
         const song = content.song;
-        const playbackTime = content.playbackTime; // [ms]
-        const timestamp = message.time; // [ms]
+        let playbackTime = content.playbackTime; // [ms]
+        const deliveryTime = message.time; // [ms]
+
+        // Estimate latency and arrival timestamp
+        const latency = Date.getTime() - deliveryTime;
+        const arrivalTime = performance.now();
+
+        // Adjust latency
+        playbackTime += latency;
+
+        // Set playback time and arrival timestamp to the song
+        song.playbackTime = playbackTime;
+        song.arrivalTime = arrivalTime;
 
        // Callback
-       CONTROLLER.onPlaySong(song, playbackTime, timestamp);
+       CONTROLLER.onPlaySong(song);
     },
 
     onShutDown: function(message)
