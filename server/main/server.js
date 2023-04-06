@@ -219,8 +219,8 @@ var SERVER =
         const user_room = WORLD.getRoom(user.room);
 
         // Log
-        console.log(`EVENT --> User ${user.name} has sent a READY message`);
-
+        console.log(`EVENT --> User ${user.name} has sent a READY message.`);
+        
         // Send to the new user info about the room current playback
         if(user_room.current_song)
         {
@@ -513,7 +513,7 @@ var SERVER =
         const check = YOUTUBE.checkVideoInfo(videoData);
         if(check != "OK")
         {
-            console.log(`ERROR -> ${check}`);
+            console.log(`ERROR ---> YOUTUBE.checkVideoInfo: ${check}`);
             return;
         }
         
@@ -521,18 +521,26 @@ var SERVER =
         const channelData = (await YOUTUBE.getChannelsInfo(videoData.publisherChannel.ID))[0];
         if(channelData) videoData.publisherChannel = channelData;
 
+        debugger;
+
         // Fetch audioStream with Youtube Downloading module
         const audioStream = await YOUTUBE.fetchAudioStreams(next_songID);
 
         // Check
         if(audioStream[0] == "ERROR")
-            return
+        {
+            console.log(`ERROR ---> YOUTUBE.fetchAudioStreams: ${audioStream[1]}`);
+            return;
+        }
         
         // Assign url info
         videoData.audioStream = audioStream[1];
 
         // Create new instance of the class Song with song data
         const next_song = new Song(videoData); 
+
+        // Show the selected song title
+        console.log(`EVENT ---> Room ${room.name} has choosen ${next_song.title}`);
         
         // Get selected suggestion's user
         const suggestion = room.getSuggestion(next_songID);

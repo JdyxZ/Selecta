@@ -22,5 +22,9 @@ Run server with nodemon: npm run server
 - Admin type accounts.
 - Room playback ready, send message.
 - Play videos instead of songs and place a canvas inside the 3D world to show the video to the people in the room.
+- Remove GAPI and use proxy and apicache.
+- Fade suggested videos.
+- Improve contains method from Array: https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Array/some
+
 
 

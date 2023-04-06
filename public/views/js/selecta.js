@@ -83,6 +83,8 @@ const SELECTA =
     current_song: document.get("#player_container #current_song"),
     player: document.get("#player_container #player"),
     next_song: document.get("#player_container #current_song"),
+    progress_bar: document.get("#player_container #player .progress-bar"),
+    playback_timer: document.get("#player_container #player #current-time"),
 
     // Templates
     videoTemplate: document.get("#Selecta .video"),
@@ -152,6 +154,9 @@ const SELECTA =
         // Votes interface
         this.votes_trigger.when("click", this.updateVotesInterface.bind(this));
         this.vote_result.when('click', this.voteSuggestion.bind(this));
+
+        // Player
+        MODEL.player.addEventListener('timeupdate', this.updatePlaybackProgress.bind(this));        
         
         // Callbacks for volume control
         this.sliders.music_volume.when("input", this.setVolume);
@@ -664,5 +669,20 @@ const SELECTA =
         {
             console.error(error);
         }
+    },
+
+    // Audio callbacks
+    updatePlaybackProgress: function()
+    {
+        // Get playback info
+        let {currentTime, duration} = MODEL.player;
+        currentTime = currentTime ?? 0;
+
+        // Progress bar
+        const progressPercent = currentTime > duration ? 100 : (currentTime / duration) * 100;
+        progress_bar.style.width = `${progressPercent}%`;
+
+        // Timer
+        playback_timer.textContent = Date.toTime(currentTime);
     }
 }

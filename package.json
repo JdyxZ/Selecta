@@ -5,7 +5,8 @@
   "main": "code.js",
   "scripts": {
     "tests": "nodemon server/testing/tests.js",
-    "server": "nodemon server/main/main.js"
+    "server": "nodemon server/main/main.js",
+    "server_debug": "nodemon --inspect=127.0.0.1:9230 --inspect-brk server/main/main.js"
   },
   "repository": {
     "type": "git",

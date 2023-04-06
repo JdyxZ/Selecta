@@ -310,7 +310,7 @@ const YOUTUBE =
     fetchAudioStreams: async function(videoID)
     {
         try
-        {
+        {            
             // Check videoID
             const check = await ytdl.validateID(videoID);
             if(!check) throw `YOUTUBE_UNABLE_TO_PARSE_${videoID}`;
