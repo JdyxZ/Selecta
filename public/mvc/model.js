@@ -229,5 +229,5 @@ function Message(sender, type, content, time)
     this.sender = sender || ""; //ID
     this.type = type || "ERROR";
     this.content = content || "";
-    this.time = time || Date.getTime();
+    this.time = time || Date.now();
 }

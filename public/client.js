@@ -280,7 +280,7 @@ var CLIENT =
         const deliveryTime = message.time; // [ms]
 
         // Estimate latency and arrival timestamp
-        const latency = Date.getTime() - deliveryTime;
+        const latency = Date.now() - deliveryTime;
         const arrivalTime = performance.now();
 
         // Adjust latency

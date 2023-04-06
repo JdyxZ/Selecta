@@ -79,12 +79,6 @@ String.prototype.toNumber = function()
 
 /***************** DATE *****************/
 
-Date.getTime = function()
-{
-	const date = new Date();
-	return date.getTime();
-}
-
 Date.getDate = function()
 {
 	const date = new Date();

@@ -79,7 +79,7 @@ var SERVER =
             if (result[0] != "OK") throw result;
 
             // If there is no send time, append one
-            if(message.time == null) message.time = Date.getTime();
+            if(message.time == null) message.time = Date.now();
 
             // Eventually, message has passed general checkings and is ready to be routed!
             const status = await this.routeMessage(message);
@@ -94,9 +94,9 @@ var SERVER =
             // Build error message
             let error_message;
             if(isArray(error) && error.length == 2 && error[1] === true)
-                error_message = new Message("system", "ERROR", error[1], Date.getTime());
+                error_message = new Message("system", "ERROR", error[1], Date.now());
             else
-                error_message = new Message("system", "ERROR", "Error upon processing your message", Date.getTime());
+                error_message = new Message("system", "ERROR", "Error upon processing your message", Date.now());
             
             // Send error message
             this.sendPrivateMessage(error_message, message.sender);
@@ -134,7 +134,7 @@ var SERVER =
         }
 
         // Send to the new user all the app assets
-        message = new Message("system", "ASSETS", JSON.stringify(assets), Date.getTime());
+        message = new Message("system", "ASSETS", JSON.stringify(assets), Date.now());
         this.sendPrivateMessage(message, user.id);
 
         // Log
@@ -151,7 +151,7 @@ var SERVER =
         this.clients.remove(user_id);
         
         // Update info to the other users
-        const message = new Message("system", "USER_LEFT", user.id, Date.getTime());
+        const message = new Message("system", "USER_LEFT", user.id, Date.now());
         this.sendRoomMessage(message, user.room, user_id);
 
         // Log
@@ -227,7 +227,7 @@ var SERVER =
         if(user_room.current_song)
         {
             const playbackInfo = this.getPlaybackInfo(user_room, user_room.current_song);
-            message = new Message("system", "PLAY_SONG", JSON.stringify(playbackInfo), Date.getTime());
+            message = new Message("system", "PLAY_SONG", JSON.stringify(playbackInfo), Date.now());
             this.sendPrivateMessage(message, sender_id);
         };
 
@@ -235,7 +235,7 @@ var SERVER =
         if(user_room.next_song)
         {
             const playbackInfo = this.getPlaybackInfo(user_room, user_room.next_song);
-            message = new Message("system", "PLAY_SONG", JSON.stringify(playbackInfo), Date.getTime());
+            message = new Message("system", "PLAY_SONG", JSON.stringify(playbackInfo), Date.now());
             this.sendPrivateMessage(message, sender_id);
         }
 
@@ -442,7 +442,7 @@ var SERVER =
         this.onNewUserToRoom(user.id);
 
         // Notify the users of the old room that the user has left
-        message = new Message("system", "USER_LEFT", user_id, Date.getTime());   
+        message = new Message("system", "USER_LEFT", user_id, Date.now());   
         this.sendRoomMessage(message, previous_room, sender_id);    
         
         // Output status
@@ -453,7 +453,7 @@ var SERVER =
     {
         // Estimate latency 
         const arrivalTime = message.time;
-        const latency = Date.getTime() - arrivalTime;
+        const latency = Date.now() - arrivalTime;
 
         // Show
         const room = WORLD.getRoom(1);
@@ -584,7 +584,7 @@ var SERVER =
         const playbackInfo = this.getPlaybackInfo(room, next_song);
         
         // Send playbackInfo of the song to the room
-        const playback_message = new Message("system", "PLAY_SONG", JSON.stringify(playbackInfo), Date.getTime());
+        const playback_message = new Message("system", "PLAY_SONG", JSON.stringify(playbackInfo), Date.now());
         this.sendRoomMessage(playback_message, room.id, []);
 
         // Output
@@ -732,22 +732,22 @@ var SERVER =
         const song = user_room.skipping ? user_room.next_song : user_room.current_song;
 
         // Send to the new user info about their current/new room
-        message = new Message("system", "ROOM", user_room.toJSON(), Date.getTime());
+        message = new Message("system", "ROOM", user_room.toJSON(), Date.now());
         this.sendPrivateMessage(message, user_id);
 
         // Send to the new user its own user data
-        message = new Message("system", "YOUR_INFO", user.toJSON(), Date.getTime());
+        message = new Message("system", "YOUR_INFO", user.toJSON(), Date.now());
         this.sendPrivateMessage(message, user_id);        
 
         // Send to the new user info about the active users in the current/new room
         if(active_room_users_ids.length > 0)
         {
-            message = new Message("system", "USER_JOIN", active_room_users_info, Date.getTime());
+            message = new Message("system", "USER_JOIN", active_room_users_info, Date.now());
             this.sendPrivateMessage(message, user_id);
         }
 
         // Send to the current/new room active users data of the new user
-        message = new Message("system", "USER_JOIN", [user.toJSON()], Date.getTime());
+        message = new Message("system", "USER_JOIN", [user.toJSON()], Date.now());
         this.sendRoomMessage(message, user.room, user.id); 
     },
 

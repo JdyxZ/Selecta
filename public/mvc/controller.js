@@ -4,6 +4,9 @@ const CONTROLLER =
 {
     // Vars
     loading: true,
+    audio_loaded: false,
+    syncro_diff: 100, // [ms]
+    stop_current_loading: false,
 
     /***************** INIT *****************/
 
@@ -256,12 +259,13 @@ const CONTROLLER =
         {
             // Update model
             MODEL.current_song = song;
-            
+
             // Set a loading callback
-            MODEL.player.oncanplaythrough = this.playCurrentSong;
+            MODEL.player.oncanplaythrough = this.playCurrentSong.bind(this);
 
             // Start loading the song
             MODEL.player.src = song.audioStream.url;
+            MODEL.player.currentTime = song.playbackTime / 1000;
         }
         // Schedule the next song
         else if (playbackTime < 0)
@@ -277,24 +281,11 @@ const CONTROLLER =
             
             // Start preloading the song 
             MODEL.aux_player.src = song.audioStream.url;
+            MODEL.aux_player.currentTime = song.playbackTime / 1000;
+            MODEL.aux_player.play();
 
             // Schedule playback
-            setTimeout(() => 
-            {
-                // The song is ready
-                if(aux_player.readyState == 4)
-                {
-                    // Play next song
-                    this.playNextSong();
-                }
-                // The song is not ready yet
-                else
-                {
-                    // Set a loading callback
-                    MODEL.aux_player.oncanplaythrough = this.playNextSong;
-                }
-
-            }, -song.playbackTime);
+            setTimeout(this.playNextSong.bind(this), -song.playbackTime);
         }
     },
 
@@ -332,47 +323,107 @@ const CONTROLLER =
 
     /***************** AUXILIAR METHODS *****************/
 
-    playCurrentSong: function()
+    playCurrentSong: async function()
     {
+        // Check
+        if(MODEL.player.readyState != 4)
+            return;
+
         // Deactive callback to avoid bugs
         MODEL.player.oncanplaythrough = null;
 
-        // Set song time
-        const loadingTime = performance.now() - MODEL.current_song.arrivalTime;
-        const time = (MODEL.current_song.playbackTime + loadingTime) / 1000;  // [s]
-        MODEL.player.currentTime = time;
+        // Register volume and turn it off
+        MODEL.player.lastVolume = MODEL.player.volume;
+        MODEL.player.volume = 0;
 
-        // Play song
-        MODEL.player.play();
+        // Create a benchmark variable
+        let diff = 1000;
+
+        // Loop until the song is played without delay
+        while(diff > this.syncro_diff)
+        {
+            // Check
+            if(this.stop_current_loading)
+            {
+                stop = false;
+                return;
+            }
+
+            // Estimate song time
+            const loadingTime = performance.now() - MODEL.current_song.arrivalTime;
+            const time = (MODEL.current_song.playbackTime + loadingTime) / 1000;  // [s]
+
+            // Set player time
+            MODEL.player.currentTime = time;
+
+            // Set timestamp
+            const timestamp = performance.now();
+
+            // Await audio playback
+            await MODEL.player.play();
+
+            // Estimate diff
+            diff = performance.now() - timestamp;
+        }
+
+        // Restore volume
+        MODEL.player.volume = MODEL.player.lastVolume;
 
         // Force update visuals
         SELECTA.updatePlaybackInterface("current");  
     },
     
-    playNextSong: function()
+    playNextSong: async function()
     {
+        // Set stop current loading flag to true to avoid conflict with current loading pipeline
+        this.stop_current_loading = true;
+
         // Deactive callback to avoid bugs
         MODEL.aux_player.oncanplaythrough = null;
 
-        // Set next song to current
-        MODEL.current_song = MODEL.next_song;
-        MODEL.next_song = null;
+        // Register volume and turn it off
+        MODEL.player.lastVolume = MODEL.player.volume;
+        MODEL.player.volume = 0;
 
-        // Set song time
-        const loadingTime = performance.now() - MODEL.current_song.arrivalTime + MODEL.current_song.playbackTime;
-        const time = loadingTime / 1000; // [s]
-        MODEL.player.currentTime = time; 
+        // Create a benchmark variable
+        let diff = 1000;
 
-        // Pause old player and start new one
+        // Loop until the song is played without delay
+        while(diff > this.syncro_diff)
+        {
+            // Estimate song time
+            const loadingTime = performance.now() - MODEL.next_song.arrivalTime + MODEL.next_song.playbackTime;
+            const time = loadingTime / 1000; // [s]
+
+            // Set song time
+            MODEL.player.currentTime = time; 
+
+            // Set timestamp
+            const timestamp = performance.now();
+
+            // Await audio playback  
+            await MODEL.aux_player.play();
+
+            // Estimate diff
+            diff = performance.now() - timestamp;
+        }
+        
+        // Pause old player
         MODEL.player.pause();
-        MODEL.aux_player.play();
 
         // Assign new player
         MODEL.player = MODEL.aux_player;
         MODEL.aux_player = null;
 
+        // Set next song to current
+        MODEL.current_song = MODEL.next_song;
+        MODEL.next_song = null;
+
         // Force update visuals
         SELECTA.updatePlaybackInterface("both");
+
+        // Set stop current loading flag to false to enable current loading pipeline again
+        this.stop_current_loading = true;
     }
 
 }
