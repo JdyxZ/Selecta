@@ -11,7 +11,7 @@ var SERVER =
     port: null,
     clients : {},
     last_id : 0,
-    messages_types: ["READY", "TICK", "SUGGEST", "VOTE", "SKIP", "SONG_READY", "EXIT", "TEST"],
+    messages_types: ["TICK", "SUGGEST", "VOTE", "SKIP", "EXIT", "TEST"],
 
     /***************** HTTP SERVER CALLBACKS *****************/
 
@@ -192,8 +192,6 @@ var SERVER =
         // Route message        
         switch(message.type)
         {
-            case "READY":
-                return this.onReady(message);
             case "TICK":
                 return this.onTick(message);
             case "SUGGEST":
@@ -209,38 +207,6 @@ var SERVER =
             default:
                 return ["WTF", false];
         }
-    },
-
-    onReady: function(message)
-    {
-        // Get message data
-        const sender_id = message.sender;
-
-        // Get user data
-        const user = WORLD.getUser(sender_id);
-        const user_room = WORLD.getRoom(user.room);
-
-        // Log
-        console.log(`EVENT --> User ${user.name} has sent a READY message.`);
-        
-        // Send to the new user info about the room current playback
-        if(user_room.current_song)
-        {
-            const playbackInfo = this.getPlaybackInfo(user_room, user_room.current_song);
-            message = new Message("system", "PLAY_SONG", JSON.stringify(playbackInfo), Date.now());
-            this.sendPrivateMessage(message, sender_id);
-        };
-
-        // Send to the new user info about the room future playback
-        if(user_room.next_song)
-        {
-            const playbackInfo = this.getPlaybackInfo(user_room, user_room.next_song);
-            message = new Message("system", "PLAY_SONG", JSON.stringify(playbackInfo), Date.now());
-            this.sendPrivateMessage(message, sender_id);
-        }
-
-        // Output status
-        return ["OK", false];
     },
 
     onTick: function(message)
@@ -748,7 +714,23 @@ var SERVER =
 
         // Send to the current/new room active users data of the new user
         message = new Message("system", "USER_JOIN", [user.toJSON()], Date.now());
-        this.sendRoomMessage(message, user.room, user.id); 
+        this.sendRoomMessage(message, user.room, user_id); 
+
+        // Send to the new user info about the room current playback
+        if(user_room.current_song)
+        {
+            const playbackInfo = this.getPlaybackInfo(user_room, user_room.current_song);
+            message = new Message("system", "PLAY_SONG", JSON.stringify(playbackInfo), Date.now());
+            this.sendPrivateMessage(message, user_id);
+        };
+
+        // Send to the new user info about the room future playback
+        if(user_room.next_song)
+        {
+            const playbackInfo = this.getPlaybackInfo(user_room, user_room.next_song);
+            message = new Message("system", "PLAY_SONG", JSON.stringify(playbackInfo), Date.now());
+            this.sendPrivateMessage(message, user_id);
+        }
     },
 
     filterActiveUsers(users_id)

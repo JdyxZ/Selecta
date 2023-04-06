@@ -114,9 +114,6 @@ const SELECTA =
         // Init other resources
         CONTROLLER.init();
         await CLIENT.init();
-
-        // Start the loading timeout
-        setTimeout(this.loadingOver.bind(this), 3500);
     },
 
     addEventListeners: function()
@@ -195,20 +192,20 @@ const SELECTA =
 
     loadingOver: function()
     {
+        // Show button to access the app
         this.loading_screen_loop.hide();
         this.loading_screen_button.show();
     },
 
     start: function()
     {
+        // Restore volume
+        MODEL.player.volume = MODEL.player.lastVolume;
+
         // Toggle screens
         this.loading_screen.hide();
         this.selecta.show();
-
-        // Send ready message to the server
-        CONTROLLER.sendReady();
     },
-
 
     toggleMute: function()
     {

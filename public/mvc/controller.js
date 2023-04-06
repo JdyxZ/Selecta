@@ -7,6 +7,7 @@ const CONTROLLER =
     audio_loaded: false,
     syncro_diff: 100, // [ms]
     stop_current_loading: false,
+    debug: null,
 
     /***************** INIT *****************/
 
@@ -291,12 +292,6 @@ const CONTROLLER =
 
     /***************** SEND METHODS *****************/
 
-    sendReady:function()
-    {
-        const message = new Message(MODEL.my_user.id, "READY", "", getTime());
-        CLIENT.sendMessage(message);
-    },
-
     sendTick: function()
     {
         const message = new Message(MODEL.my_user.id, "TICK", {"model":MODEL.my_user.model,"animation":MODEL.my_user.animation}, getTime());
@@ -334,7 +329,7 @@ const CONTROLLER =
 
         // Register volume and turn it off
         MODEL.player.lastVolume = MODEL.player.volume;
-        MODEL.player.volume = 0;
+        MODEL.player.volume = 0; // To avoid autoplay restrictions
 
         // Create a benchmark variable
         let diff = 1000;
@@ -366,11 +361,21 @@ const CONTROLLER =
             diff = performance.now() - timestamp;
         }
 
-        // Restore volume
-        MODEL.player.volume = MODEL.player.lastVolume;
-
         // Force update visuals
-        SELECTA.updatePlaybackInterface("current");  
+        SELECTA.updatePlaybackInterface("current");
+        
+        // Check if we are loading the audio for first time
+        if(!this.audio_loaded)
+        {
+            // Notify the user the app is ready to run
+            SELECTA.loadingOver();
+            this.audio_loaded = true;
+        }
+        else
+        {
+            // Restore volume
+            MODEL.player.volume = MODEL.player.lastVolume;
+        }
     },
     
     playNextSong: async function()
@@ -423,7 +428,7 @@ const CONTROLLER =
         SELECTA.updatePlaybackInterface("both");
 
         // Set stop current loading flag to false to enable current loading pipeline again
-        this.stop_current_loading = true;
+        this.stop_current_loading = false;
     }
 
 }
