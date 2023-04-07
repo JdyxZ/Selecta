@@ -107,6 +107,7 @@ var SERVER =
     {       
         // Get user data
         const user = WORLD.getUser(user_id);
+        const user_room = user == undefined ? undefined : WORLD.getRoom(user.room);
 
         // Check that user exists
         if(!user)
@@ -115,15 +116,14 @@ var SERVER =
             return;
         }
 
-        // Just in case
-        const user_room = WORLD.getRoom(user.room);
-        if(!user_room.people.includes(user_id)) user_room.people = [...user_room.people, user_id];
+        // Add the user to the active users of the room
+        user_room.addActiveUser(user);        
         
         // Store connection
         connection.user_id = user_id;
         this.clients[user_id] = connection; 
         
-        // Send data to new user and people of the room
+        // Send data to new user and users of the room
         this.onNewUserToRoom(user_id);
 
         // Build asset object
@@ -134,7 +134,7 @@ var SERVER =
         }
 
         // Send to the new user all the app assets
-        message = new Message("system", "ASSETS", JSON.stringify(assets), Date.now());
+        message = new Message("system", "ASSETS", assets, Date.now());
         this.sendPrivateMessage(message, user.id);
 
         // Log
@@ -146,6 +146,10 @@ var SERVER =
         // Get user data
         const user_id = connection.user_id;
         const user = WORLD.getUser(user_id);
+        const user_room = WORLD.getRoom(user.room);
+
+        // Remove user from active users of the room
+        user_room.removeActiveUser(user); 
 
         // Remove connection
         this.clients.remove(user_id);
@@ -230,7 +234,7 @@ var SERVER =
         if(content.model != undefined) user.model = content.model;  
         if(content.animation != undefined) user.animation = content.animation;      
         
-        // Send the message to all the people in the room except the user
+        // Send the message to all the users in the room except the user
         this.sendRoomMessage(message, user.room, user.id);
 
         // Output status
@@ -380,7 +384,7 @@ var SERVER =
         this.sendRoomMessage(message, user.room, sender_id);
 
         // Check skip counter
-        if(user_room.skip_counter / user_room.num_people > WORLD.skipping_threshold)
+        if(user_room.skip_counter / user_room.num_active_users > WORLD.skipping_threshold)
             this.skipSong(user.room);
 
         // Output status
@@ -497,12 +501,12 @@ var SERVER =
             if(room.next_song)
             {
                 next_songID = room.next_song.ID;
-                future_songID = room.playlist_items.clone().remove(next_songID).pickRandom();
+                future_songID = room.playlist_items.clone(next_songID).pickRandom();
             }
             else
             {
                 next_songID = room.playlist_items.pickRandom();
-                future_songID = room.playlist_items.clone().remove(next_songID).pickRandom();
+                future_songID = room.playlist_items.clone(next_songID).pickRandom();
             }
         }           
         else if(sortedSuggestions.length == 1) 
@@ -565,18 +569,10 @@ var SERVER =
         
         // Get selected suggestion's user
         const suggestion = room.getSuggestion(next_songID);
-        const user = suggestion !== undefined ? WORLD.getUser(suggestion.userID) : null;
-
-        // Update user data
-        room.people.forEach(userID => {
-            // Get user
-            const user = WORLD.getUser(userID);
-            
-            // Set skip to false
-            user.skip = false
-        });
+        const user = suggestion !== undefined ? WORLD.getUser(suggestion.userID) : null;        
 
         // Update room data
+        WORLD.resetSkipVotes(room);
         WORLD.removeSuggestion(room, user, next_song);
         room.skipping = true;
         room.skip_counter = 0;
@@ -591,10 +587,10 @@ var SERVER =
         // Get playbackInfo of the next and future song
         const nextPlaybackInfo = this.getPlaybackInfo(room, next_song);
         const futurePlaybackInfo = this.getPlaybackInfo(room, future_song);
-        
+
         // Build playback messages
-        const next_playback_message = new Message("system", "PLAY_SONG", JSON.stringify(nextPlaybackInfo), Date.now());
-        const future_playback_message = new Message("system", "PLAY_SONG", JSON.stringify(futurePlaybackInfo), Date.now());
+        const next_playback_message = new Message("system", "PLAY_SONG", nextPlaybackInfo, Date.now());
+        const future_playback_message = new Message("system", "PLAY_SONG", futurePlaybackInfo, Date.now());
 
         // Send messages
         this.sendRoomMessage(next_playback_message, room.id, []);
@@ -705,7 +701,7 @@ var SERVER =
 
         // Get active users of the room
         const room = WORLD.getRoom(room_id);
-        const room_users = room.people.clone().remove(users_id);
+        const room_users = room.getActiveUsers(users_id);
 
         // Iterate through room active users
         for(user_id of room_users)
@@ -752,9 +748,7 @@ var SERVER =
         let message;
         const user = WORLD.getUser(user_id); 
         const user_room = WORLD.getRoom(user.room);
-        const room_users = user_room.people.clone().remove(user_id);
-        const active_room_users_ids = this.filterActiveUsers(room_users); 
-        const [_, active_room_users_info] = user_room.getRoomUsersInfo(active_room_users_ids, "INCLUSIVE");
+        const active_users_data = user_room.getActiveUsersJSONs(user.id);
         const song = user_room.skipping ? user_room.next_song : user_room.current_song;
 
         // Send to the new user info about their current/new room
@@ -766,21 +760,21 @@ var SERVER =
         this.sendPrivateMessage(message, user_id);        
 
         // Send to the new user info about the active users in the current/new room
-        if(active_room_users_ids.length > 0)
+        if(active_users_data.length > 0)
         {
-            message = new Message("system", "USER_JOIN", active_room_users_info, Date.now());
+            message = new Message("system", "USER_JOIN", active_users_data, Date.now());
             this.sendPrivateMessage(message, user_id);
         }
 
         // Send to the current/new room active users data of the new user
-        message = new Message("system", "USER_JOIN", [user.toJSON()], Date.now());
+        message = new Message("system", "USER_JOIN", user.toJSON(), Date.now());
         this.sendRoomMessage(message, user.room, user_id); 
 
         // Send to the new user info about the room current playback
         if(user_room.current_song)
         {
             const playbackInfo = this.getPlaybackInfo(user_room, user_room.current_song);
-            message = new Message("system", "PLAY_SONG", JSON.stringify(playbackInfo), Date.now());
+            message = new Message("system", "PLAY_SONG", playbackInfo, Date.now());
             this.sendPrivateMessage(message, user_id);
         };
 
@@ -788,7 +782,7 @@ var SERVER =
         if(user_room.next_song)
         {
             const playbackInfo = this.getPlaybackInfo(user_room, user_room.next_song);
-            message = new Message("system", "PLAY_SONG", JSON.stringify(playbackInfo), Date.now());
+            message = new Message("system", "PLAY_SONG", playbackInfo, Date.now());
             this.sendPrivateMessage(message, user_id);
         }
 
@@ -796,7 +790,7 @@ var SERVER =
         if(user_room.future_song)
         {
             const playbackInfo = this.getPlaybackInfo(user_room, user_room.future_song);
-            message = new Message("system", "PLAY_SONG", JSON.stringify(playbackInfo), Date.now());
+            message = new Message("system", "PLAY_SONG", playbackInfo, Date.now());
             this.sendPrivateMessage(message, user_id);
         }
     },

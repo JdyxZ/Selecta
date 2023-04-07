@@ -81,10 +81,13 @@ function Room(data)
     this.id = data == undefined ? -1 : data.id || -1;
     this.name = data == undefined ? "unnamed" : data.name || "unnamed";
     this.objects = data == undefined ? [] : data.objects || [];
-    this.people = data == undefined ? [] : data.people || []; 
+    this.users = data == undefined ? [] : data.users || []; 
+    this.num_users =  data == undefined ? 0 : data.users.length || 0;
     this.exits = data == undefined ? [] : data.exits || [];
     this.default_model = data == undefined ? [] : data.default_model || [];
     this.playlist = data == undefined ? null : data.playlist || null;
+    this.active_users = [];
+    this.num_active_users = 0;
     this.suggestions = {};
     this.songs = {};
     this.skipping = false;
@@ -95,7 +98,6 @@ function Room(data)
     this.future_song = null;
     this.reference_time = 0;
     this.playback_time = 0;
-    this.num_people = 0;
     this.playlist_items = [];
 
     // Timers
@@ -114,45 +116,112 @@ function Room(data)
 
 Room.prototype.addUser = function(user)
 {
-    if(this.people.includes(user.id))
+    if(!this.users.includes(user.id))
+    {
+        this.users.push(user.id);
+        this.num_users++;       
+        user.room = this.id;
+    }
+
+    if(!this.active_users.includes(user.id))
+    {
+        this.active_users.push(user.id);
+        this.num_active_users++; 
+        user.room = this.id;
+    }
+}
+
+Room.prototype.addActiveUser = function(user)
+{
+    if(this.active_users.includes(user.id))
         return
 
-    this.people.push(user.id);
-    this.num_people++;
-    user.room = this.id;
+    this.active_users.push(user.id);
+    this.num_active_users++;
 }
 
 Room.prototype.removeUser = function(user)
 {
-    if(!(this.people.includes(user.id)))
+    if((this.users.includes(user.id)))
+    {
+        this.users.remove(user.id);
+        this.num_users--;
+        user.room = null;
+    }
+
+    if((this.active_users.includes(user.id)))
+    {
+        this.active_users.remove(user.id);
+        this.num_active_users--;
+        user.room = null;
+    }
+}
+
+Room.prototype.removeActiveUser = function(user)
+{
+    if(!this.active_users.includes(user.id))
         return
     
-    this.people.remove(user.id);
-    this.num_people--;
-    user.room = null;
+    this.active_users.remove(user.id);
+    this.num_active_users--;
 }
+
 
 Room.prototype.toJSON = function()
 {
-    const{ id, name, objects, people, exits, default_model, suggestions, songs, skipping, skip_counter, num_people} = this;
+    const{ id, name, objects, active_users, num_active_users, exits, default_model, suggestions, songs, skipping, skip_counter} = this;
 
     const room_json =
     {
         id,
         name,
         objects,
-        people,
+        active_users,
+        num_active_users,
         exits,
         default_model,
         suggestions,
         songs,
         skipping,
-        skip_counter,
-        num_people
+        skip_counter
     }
 
     // Output JSON
     return room_json;
+}
+
+Room.prototype.getUsers = function(users_id)
+{
+    return this.users.clone(users_id);
+}
+
+Room.prototype.getActiveUsers = function(users_id)
+{
+    return this.active_users.clone(users_id);
+}
+
+Room.prototype.getUsersJSONs = function(users_id)
+{
+    return this.getUsers(users_id).map(userID => {
+        
+        // Get user instance
+        const user = WORLD.getUser(userID);
+
+        // Return user JSON
+        return user.toJSON();
+    });
+}
+
+Room.prototype.getActiveUsersJSONs = function(users_id)
+{
+    return this.getActiveUsers(users_id).map(userID => {
+        
+        // Get user instance
+        const user = WORLD.getUser(userID);
+
+        // Return user JSON
+        return user.toJSON();
+    });
 }
 
 Room.prototype.getRoomUsersInfo = function(users_id, filter_type)
@@ -173,7 +242,7 @@ Room.prototype.getRoomUsersInfo = function(users_id, filter_type)
     }
 
     // Reduce
-    return this.people.reduce( (arr, user_id) => {
+    return this.users.reduce( (arr, user_id) => {
 
         // Check if current user is exempt
         if(filter_type == "EXCLUSIVE" && users_id.includes(user_id)) return arr;
@@ -187,20 +256,6 @@ Room.prototype.getRoomUsersInfo = function(users_id, filter_type)
         // Ouput
         return arr;
     }, [[],[]]);
-}
-
-
-Room.prototype.getUsers = function(users_id)
-{
-    // Checkings
-    if (isNumber(users_id) || isString(users_id)) users_id = users_id.toArray();    
-    else if (!users_id instanceof Array)
-    {
-        console.log(`ERROR ---> Invalid input "${users_id}" in function getUsers of Room Class. Returning null`);
-        return null;
-    }
-
-    return user_room.people.clone().remove(users_id);
 }
 
 Room.prototype.getSuggestion = function(suggestionID)
@@ -256,12 +311,11 @@ var WORLD = {
     // Methods
     init: function(rooms_array, users_array, user_assets_array, object_assets_array)
     {
-
         // Map room properties to proper structures
         rooms_array.map( room => 
         {
             room.exits = room.exits.values();
-            room.people = room.people.values();
+            room.users = room.users.values();
         });
 
         // Map user assets properties to proper structures
@@ -405,13 +459,24 @@ var WORLD = {
         suggestion.vote_counter = 0;
 
         // Remove votes
-        room.people.forEach(userID => {
+        room.active_users.forEach(userID => {
             // Get user
             const user = this.getUser(userID);
             
             // Remove
             user.votes.remove(songID);
         })
+    },
+
+    resetSkipVotes(room)
+    {
+        room.getActiveUsers().forEach(userID => {
+            // Get user
+            const user = this.getUser(userID);
+            
+            // Set skip to false
+            user.skip = false
+        });
     },
 
     getSong: function(room, songID)
@@ -456,8 +521,7 @@ var WORLD = {
        
         // Create users
         world_json.users.forEach(user_json => {
-            const user = this.createUser(user_json);
-            this.addUsertoRoom(user.id, user.room);
+            this.createUser(user_json);
         }); 
 
         // Create user assets
@@ -483,7 +547,6 @@ var WORLD = {
             object_assets,
             num_rooms,
             num_users,
-
         }
 
         return JSON.stringify(world_json, null, 2);

@@ -701,11 +701,12 @@ const SELECTA =
             }, decimalPart);
         }
         // Show loading status
-        else if(!CONTROLLER.audio_playing)
+        else if(!CONTROLLER.audio_playing && !MODEL.intervals.loading)
         {
             // Auxiliar var
             let counter = 0;
 
+            // Set loading interval
             MODEL.intervals.loading = setInterval(()=> {
 
                 // Get info message
@@ -720,13 +721,13 @@ const SELECTA =
 
                 // Update counter
                 counter++;
-            }, 200)
+            }, 1000)
         }
         // Show current number of votes
         else if(CONTROLLER.audio_playing)
         {
            // Update playback info
-           this.playback_info.textContent = `${100 * MODEL.current_room.skip_counter / MODEL.current_room.num_people}% of skipping`;  
+           this.playback_info.textContent = `${100 * MODEL.current_room.skip_counter / MODEL.current_room.num_active_users}% of skipping`;  
         }
     },
 

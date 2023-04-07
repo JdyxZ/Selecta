@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS selecta_rooms (
     name VARCHAR(255) UNIQUE,
     objects JSON,
     exits JSON,
-    people JSON,
+    users JSON,
     defaultPosition JSON, -- MODEL MATRIX
 
     PRIMARY KEY (id)

@@ -436,8 +436,12 @@ setObjectProperty("entries", function() {
 	return Object.entries(this);
 });
 
-setObjectProperty("clone", function() { 
-	if(isArray(this)) return this.concat();
+setObjectProperty("clone", function(elements) { 
+	if(isArray(this))
+	{
+		if(!isArray(elements)) elements = [elements];
+		return this.concat().remove(elements);
+	} 
 	else return structuredClone(this);
 });
 

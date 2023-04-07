@@ -323,16 +323,16 @@ var DATABASE = {
             // Wrap values into an array
             const values = rooms.values().reduce((values, room) => {
                 const objects_json = JSON.stringify(room.objects);
-                const people_json = JSON.stringify(room.people.toObject("user"));
-                values.push([room.id, objects_json, people_json]);
+                const users_json = JSON.stringify(room.users.toObject("user"));
+                values.push([room.id, objects_json, users_json]);
                 return values;
             }, []);
             
             // Query            
             const result = await this.pool.query
             (
-                `INSERT INTO ${this.rooms} (id, objects, people) VALUES ? 
-                ON DUPLICATE KEY UPDATE id = VALUES(id), objects = VALUES(objects), people = VALUES(people);`, 
+                `INSERT INTO ${this.rooms} (id, objects, users) VALUES ? 
+                ON DUPLICATE KEY UPDATE id = VALUES(id), objects = VALUES(objects), users = VALUES(users);`, 
                 [values]
             );
 

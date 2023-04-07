@@ -168,12 +168,9 @@ var CLIENT =
         console.log("New ASSETS message received\n");
         //console.table(message.content);
 
-        // Parse message content
-        const content = JSON.parse(message.content);
-
         // Unpack message data
-        const user_assets = content.user_assets;
-        const object_assets = content.object_assets;
+        const user_assets = message.content.user_assets;
+        const object_assets = message.content.object_assets;
 
         // Callback
         CONTROLLER.setAvatarAssets(user_assets);
@@ -184,13 +181,13 @@ var CLIENT =
     {
         // Log
         console.log("New USER_JOIN message received\n");
-        //console.table(message.content);
+        console.table(message.content);
 
         // Unpack message data
-        const users = message.content;
+        const user_data = message.content;
 
         // Callback
-        CONTROLLER.onUserJoin(users);
+        CONTROLLER.onUserJoin(user_data);
     },
 
     onUserLeft: function(message)
@@ -288,12 +285,9 @@ var CLIENT =
         console.log("New PLAY_SONG message received\n");
         // console.table(message.content);
 
-        // Parse message content
-        const content = JSON.parse(message.content);
-
         // Unpack message data
-        const song = content.song;
-        let playbackTime = content.playbackTime; // [ms]
+        const song = message.content.song;
+        let playbackTime = message.content.playbackTime; // [ms]
         const deliveryTime = message.time; // [ms]
 
         // If playbackTime is a number

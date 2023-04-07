@@ -41,6 +41,9 @@ const CONTROLLER =
         MODEL.my_votes = user.votes;
         MODEL.my_song = user.song;
 
+        // Update number of active users in the room
+        MODEL.current_room.num_active_users++;
+
         // Animation
         MODEL.my_user.animation = 'idle.skanim'
 
@@ -169,13 +172,13 @@ const CONTROLLER =
         // View stuff
         if(isArray(user_data))
         {
-            user_data.forEach(user => { if (this.users_obj[user.id].animation !== null) this.users_obj[user.id].animation = 'idle.skanim';});
-            user_data.forEach(user =>{ if(!((typeof MODEL.raw_user_assets[user.asset] === 'undefined'))) VIEW.addUser(user) } );
+            user_data.forEach(user => {if(MODEL.users_obj[user.id].animation !== null) MODEL.users_obj[user.id].animation = 'idle.skanim';});
+            user_data.forEach(user => {if(typeof MODEL.raw_user_assets[user.asset] !== 'undefined') VIEW.addUser(user);} );
         }
         else if(isObject(user_data))
         {
-            if (this.users_obj[user_data.id].animation !== null) this.users_obj[user_data.id].animation = 'idle.skanim';
-            if ((typeof MODEL.raw_user_assets[user_data.asset] === 'undefined')) VIEW.addUser(user_data);
+            if(MODEL.users_obj[user_data.id].animation !== null) MODEL.users_obj[user_data.id].animation = 'idle.skanim';
+            if(typeof MODEL.raw_user_assets[user_data.asset] !== 'undefined') VIEW.addUser(user_data);
         }
     },
 
@@ -319,7 +322,7 @@ const CONTROLLER =
             MODEL.player.currentTime = song.playbackTime / 1000;
         }
         // Schedule the next song
-        else if (playbackTime < 0)
+        else if (song.playbackTime < 0)
         {
             // Update model
             MODEL.next_song = song;
@@ -408,11 +411,10 @@ const CONTROLLER =
         SELECTA.updatePlaybackInterface("current");
         
         // Check if we are loading the audio for first time
-        if(!this.audio_playing)
+        if(this.loading)
         {
             // Notify the user the app is ready to run
             SELECTA.loadingOver();
-            this.audio_playing = true;
         }
         else
         {

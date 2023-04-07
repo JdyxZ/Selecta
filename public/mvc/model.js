@@ -62,15 +62,15 @@ const MODEL =
     addUser: function(user)
     {
         this.users_obj[user.id] = user;
-        this.users_arr.append(user);
-        this.current_room.num_people++;
+        this.users_arr.push(user);
+        this.current_room.num_active_users++;
     },
 
     addUsers: function(users)
     {
         users.forEach(user => this.users_obj[user.id] = user);
         this.users_arr = this.users_arr.concat(users);
-        this.current_room.num_people += users.length;
+        this.current_room.num_active_users += users.length;
     },
 
     removeUser: function(id)
@@ -97,8 +97,8 @@ const MODEL =
         this.users_obj.remove(id);
         this.users_arr.splice(index, 1);
 
-        // Update number of people in the room
-        this.current_room.num_people--;
+        // Update number of active users in the room
+        this.current_room.num_active_users--;
     },
 
     // Suggestion Methods
