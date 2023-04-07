@@ -75,6 +75,7 @@
     overflow: hidden;
     /* font-weight: bold; */
     margin-bottom: 0.2rem;
+    text-align: end;
 }
 
 #Selecta #current_song .artist, #Selecta #next_song .artist
@@ -114,6 +115,7 @@
     border-radius: 50%;
     margin-top: 1rem;
     margin-left: calc(50% - 2.25rem);
+    animation: rotate 60s linear infinite;
 }
 
 #Selecta #player #skip-button
@@ -180,8 +182,27 @@
     margin-right: 1rem;
 }
 
+#Selecta #player .loading
+{
+    animation-play-state: paused;
+}
+
 #Selecta #player .playing
 {
+    animation-play-state: running;
+}
 
+/* DEFINE ROTATE ANIMATION*/
+@keyframes rotate 
+{
+    from 
+    {
+      transform: rotate(0deg);
+    }
+  
+    to 
+    {
+      transform: rotate(360deg);
+    }
 }
 

@@ -84,6 +84,7 @@ const SELECTA =
     next_song: document.get("#player_container #next_song"),
     player: document.get("#player_container #player"),
     progress_bar: document.get("#player_container #player .progress-bar"),
+    player_thumbnail: document.get("#player_container #player .thumbnail"),
     playback_timer: document.get("#player_container #player #current-time"),
     playback_info: document.get("#player_container #player #playback-info"),
     skip_button: document.get("#player_container #player #skip-button"),
@@ -813,6 +814,9 @@ const SELECTA =
             // Update audio playing controller
             CONTROLLER.audio_playing = false;
 
+            // Set player thumbnail animation to pause
+            this.player_thumbnail.classList.replace("playing", "loading");
+
             // Update playback info
             this.updatePlaybackInfo();
         }
@@ -827,6 +831,9 @@ const SELECTA =
 
             // Update audio playing controller
             CONTROLLER.audio_playing = true;
+
+            // Set player thumbnail animation to play
+            this.player_thumbnail.classList.replace("loading", "playing");
 
             // Update playback info
             this.updatePlaybackInfo();

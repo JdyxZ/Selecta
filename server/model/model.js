@@ -226,7 +226,7 @@ Room.prototype.getActiveUsersJSONs = function(users_id)
 
 Room.prototype.getRoomUsersInfo = function(users_id, filter_type)
 {
-    // Checkings
+    // checks
     if (isNumber(users_id) || isString(users_id)) users_id = users_id.toArray();    
     else if (!isArray(users_id))
     {

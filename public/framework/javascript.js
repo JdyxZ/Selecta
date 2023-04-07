@@ -369,18 +369,31 @@ setArrayProperty("containsStrict", function(elements)
 setArrayProperty("remove", function(elements) { 
 
 	// Checks
-	if (!isArray(elements)) elements = elements.toArray();
+	if (!isArray(elements)) elements = [elements];
 
 	// Filter
 	elements.forEach( element =>
 	{
 		const index = this.indexOf(element);
-		if(index != -1) this.splice(index, 1);
+		if(~index) this.splice(index, 1);
 	});
 
 	// Output
 	return this;
 
+});
+
+setArrayProperty("replace", function(elements, replacement) { 
+
+	// Check
+	if(!this.contains(elements))
+		return;
+
+	// Get index of the element/s
+	const index = isArray(elements) ? this.indexOf(elements[0]) : this.indexOf(elements);
+
+	// Replace
+	isArray(replacement) ? this.splice(index, 1, ...replacement) : this.splice(index, 1, replacement);
 });
 
 setArrayProperty("toObject", function(prefix) { 
