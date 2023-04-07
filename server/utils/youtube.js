@@ -141,12 +141,16 @@ const YOUTUBE =
         }
     },
 
-    checkVideoInfo: function(video)
+    checkVideosInfo: function(videos)
     {
-        if(video === undefined) return "YOUTUBE_CHECK_INVALID_VIDEOID";
-        if(video === null) return "YOUTUBE_CHECK_SOMETHING_WRONG_HAPPENED";
-        if(video.live) return "YOUTUBE_CHECK_LIVE_VIDEO";   
-        else return "OK";
+        for(const video of videos)
+        {
+            if(video === undefined) return "YOUTUBE_CHECK_INVALID_VIDEOID";
+            if(video === null) return "YOUTUBE_CHECK_SOMETHING_WRONG_HAPPENED";
+            if(video.live) return "YOUTUBE_CHECK_LIVE_VIDEO";   
+        }
+
+        return "OK";
     },
 
     getChannelsInfo: async function(channelIDs)

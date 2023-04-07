@@ -258,12 +258,15 @@ var SERVER =
         console.log(`EVENT --> User ${user.name} has sent a SUGGEST message`);
 
         // Fetch song data
-        const videoData = (await YOUTUBE.getVideosInfo(new_songID))[0];
+        let videoData = await YOUTUBE.getVideosInfo(new_songID);
         
         // Do some checkings
-        const check = YOUTUBE.checkVideoInfo(videoData);
+        const check = YOUTUBE.checkVideosInfo(videoData);
         if(check != "OK") return [check, true];
         if(suggestion != undefined && suggestion.userID != sender_id) return ["SUGGEST_SONG_ALREADY_SUGGESTED", true];
+
+        // Get first video
+        videoData = videoData[0];
 
         // Fetch channel's song data from Youtube API
         const channelData = (await YOUTUBE.getChannelsInfo(videoData.publisherChannel.ID))[0];
@@ -437,12 +440,16 @@ var SERVER =
         const room = WORLD.getRoom(roomID);
 
         // Check song
-        if(!song)
+        if(!song || !song.audioStream)
+        {
             room.timers.playSong = null;
+            return;
+        }
 
         // Update room playback settings
         room.current_song = song;
-        room.next_song = null;
+        room.next_song = room.future_song;
+        room.future_song = null;
         room.skipping = false;
         room.skipping_time = 0;
 
@@ -450,12 +457,12 @@ var SERVER =
         const song_duration = song.duration.totalMiliseconds;
 
         // Clear timers
-        clearTimeout(room.timers.chooseNextSong);
+        clearTimeout(room.timers.chooseNextSongs);
         clearTimeout(room.timers.playSong);
 
         // Set timers
-        room.timers.chooseNextSong = setTimeout(() => {
-            this.chooseNextSong(roomID);
+        room.timers.chooseNextSongs = setTimeout(() => {
+            this.chooseNextSongs(roomID);
         }, song_duration - WORLD.loading_duration);
 
         room.timers.playSong = setTimeout(() => {
@@ -475,86 +482,124 @@ var SERVER =
         }, WORLD.playback_update_frequency);
     },
 
-    chooseNextSong: async function(roomID)
+    chooseNextSongs: async function(roomID)
     {
         // Get room data
         const room = WORLD.getRoom(roomID); 
-        const MVS = room.getMostVotedSuggestions(); // Most Voted Suggestion
+        const sortedSuggestions = room.getSortedSuggestions(); // Most Voted Suggestion
 
         // Declare next song
         let next_songID = null;
+        let future_songID = null;
 
         // Consider different case scenarios
-        if(MVS.length == 0)           
-            next_songID = room.playlist_items.pickRandom();
-        else if(MVS.length == 1) 
-            next_songID = MVS[0].songID;
+        if(sortedSuggestions.length == 0)
+        {
+            if(room.next_song)
+            {
+                next_songID = room.next_song.ID;
+                future_songID = room.playlist_items.clone().remove(next_songID).pickRandom();
+            }
+            else
+            {
+                next_songID = room.playlist_items.pickRandom();
+                future_songID = room.playlist_items.clone().remove(next_songID).pickRandom();
+            }
+        }           
+        else if(sortedSuggestions.length == 1) 
+        {
+            next_songID = sortedSuggestions[0].songID;
+            future_songID = room.playlist_items.pickRandom();
+        }
         else
-            next_songID = MVS.pickRandom().songID;
+        {
+            next_songID = sortedSuggestions[0].songID;
+            future_songID = sortedSuggestions[1].songID;
+        }
 
-        // Fetch song data with Youtube API
-        const videoData = (await YOUTUBE.getVideosInfo(next_songID))[0];
+        // Fetch songs data with Youtube API
+        const videosData = await YOUTUBE.getVideosInfo([next_songID, future_songID]);
+
+        // Assign song data
+        const nextVideoData = videosData.getObject({ID: next_songID});
+        const futureVideoData = videosData.getObject({ID: future_songID});
 
         // Check song data
-        const check = YOUTUBE.checkVideoInfo(videoData);
+        const check = YOUTUBE.checkVideosInfo([nextVideoData, futureVideoData]);
         if(check != "OK")
         {
             console.log(`ERROR ---> YOUTUBE.checkVideoInfo: ${check}`);
             return;
         }
+
+        // Get publisher IDs
+        const nextPublisherID = nextVideoData.publisherChannel.ID;
+        const futurePublisherID = futureVideoData.publisherChannel.ID;
         
-        // Fetch channel's song data with Youtube API
-        const channelData = (await YOUTUBE.getChannelsInfo(videoData.publisherChannel.ID))[0];
-        if(channelData) videoData.publisherChannel = channelData;
+        // Fetch channel data of the songs with Youtube API
+        const channelsData = await YOUTUBE.getChannelsInfo([nextPublisherID, futurePublisherID]);
+
+        // Assign channel data
+        nextVideoData.publisherChannel = channelsData.getObject({ID: nextPublisherID});
+        futureVideoData.publisherChannel = channelsData.getObject({ID: futurePublisherID});
 
         // Fetch audioStream with Youtube Downloading module
-        const audioStream = await YOUTUBE.fetchAudioStreams(next_songID);
+        const nextAudioStream = await YOUTUBE.fetchAudioStreams(next_songID);
 
         // Check
-        if(audioStream[0] == "ERROR")
+        if(nextAudioStream[0] == "ERROR")
         {
-            console.log(`ERROR ---> YOUTUBE.fetchAudioStreams: ${audioStream[1]}`);
+            console.log(`ERROR ---> YOUTUBE.fetchAudioStreams: ${nextAudioStream[1]}`);
             return;
         }
         
         // Assign url info
-        videoData.audioStream = audioStream[1];
+        nextVideoData.audioStream = nextAudioStream[1];
 
-        // Create new instance of the class Song with song data
-        const next_song = new Song(videoData); 
+        // Create new instances of the class Song with songs data
+        const next_song = new Song(nextVideoData); 
+        const future_song = new Song(futureVideoData);
 
         // Show the selected song title
-        console.log(`EVENT ---> Room ${room.name} has choosen ${next_song.title}`);
+        console.log(`EVENT ---> Room ${room.name} has choosen ${next_song.title} as next song`);
+        console.log(`EVENT ---> Room ${room.name} has choosen ${future_song.title} as future song`);
         
         // Get selected suggestion's user
         const suggestion = room.getSuggestion(next_songID);
         const user = suggestion !== undefined ? WORLD.getUser(suggestion.userID) : null;
 
-        // Update room data
-        room.next_song = next_song;
-        room.skipping = true;
-        room.skipping_time = room.playback_time;
-        room.skip_counter = 0;
-        WORLD.removeSuggestion(room, user, next_song);
-
         // Update user data
-        room.people.forEach(user => {
-            user.skip = false;
+        room.people.forEach(userID => {
+            // Get user
+            const user = WORLD.getUser(userID);
+            
+            // Set skip to false
+            user.skip = false
         });
+
+        // Update room data
+        WORLD.removeSuggestion(room, user, next_song);
+        room.skipping = true;
+        room.skip_counter = 0;
+        room.skipping_time = room.playback_time;
+        room.next_song = next_song;
+        room.future_song = future_song;
 
         // If the playback timer is not active, play the song
         if(room.timers.playSong == null)
             this.playSong(roomID, next_song);
 
-        // Get playbackInfo of the song
-        const playbackInfo = this.getPlaybackInfo(room, next_song);
+        // Get playbackInfo of the next and future song
+        const nextPlaybackInfo = this.getPlaybackInfo(room, next_song);
+        const futurePlaybackInfo = this.getPlaybackInfo(room, future_song);
         
-        // Send playbackInfo of the song to the room
-        const playback_message = new Message("system", "PLAY_SONG", JSON.stringify(playbackInfo), Date.now());
-        this.sendRoomMessage(playback_message, room.id, []);
+        // Build playback messages
+        const next_playback_message = new Message("system", "PLAY_SONG", JSON.stringify(nextPlaybackInfo), Date.now());
+        const future_playback_message = new Message("system", "PLAY_SONG", JSON.stringify(futurePlaybackInfo), Date.now());
 
-        // Output
-        return next_song;
+        // Send messages
+        this.sendRoomMessage(next_playback_message, room.id, []);
+        this.sendRoomMessage(future_playback_message, room.id, []);
     },
 
     skipSong: function(roomID)
@@ -563,16 +608,16 @@ var SERVER =
         const room = WORLD.getRoom(roomID);
 
         // Clear current song timers
-        clearTimeout(room.timers.chooseNextSong);
+        clearTimeout(room.timers.chooseNextSongs);
         clearTimeout(room.timers.playSong);
 
         // Play song after some loading seconds
         room.timers.playSong = setTimeout(() => {
-            this.playSong(roomID, next_song)
+            this.playSong(roomID, room.next_song)
         }, WORLD.loading_duration);
 
         // Choose next song
-        const next_song = this.chooseNextSong(roomID);
+        this.chooseNextSongs(roomID);
     },
 
     initPlayback: async function()
@@ -597,7 +642,7 @@ var SERVER =
             room.playlist_items = playlist_items.map(item => item.ID);
 
             // Start song cycle
-            await this.chooseNextSong(roomID);
+            await this.chooseNextSongs(roomID);
         }
 
         // Notify the initialization of the playback of the rooms is done
@@ -607,17 +652,33 @@ var SERVER =
     getPlaybackInfo: function(room, song)
     {
         // Check
-        if(!song || (song != room.current_song && song != room.next_song))
+        if(!song || (song != room.current_song && song != room.next_song && song != room.future_song))
         {
             console.log("Error ---> getPlaybackInfo: Invalid song");
             return null;
         }
 
+        // Calculate playback time
+        let playbackTime;
+        if(song === room.current_song)
+        {
+            playbackTime = room.playback_time;
+        }
+        else if (song === room.next_song)
+        {
+            if(room.skipping) playbackTime = room.playback_time - (room.skipping_time + WORLD.loading_time);
+            else playbackTime = "next";
+        }
+        else
+        {
+            playbackTime = "future";
+        }
+
         // Build playbackInfo object
         const playbackInfo =
         {
-            song: song,
-            playbackTime: room.current_song.ID === song.ID ? room.playback_time : room.playback_time - (room.skipping_time + WORLD.loading_time)
+            song,
+            playbackTime
         };
 
         // Return object
@@ -724,10 +785,18 @@ var SERVER =
             this.sendPrivateMessage(message, user_id);
         };
 
-        // Send to the new user info about the room future playback
+        // Send to the new user info about the room next playback
         if(user_room.next_song)
         {
             const playbackInfo = this.getPlaybackInfo(user_room, user_room.next_song);
+            message = new Message("system", "PLAY_SONG", JSON.stringify(playbackInfo), Date.now());
+            this.sendPrivateMessage(message, user_id);
+        }
+
+        // Send to the new user info about the room future playback
+        if(user_room.future_song)
+        {
+            const playbackInfo = this.getPlaybackInfo(user_room, user_room.future_song);
             message = new Message("system", "PLAY_SONG", JSON.stringify(playbackInfo), Date.now());
             this.sendPrivateMessage(message, user_id);
         }

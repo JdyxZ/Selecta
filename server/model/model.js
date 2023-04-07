@@ -92,6 +92,7 @@ function Room(data)
     this.skipping_time = 0;
     this.current_song = null;
     this.next_song = null;
+    this.future_song = null;
     this.reference_time = 0;
     this.playback_time = 0;
     this.num_people = 0;
@@ -100,7 +101,7 @@ function Room(data)
     // Timers
     this.timers =
     {
-        "chooseNextSong" : null,
+        "chooseNextSongs" : null,
         "playSong" : null
     };
 
@@ -207,7 +208,7 @@ Room.prototype.getSuggestion = function(suggestionID)
 
 Room.prototype.getSortedSuggestions = function()
 {
-    this.suggestions.values().sort((a, b) => {
+    return this.suggestions.values().sort((a, b) => {
         return b.vote_counter - a.vote_counter
     });
 }
@@ -403,7 +404,7 @@ var WORLD = {
 
         // Remove votes
         room.people.forEach(userID => {
-            // Get user and songID
+            // Get user
             const user = this.getUser(userID);
             
             // Remove

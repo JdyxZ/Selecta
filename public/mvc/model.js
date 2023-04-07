@@ -27,6 +27,7 @@ const MODEL =
     // Audio playback
     current_song: null,
     next_song: null, 
+    future_song: null,
     player: new Audio(),
     aux_player: null,
 

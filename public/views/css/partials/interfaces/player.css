@@ -15,7 +15,7 @@
 #Selecta #current_song
 {
     display: inline-flex;
-    width: 25%;
+    width: 35%;
     height:auto;
     align-items: center;
     overflow: hidden;
@@ -24,8 +24,8 @@
 #Selecta #next_song
 {
     display: inline-flex;
-    width: 25%;
-    height:auto;
+    width: 35%;
+    height: auto;
     flex-direction: row;
     justify-content: flex-end;
     align-items: center;
@@ -35,7 +35,8 @@
 #Selecta #current_song .thumbnail
 {
     object-fit: contain;
-    height: 60%;
+    height: 75%;
+    border-radius: 5%;
     margin-right: 0.8rem;
     margin-left: 8%;
 }
@@ -43,8 +44,9 @@
 #Selecta #next_song .thumbnail
 {
     object-fit: contain;
-    height: 50%;
-    margin: 0.8rem;
+    height: 75%;
+    border-radius: 5%;
+    margin-left: 0.8rem;
     margin-right: 8%;
 }
 
@@ -61,10 +63,9 @@
 {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: flex-end;
     justify-content: center;
-    /* white-space: nowrap; */
-    margin-left: 0.5rem;
+    margin-right: 0.5rem;
 }
 
 #Selecta #current_song .title, #Selecta #next_song .title
@@ -89,7 +90,7 @@
     display:flex;
     align-items: center;
     place-content: center;
-    width: 50%;
+    width: 30%;
     height:auto;
     flex-direction: column;
 }
@@ -106,8 +107,8 @@
 #Selecta #player .thumbnail
 {
     object-fit: cover;
-    width: 5rem;
-    height: 5rem;
+    width: 4.5rem;
+    height: 4.5rem;
     border-radius: 50%;
     position: absolute;
     margin-top: 1rem;
@@ -117,7 +118,7 @@
 {
     object-fit: contain;
     height: 25%;
-    margin-left: auto;
+    margin-left: 12.5rem;
 }
 
 #Selecta #player #skip-info
@@ -155,7 +156,7 @@
 
 #Selecta .progress-bar
 {
-    width: 20%;
+    width: 0%;
     height: 0.2rem;
     border-radius: 8px;
     background-color: #ffffff;

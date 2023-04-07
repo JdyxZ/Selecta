@@ -279,16 +279,22 @@ var CLIENT =
         let playbackTime = content.playbackTime; // [ms]
         const deliveryTime = message.time; // [ms]
 
-        // Estimate latency and arrival timestamp
-        const latency = Date.now() - deliveryTime;
-        const arrivalTime = performance.now();
+        // If playbackTime is a number
+        if(isNumber(playbackTime))
+        {
+            // Estimate latency and arrival timestamp
+            const latency = Date.now() - deliveryTime;
+            const arrivalTime = performance.now();
+    
+            // Adjust latency
+            playbackTime += latency;
+    
+            // Set arrival timestamp to the song
+            song.arrivalTime = arrivalTime;
+        }
 
-        // Adjust latency
-        playbackTime += latency;
-
-        // Set playback time and arrival timestamp to the song
+        // Set playbackTime to the song
         song.playbackTime = playbackTime;
-        song.arrivalTime = arrivalTime;
 
        // Callback
        CONTROLLER.onPlaySong(song);
