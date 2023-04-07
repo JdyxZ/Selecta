@@ -14,7 +14,7 @@
     position: absolute;
     background: #202020;
     width: 70%;
-    height: 85%;
+    height: 75%;
     overflow: hidden;
     border-radius: 8px;
     z-index: 1;
@@ -144,7 +144,7 @@
 #Selecta #votes_interface #search_result 
 {
     width: 90%;
-    height: 70%;
+    height: 65%;
     padding: 2rem 0 2rem 5%;
     overflow-y: auto;
     overflow-x: hidden;
