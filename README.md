@@ -25,7 +25,7 @@ Run server with nodemon: npm run server
 - Remove GAPI and use proxy and apicache.
 - Fade suggested videos.
 - Improve contains method from Array: https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Array/some
-- Adapt getEventListeners and removeEventListeners methods to framework.js.
+- Configure proxy server.
 
 
 

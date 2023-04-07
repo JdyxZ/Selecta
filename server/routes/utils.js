@@ -4,6 +4,7 @@
 const express = require('express');
 const router = express.Router();
 const url = require('url');
+const needle = require('needle');
 
 // Our modules
 const {WORLD} = require("../model/model.js");
@@ -107,7 +108,6 @@ router.get("/server_settings", (req, res, next) => {
 });
 
 // Youtube 
-
 router.get("/youtube_keys", (req, res, next) => {
     res.json(API_CREDENTIALS.google.public);
 });
@@ -122,6 +122,14 @@ router.get("/youtubeGetAudioStreams", async (req, res, next) =>
 
     // Respond
     res.json(result);    
+});
+
+// Proxy
+router.get("/proxy", async (req, res, next) => 
+{
+    const apiRes = await needle('get', `https://yt3.ggpht.com/y8aH22sg9A1XUuDvu74oK_Zv1Q5ygJxn-Z4auUT_XOGxC_Zj5B1W43WVhwiEXuGTq9tIEW9MjrY=s240-c-k-c0x00ffffff-no-rj`)
+    const data = apiRes.body
+    res.status(200).end(data);
 });
 
 
