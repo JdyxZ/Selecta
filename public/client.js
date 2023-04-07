@@ -120,6 +120,9 @@ var CLIENT =
             case "VOTE":
                 this.onVote(message);
                 break;
+            case "SKIP":
+                this.onSkip(message);
+                break;
             case "PLAY_SONG":
                 this.onPlaySong(message);
                 break;
@@ -263,6 +266,20 @@ var CLIENT =
     
         // Callback
         CONTROLLER.onVote(user, songID);
+    },
+
+    onSkip: function(message)
+    {
+        // Log
+        console.log("New SKIP message received\n");
+        //console.table(message.content);
+
+        // Unpack message data
+        const requester = message.sender;
+        const user = MODEL.getUser(requester);
+    
+        // Callback
+        CONTROLLER.onSkip(user);
     },
 
     onPlaySong: function(message)

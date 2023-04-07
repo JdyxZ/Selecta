@@ -93,6 +93,7 @@
     width: 30%;
     height:auto;
     flex-direction: column;
+    overflow: hidden;
 }
 
 #Selecta #player .cover
@@ -121,7 +122,15 @@
     margin-left: 12.5rem;
 }
 
-#Selecta #player #skip-info
+#Selecta #player #skip-button .faded
+{
+    object-fit: contain;
+    height: 25%;
+    margin-left: 12.5rem;
+    opacity: 0.5;
+}
+
+#Selecta #player #playback-info
 {
     color: #ababab;
     font-size: 12px;

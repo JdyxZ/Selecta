@@ -2,11 +2,13 @@
 
 const CONTROLLER = 
 {
-    // Vars
+    // Control variables
     loading: true,
-    audio_loaded: false,
+    audio_playing: false,
     syncro_diff: 100, // [ms]
     stop_current_loading: false,
+
+    // Debug
     debug: null,
 
     /***************** INIT *****************/
@@ -158,11 +160,23 @@ const CONTROLLER =
 
     },
 
-    onUserJoin: function(users)
+    onUserJoin: function(user_data)
     {
         // Append new users to users
-        MODEL.addUsers(users);
-        users.forEach(user =>{ if(!((typeof MODEL.raw_user_assets[user.asset] === 'undefined'))) VIEW.addUser(user) } );
+        if(isArray(user_data)) MODEL.addUsers(user_data);
+        if(isObject(user_data)) MODEL.addUser(user_data);
+
+        // View stuff
+        if(isArray(user_data))
+        {
+            user_data.forEach(user => { if (this.users_obj[user.id].animation !== null) this.users_obj[user.id].animation = 'idle.skanim';});
+            user_data.forEach(user =>{ if(!((typeof MODEL.raw_user_assets[user.asset] === 'undefined'))) VIEW.addUser(user) } );
+        }
+        else if(isObject(user_data))
+        {
+            if (this.users_obj[user_data.id].animation !== null) this.users_obj[user_data.id].animation = 'idle.skanim';
+            if ((typeof MODEL.raw_user_assets[user_data.asset] === 'undefined')) VIEW.addUser(user_data);
+        }
     },
 
     onUserLeft: function(user_id)
@@ -250,7 +264,28 @@ const CONTROLLER =
             suggestion.vote_counter++;
         }
 
+        // Update interface
         SELECTA.updateVotesInterface();
+    },
+
+    onSkip: function(user)
+    {
+        // Check skip property
+        switch(user.skip)
+        {
+            case(true): // User skipped in the past
+                MODEL.current_room.skip_counter--;
+                break;
+            case(false): // User hasn't skipped yet
+                MODEL.current_room.skip_counter++;
+                break;
+        }
+
+        // Update skip property
+        user.skip = !user.skip;
+
+        // Update visuals
+        SELECTA.updatePlaybackInfo();
     },
 
     onPlaySong: function(song)
@@ -288,9 +323,12 @@ const CONTROLLER =
         {
             // Update model
             MODEL.next_song = song;
+            MODEL.current_room.skipping = true;
 
             // Force update visuals
             SELECTA.updatePlaybackInterface("next");
+            SELECTA.updatePlaybackInfo();
+            SELECTA.updateSkipButton();
 
             // Initialize aux player to start prelaoding the song
             MODEL.aux_player = new Audio();
@@ -370,11 +408,11 @@ const CONTROLLER =
         SELECTA.updatePlaybackInterface("current");
         
         // Check if we are loading the audio for first time
-        if(!this.audio_loaded)
+        if(!this.audio_playing)
         {
             // Notify the user the app is ready to run
             SELECTA.loadingOver();
-            this.audio_loaded = true;
+            this.audio_playing = true;
         }
         else
         {
@@ -406,19 +444,27 @@ const CONTROLLER =
 
         // Remove old and place new event listner
         MODEL.player.removeEventListener('timeupdate', SELECTA.updatePlaybackProgress.bind(this));      
-        MODEL.aux_player.addEventListener("timeupdate", SELECTA.updatePlaybackProgress.bind(this));
+        MODEL.aux_player.when("timeupdate", SELECTA.updatePlaybackProgress.bind(this));
 
         // Assign new player
         MODEL.player = MODEL.aux_player;
         MODEL.aux_player = null;
 
-        // Set next song to current
+        // Update model
         MODEL.current_song = MODEL.next_song;
         MODEL.next_song = MODEL.future_song;
         MODEL.future_song = null;
+        MODEL.resetSkipVotes();
+
+        // Clear skipping info
+        clearInterval(MODEL.intervals.skipping);
+        MODEL.intervals.skipping = null;
+        MODEL.current_room.skipping = false;
 
         // Force update visuals
         SELECTA.updatePlaybackInterface("both");
+        SELECTA.updatePlaybackInfo();
+        SELECTA.updateSkipButton();
 
         // Set stop current loading flag to false to enable current loading pipeline again
         this.stop_current_loading = false;

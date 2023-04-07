@@ -85,6 +85,8 @@ const SELECTA =
     player: document.get("#player_container #player"),
     progress_bar: document.get("#player_container #player .progress-bar"),
     playback_timer: document.get("#player_container #player #current-time"),
+    playback_info: document.get("#player_container #player #playback-info"),
+    skip_button: document.get("#player_container #player #skip-button"),
 
     // Templates
     videoTemplate: document.get("#Selecta .video"),
@@ -150,10 +152,11 @@ const SELECTA =
 
         // Votes interface
         this.votes_trigger.when("click", this.updateVotesInterface.bind(this));
-        this.vote_result.when('click', this.voteSuggestion.bind(this));
+        this.vote_result.when("click", this.voteSuggestion.bind(this));
 
         // Player
-        MODEL.player.addEventListener('timeupdate', this.updatePlaybackProgress.bind(this));        
+        MODEL.player.addEventListener("timeupdate", this.updatePlaybackProgress.bind(this)); 
+        this.skip_button.when("click", this.skipSong.bind(this));
         
         // Callbacks for volume control
         this.sliders.music_volume.when("input", this.setVolume);
@@ -537,6 +540,34 @@ const SELECTA =
         CONTROLLER.sendVote(videoID);  
     },
 
+    skipSong: function()
+    {
+        // Check
+        if(MODEL.current_room.skipping)
+            return;
+
+        // Check user skip status
+        switch(MODEL.my_user.skip)
+        {
+            case(true): // User skipped in the past
+                MODEL.current_room.skip_counter--;
+                break;
+            case(false): // User hasn't skipped yet
+                MODEL.current_room.skip_counter++;
+                break;
+        }
+
+        // Update skip property
+        MODEL.my_user.skip = !MODEL.my_user.skip;
+
+        // Update skip visuals
+        this.updatePlaybackInfo();
+        this.updateSkipButton();
+
+        // Send skip message
+        CONTROLLER.sendSkip();
+    },
+
     updateSuggestionInterface: function()
     {
         // Remove old search
@@ -612,7 +643,94 @@ const SELECTA =
         });    
     },
 
-    updatePlaybackInterface:function(update)
+    updateSkipButton: function()
+    {
+        if(MODEL.current_room.skipping)
+        {
+            this.skip_button.className = "faded";
+        }
+        else if(MODEL.my_user.skip)
+        {
+            this.skip_button.className = "";
+            this.skip_button.src = "media/interface/skip_button_on.png";
+        }
+        else
+        {
+            this.skip_button.className = "";
+            this.skip_button.src = "media/interface/skip_button_off.png";
+        } 
+    },
+
+    updatePlaybackInfo: function()
+    {
+        // Set countdown for skipping
+        if(MODEL.current_room.skipping && !MODEL.intervals.skipping)
+        {
+            // Calculate mean time
+            const meanTime = performance.now() - song.arrivalTime;
+
+            // Set an aux variable with playbackTime
+            const playbackTime = -(MODEL.next_song.playbackTime + meanTime);
+
+            // Calculate integer and decimal parts of playbackTime
+            let integerPart = Math.trunc(playbackTime);
+            const decimalPart = playbackTime - integerPart;
+
+            // Check
+            if(integerPart == 0)
+                return;
+
+            // Start the interval after some miliseconds of difference
+            setTimeout(() => {
+
+                // Set a countdown
+                MODEL.intervals.skipping = setInterval(() => {
+
+                    // Check
+                    if(integerPart < 0)
+                        return;
+
+                    // Update playback info
+                    this.playback_info.textContent = `Skipping in ${integerPart}s`;
+
+                    // Update integer part
+                    integerPart--;
+                        
+                }, 1000);
+
+            }, decimalPart);
+        }
+        // Show loading status
+        else if(!CONTROLLER.audio_playing)
+        {
+            // Auxiliar var
+            let counter = 0;
+
+            MODEL.intervals.loading = setInterval(()=> {
+
+                // Get info message
+                let info;
+                if(counter % 4 == 0) info = "loading";
+                else if (counter % 4 == 1) info = "loading.";
+                else if (counter % 4 == 2) info = "loading..";
+                else if (counter % 4 == 3) info = "loading...";
+
+                // Update playback info
+                this.playback_info.textContent = info; 
+
+                // Update counter
+                counter++;
+            }, 200)
+        }
+        // Show current number of votes
+        else if(CONTROLLER.audio_playing)
+        {
+           // Update playback info
+           this.playback_info.textContent = `${100 * MODEL.current_room.skip_counter / MODEL.current_room.num_people}% of skipping`;  
+        }
+    },
+
+    updatePlaybackInterface: function(update)
     {
         try 
         {
@@ -644,8 +762,8 @@ const SELECTA =
         
                 // Fill song elements with current song data
                 songThumbnail.src = MODEL.current_song ? MODEL.current_song.thumbnails.medium.url : "media/interface/no_song.png";
-                songTitle.textContent = MODEL.current_song ? MODEL.current_song.title.resumeByChars(50) : "Current song";
-                songArtist.textContent = MODEL.current_song ? MODEL.current_song.publisherChannel.title.resumeByChars(50) : "Song artist";
+                songTitle.textContent = MODEL.current_song ? MODEL.current_song.title.resumeByChars(45) : "Current song";
+                songArtist.textContent = MODEL.current_song ? MODEL.current_song.publisherChannel.title.resumeByChars(45) : "Song artist";
                 
                 // Fill player elements with current song data
                 songPlayerThumbnail.src = MODEL.current_song ? MODEL.current_song.thumbnails.medium.url : "media/interface/no_song.png";
@@ -661,8 +779,8 @@ const SELECTA =
         
                 // Fill elements with current song data
                 songThumbnail.src = MODEL.next_song ? MODEL.next_song.thumbnails.medium.url : "media/interface/no_song.png";
-                songTitle.textContent = MODEL.next_song ? MODEL.next_song.title.resumeByChars(50) : "Next song";
-                songArtist.textContent = MODEL.next_song ? MODEL.next_song.publisherChannel.title.resumeByChars(50) : "Song artist";
+                songTitle.textContent = MODEL.next_song ? MODEL.next_song.title.resumeByChars(45) : "Next song";
+                songArtist.textContent = MODEL.next_song ? MODEL.next_song.publisherChannel.title.resumeByChars(45) : "Song artist";                
             }            
         } 
         catch (error) 
@@ -685,12 +803,32 @@ const SELECTA =
         // Synchronize
         if(Math.abs(currentTime - time) > CONTROLLER.syncro_diff / 1000)
         {
+            // Mute player
             MODEL.player.muted = true;
+
+            // Adjust the player time
             MODEL.player.currentTime = time;
+
+            // Update audio playing controller
+            CONTROLLER.audio_playing = false;
+
+            // Update playback info
+            this.updatePlaybackInfo();
         }
-        else if(!CONTROLLER.loading)
+        else if(!CONTROLLER.loading && !CONTROLLER.audio_playing)
         {
+            // Restore volume
             MODEL.player.muted = false;
+
+            // Clear loading interval
+            clearInterval(MODEL.intervals.loading);
+            MODEL.intervals.loading = null;
+
+            // Update audio playing controller
+            CONTROLLER.audio_playing = true;
+
+            // Update playback info
+            this.updatePlaybackInfo();
         }
 
         // Progress bar

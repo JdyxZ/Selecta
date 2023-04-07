@@ -40,6 +40,16 @@ const MODEL =
     area_camera: null,
     camera: null,
 
+    // Timers
+    timers:{},
+
+    // Intervals
+    intervals:
+    {
+        "skipping": null,
+        "loading": null,
+    },
+
     // Debug
     debug: null,
 
@@ -53,14 +63,14 @@ const MODEL =
     {
         this.users_obj[user.id] = user;
         this.users_arr.append(user);
+        this.current_room.num_people++;
     },
 
     addUsers: function(users)
     {
         users.forEach(user => this.users_obj[user.id] = user);
-        users.forEach(user => { if (this.users_obj[user.id].animation !== null) this.users_obj[user.id].animation = 'idle.skanim';});
-          
         this.users_arr = this.users_arr.concat(users);
+        this.current_room.num_people += users.length;
     },
 
     removeUser: function(id)
@@ -86,6 +96,9 @@ const MODEL =
         // Remove user 
         this.users_obj.remove(id);
         this.users_arr.splice(index, 1);
+
+        // Update number of people in the room
+        this.current_room.num_people--;
     },
 
     // Suggestion Methods
@@ -157,6 +170,15 @@ const MODEL =
         // Remove votes
         this.users_arr.forEach(user => {
             user.votes.remove(suggestion.songID);
+        })
+    },
+
+    // Skip Methods
+    resetSkipVotes()
+    {
+        // Reset skip votes
+        this.users_arr.forEach(user => {
+            user.skip = false;
         })
     },
 

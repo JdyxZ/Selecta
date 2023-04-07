@@ -353,7 +353,6 @@ var SERVER =
     {
         // Get message data
         const sender_id = message.sender;
-        const content = message.content;
 
         // Get user data
         const user = WORLD.getUser(sender_id);

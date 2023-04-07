@@ -87,8 +87,8 @@ function Room(data)
     this.playlist = data == undefined ? null : data.playlist || null;
     this.suggestions = {};
     this.songs = {};
-    this.skip_counter = 0;
     this.skipping = false;
+    this.skip_counter = 0;
     this.skipping_time = 0;
     this.current_song = null;
     this.next_song = null;
@@ -134,7 +134,7 @@ Room.prototype.removeUser = function(user)
 
 Room.prototype.toJSON = function()
 {
-    const{ id, name, objects, people, exits, default_model, suggestions, songs, num_people } = this;
+    const{ id, name, objects, people, exits, default_model, suggestions, songs, skipping, skip_counter, num_people} = this;
 
     const room_json =
     {
@@ -146,6 +146,8 @@ Room.prototype.toJSON = function()
         default_model,
         suggestions,
         songs,
+        skipping,
+        skip_counter,
         num_people
     }
 
