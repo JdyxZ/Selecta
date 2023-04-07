@@ -38,10 +38,60 @@ Document.prototype.when = function(event, callback)	{
 	document.addEventListener(event, callback);
 };
 
+Document.prototype.stop = function(event, callback)	
+{
+	// Get listeners
+	const listeners = getEventListeners(document)[event];
+
+	// Check
+	if(listeners == undefined)
+	{
+		console.error(`ERROR: Listeners upon the event ${event} in the document do not exist`);
+		return;
+	}
+
+	// Get listeners callbacks
+	const listeners_callbacks = listeners.map(eventSpecs => eventSpecs.listener);
+
+	// Check
+	if(!listeners_callbacks.includes(callback))
+	{
+		console.error(`ERROR: No listener with the name ${callback.name} has been detected upon the event ${event} in the document`);
+		return;
+	}
+	
+	document.removeEventListener(event, callback);
+};
+
+Document.prototype.stopByName = function(event, callbackName)	
+{
+	// Get listeners
+	const listeners = getEventListeners(document)[event];
+
+	// Check
+	if(listeners == undefined)
+	{
+		console.error(`ERROR: Listeners upon the event ${event} in the document do not exist`);
+		return;
+	}
+
+	// Filter by name
+	const filtered_listeners = listeners.filter(eventSpecs => eventSpecs.listener.name.includes(callbackName));
+
+	// Check
+	if(filtered_listeners.length > 1)
+	{
+		console.error(`ERROR: Several or no listeners with the name ${callbackName} has been detected upon the event ${event} in the element document`);
+		return;
+	}
+	
+	document.removeEventListener(event, filtered_listeners[0].listener);
+};
+
 /***************** HTML ElEMENTS *****************/
 
-HTMLElement.prototype.get = function(selector)	{
-
+HTMLElement.prototype.get = function(selector)	
+{
 	// Get query
 	const query = this.querySelector(selector);
 
@@ -68,7 +118,8 @@ HTMLElement.prototype.get = function(selector)	{
 	}
 };
 
-HTMLElement.prototype.getAll = function(selector)	{
+HTMLElement.prototype.getAll = function(selector)	
+{
 
 	// Get query
 	const query = this.querySelectorAll(selector);
@@ -90,6 +141,11 @@ HTMLElement.prototype.getAll = function(selector)	{
 
 };
 
+HTMLElement.prototype.getName = function()
+{
+	return `<${this.tagName.toLowerCase()}${this.id != undefined ? ` id="${this.id}"` : " "}${this.classList.length > 0 ? `class="${this.classList.toString()}"` : ""}> ... </${this.tagName.toLowerCase()}>`;
+}
+
 HTMLElement.prototype.getParents = function()
 {
 	let parents = new Array();
@@ -104,6 +160,62 @@ HTMLElement.prototype.getParents = function()
 
 	return parents;    
 };
+
+HTMLElement.prototype.when = function(event, callback)	
+{
+	this.addEventListener(event, callback);
+};
+
+HTMLElement.prototype.stop = function(event, callback)	
+{
+	// Get listeners
+	const listeners = getEventListeners(this)[event];
+
+	// Check
+	if(listeners == undefined)
+	{
+		console.error(`ERROR: Listeners upon the event ${event} in the element ${this.getName()} do not exist`);
+		return;
+	}
+
+	// Get listeners callbacks
+	const listeners_callbacks = listeners.map(eventSpecs => eventSpecs.listener);
+
+	// Check
+	if(!listeners_callbacks.includes(callback))
+	{
+		console.error(`ERROR: No listener with the name ${callback.name} has been detected upon the event ${event} in the element ${this.getName()}`);
+		return;
+	}
+	
+	this.removeEventListener(event, callback);
+}
+
+HTMLElement.prototype.stopByName = function(event, callbackName)	
+{
+	// Get listeners
+	const listeners = getEventListeners(this)[event];
+
+	// Check
+	if(listeners == undefined)
+	{
+		console.error(`ERROR: Listeners upon the event ${event} in the element ${this.getName()} do not exist`);
+		return;
+	}
+
+	// Filter by name
+	const filtered_listeners = listeners.filter(eventSpecs => eventSpecs.listener.name.includes(callbackName));
+
+	// Check
+	if(filtered_listeners.length != 1)
+	{
+		console.error(`ERROR: Several or any listener with the name ${callbackName} has been detected upon the event ${event} in the element ${this.getName()}`);
+		return;
+	}
+	
+	this.removeEventListener(event, filtered_listeners[0].listener);
+}
+
 
 HTMLElement.prototype.appendChildren = function(children)
 {
@@ -128,11 +240,6 @@ HTMLElement.prototype.clone = function()
 {
 	return this.cloneNode(true);
 }
-
-HTMLElement.prototype.when = function(event, callback)	
-{
-	this.addEventListener(event, callback);
-};
 
 HTMLElement.prototype.visibility = function()
 {

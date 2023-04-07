@@ -155,7 +155,7 @@ const SELECTA =
         this.vote_result.when("click", this.voteSuggestion.bind(this));
 
         // Player
-        MODEL.player.addEventListener("timeupdate", this.updatePlaybackProgress.bind(this)); 
+        MODEL.player.when("timeupdate", this.updatePlaybackProgress.bind(this)); 
         this.skip_button.when("click", this.skipSong.bind(this));
         
         // Callbacks for volume control
@@ -424,7 +424,7 @@ const SELECTA =
         // Get suggestion
         const suggestion = MODEL.getSuggestion(videoID);
 
-        // Checkings
+        // Checks
         if(!videoHTML)
         {
             return;
@@ -501,7 +501,7 @@ const SELECTA =
             }
         }
 
-        // Checkings
+        // Checks
         if(!videoHTML)
         {
             return;

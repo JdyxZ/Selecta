@@ -368,7 +368,7 @@ setArrayProperty("containsStrict", function(elements)
 
 setArrayProperty("remove", function(elements) { 
 
-	// Checkings
+	// Checks
 	if (!isArray(elements)) elements = elements.toArray();
 
 	// Filter
@@ -404,6 +404,10 @@ setArrayProperty("isEmpty", function() {
 setArrayProperty("pickRandom", function() { 
 	return this[Math.floor(Math.random() * this.length)];
 });
+
+setArrayProperty("toString", function() {
+	return this.join(', ');
+})
 
 /***************** OBJECT *****************/
 

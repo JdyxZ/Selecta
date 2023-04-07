@@ -102,7 +102,8 @@
     align-items: center;
     width: -webkit-fill-available;
     height: 70%;
-    justify-content: center;
+    flex-direction: row;
+    /* margin-left: 50%; */
 }
 
 #Selecta #player .thumbnail
@@ -111,15 +112,15 @@
     width: 4.5rem;
     height: 4.5rem;
     border-radius: 50%;
-    position: absolute;
     margin-top: 1rem;
+    margin-left: calc(50% - 2.25rem);
 }
 
 #Selecta #player #skip-button
 {
     object-fit: contain;
     height: 25%;
-    margin-left: 12.5rem;
+    margin-left: 1.5rem;
 }
 
 #Selecta #player #skip-button .faded

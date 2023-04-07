@@ -81,7 +81,7 @@ var SERVER =
             // If there is no send time, append one
             if(message.time == null) message.time = Date.now();
 
-            // Eventually, message has passed general checkings and is ready to be routed!
+            // Eventually, message has passed general checks and is ready to be routed!
             const status = await this.routeMessage(message);
             if (status[0] != "OK") throw status;
         } 
@@ -225,7 +225,7 @@ var SERVER =
         // Log
         console.log(`EVENT --> User ${user.name} has sent a TICK message`);
 
-        // Do some checkings
+        // Do some checks
         if(content.model == undefined && content.animation == undefined) return ["TICK_WRONG_CONTENT", true];
         if(content.model && !isObject(content.model)) return ["TICK_WRONG_MODEL_TYPE", true];
         if(content.animation && !isString(content.animation)) return ["TICK_WRONG_ANIMATION_TYPE", true];
@@ -264,7 +264,7 @@ var SERVER =
         // Fetch song data
         let videoData = await YOUTUBE.getVideosInfo(new_songID);
         
-        // Do some checkings
+        // Do some checks
         const check = YOUTUBE.checkVideosInfo(videoData);
         if(check != "OK") return [check, true];
         if(suggestion != undefined && suggestion.userID != sender_id) return ["SUGGEST_SONG_ALREADY_SUGGESTED", true];
@@ -326,7 +326,7 @@ var SERVER =
         // Log
         console.log(`EVENT --> User ${user.name} has sent a VOTE message`);
 
-        // Do some checkings
+        // Do some checks
         if(suggestion == undefined) return ["VOTE_SONG_DOES_NOT_BELONG_TO_THE_ROOM", true];   
         if(suggestion.userID == sender_id) return ["VOTE_SONG_BELONGS_TO_THE_USER", true];
 
@@ -365,7 +365,7 @@ var SERVER =
         // Log
         console.log(`EVENT --> User ${user.name} has sent a SKIP message`);
 
-        // Do some checkings
+        // Do some checks
         if(user_room.skipping) return ["SKIP_SONG_IS_SKIPPING", true];        
 
         // Update WORLD state
@@ -691,7 +691,7 @@ var SERVER =
 
     sendRoomMessage: function(message, room_id, users_id)
     {
-        // Some checkings before proceeding
+        // Some checks before proceeding
         if (isNumber(users_id) || isString(users_id)) users_id = users_id.toArray();    
         else if (!isArray(users_id))
         {
@@ -719,7 +719,7 @@ var SERVER =
 
     sendPrivateMessage: function(message, addressees)
     {
-        // Some checkings before proceeding
+        // Some checks before proceeding
         if (isNumber(addressees) || isString(addressees)) addressees = addressees.toArray();    
         else if (!isArray(users_id))
         {

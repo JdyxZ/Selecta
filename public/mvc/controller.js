@@ -445,7 +445,7 @@ const CONTROLLER =
         MODEL.aux_player.muted = false;
 
         // Remove old and place new event listner
-        MODEL.player.removeEventListener('timeupdate', SELECTA.updatePlaybackProgress.bind(this));      
+        MODEL.player.stopByName("timeupdate", "updatePlaybackProgress");      
         MODEL.aux_player.when("timeupdate", SELECTA.updatePlaybackProgress.bind(this));
 
         // Assign new player

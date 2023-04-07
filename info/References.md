@@ -13,5 +13,6 @@ Get HTML elements by data component: https://stackoverflow.com/questions/7084557
 Mutate an array within forEach clause: https://stackoverflow.com/questions/24812930/how-to-remove-element-from-array-in-foreach-loop 
 Javascript Player: https://www.youtube.com/watch?v=QTHRWGn_sJw 
 Slider CSS: https://www.w3schools.com/howto/howto_js_rangeslider.asp
+Remove an event listener of a bound function: https://stackoverflow.com/questions/11565471/removing-event-listener-which-was-added-with-bind 
 
 # Sr.OjeteSucio
