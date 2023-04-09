@@ -16,7 +16,7 @@
     justify-content: center;
     align-items: center;
     display: flex;
-    background-color: #050002;
+    background-color: #000000;
 }
 
 #loading_screen .image_container #selecta_logo
@@ -32,12 +32,13 @@
     justify-content: center;
     align-items: center;
     display: flex;
-    background-color: #050002;
+    background-color: #000000;
 }
 
 #loading_screen .loop_container #loading_loop
 {
     object-fit: contain;
+    width: 15%;
 }
 
 #loading_screen .loop_container #start_button
