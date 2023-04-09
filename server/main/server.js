@@ -661,7 +661,7 @@ var SERVER =
         }
         else if (song === room.next_song)
         {
-            if(room.skipping) playbackTime = room.playback_time - (room.skipping_time + WORLD.loading_time);
+            if(room.skipping) playbackTime = room.playback_time - (room.skipping_time + WORLD.loading_duration);
             else playbackTime = "next";
         }
         else

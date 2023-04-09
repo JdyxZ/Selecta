@@ -38,7 +38,11 @@ Document.prototype.when = function(event, callback)	{
 	document.addEventListener(event, callback);
 };
 
-Document.prototype.stop = function(event, callback)	
+Document.prototype.stop = function(event, callback)	{
+	document.removeEventListener(event, callback);
+};
+
+/* Document.prototype.stop = function(event, callback)	
 {
 	// Get listeners
 	const listeners = getEventListeners(document)[event];
@@ -86,7 +90,7 @@ Document.prototype.stopByName = function(event, callbackName)
 	}
 	
 	document.removeEventListener(event, filtered_listeners[0].listener);
-};
+}; */
 
 /***************** HTML ElEMENTS *****************/
 
@@ -168,6 +172,11 @@ HTMLElement.prototype.when = function(event, callback)
 
 HTMLElement.prototype.stop = function(event, callback)	
 {
+	this.removeEventListener(event, callback);
+};
+
+/* HTMLElement.prototype.stop = function(event, callback)	
+{
 	// Get listeners
 	const listeners = getEventListeners(this)[event];
 
@@ -214,8 +223,7 @@ HTMLElement.prototype.stopByName = function(event, callbackName)
 	}
 	
 	this.removeEventListener(event, filtered_listeners[0].listener);
-}
-
+} */
 
 HTMLElement.prototype.appendChildren = function(children)
 {

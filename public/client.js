@@ -283,7 +283,7 @@ var CLIENT =
     {
         // Log
         console.log("New PLAY_SONG message received\n");
-        // console.table(message.content);
+        console.table(message.content);
 
         // Unpack message data
         const song = message.content.song;

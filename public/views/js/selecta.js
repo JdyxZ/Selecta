@@ -156,7 +156,8 @@ const SELECTA =
         this.vote_result.when("click", this.voteSuggestion.bind(this));
 
         // Player
-        MODEL.player.when("timeupdate", this.updatePlaybackProgress.bind(this)); 
+        MODEL.player.listener = this.updatePlaybackProgress.bind(this)
+        MODEL.player.when("timeupdate", MODEL.player.listener); 
         this.skip_button.when("click", this.skipSong.bind(this));
         
         // Callbacks for volume control
@@ -668,13 +669,13 @@ const SELECTA =
         if(MODEL.current_room.skipping && !MODEL.intervals.skipping)
         {
             // Calculate mean time
-            const meanTime = performance.now() - song.arrivalTime;
+            const meanTime = performance.now() - MODEL.next_song.arrivalTime;
 
             // Set an aux variable with playbackTime
             const playbackTime = -(MODEL.next_song.playbackTime + meanTime);
 
             // Calculate integer and decimal parts of playbackTime
-            let integerPart = Math.trunc(playbackTime);
+            let integerPart = Math.trunc(playbackTime / 1000);
             const decimalPart = playbackTime - integerPart;
 
             // Check
@@ -699,7 +700,7 @@ const SELECTA =
                         
                 }, 1000);
 
-            }, decimalPart);
+            }, decimalPart * 1000);
         }
         // Show loading status
         else if(!CONTROLLER.audio_playing && !MODEL.intervals.loading)

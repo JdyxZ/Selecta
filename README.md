@@ -26,6 +26,6 @@ Run server with nodemon: npm run server
 - Fade suggested videos.
 - Improve contains method from Array: https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Array/some
 - Configure proxy server.
-
+- Solve content not found error when trying to fetch video audio stream.
 
 

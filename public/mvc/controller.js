@@ -41,9 +41,6 @@ const CONTROLLER =
         MODEL.my_votes = user.votes;
         MODEL.my_song = user.song;
 
-        // Update number of active users in the room
-        MODEL.current_room.num_active_users++;
-
         // Animation
         MODEL.my_user.animation = 'idle.skanim'
 
@@ -340,6 +337,7 @@ const CONTROLLER =
             MODEL.aux_player.src = song.audioStream.url;
             MODEL.aux_player.currentTime = 0;
             MODEL.aux_player.muted = true;
+            MODEL.player.autoplay = true;
             MODEL.aux_player.play();
 
             // Calculate mean time
@@ -389,6 +387,7 @@ const CONTROLLER =
 
         // Mute player
         MODEL.player.muted = true; // To avoid autoplay restrictions
+        MODEL.player.autoplay = true;
 
         // Check
         if(this.stop_current_loading)
@@ -444,24 +443,26 @@ const CONTROLLER =
         // Restore volume
         MODEL.aux_player.muted = false;
 
-        // Remove old and place new event listner
-        MODEL.player.stopByName("timeupdate", "updatePlaybackProgress");      
-        MODEL.aux_player.when("timeupdate", SELECTA.updatePlaybackProgress.bind(this));
+        // Remove old and place new event listner 
+        MODEL.aux_player.listener = SELECTA.updatePlaybackProgress.bind(this);
+        MODEL.player.stop("timeupdate", MODEL.player.listener);       
+        MODEL.aux_player.when("timeupdate", MODEL.aux_player.listener);
 
         // Assign new player
         MODEL.player = MODEL.aux_player;
         MODEL.aux_player = null;
 
-        // Update model
+        // Update song info
         MODEL.current_song = MODEL.next_song;
         MODEL.next_song = MODEL.future_song;
         MODEL.future_song = null;
-        MODEL.resetSkipVotes();
 
         // Clear skipping info
+        MODEL.resetSkipVotes();
+        MODEL.current_room.skipping = false;
+        MODEL.current_room.skip_counter = 0;
         clearInterval(MODEL.intervals.skipping);
         MODEL.intervals.skipping = null;
-        MODEL.current_room.skipping = false;
 
         // Force update visuals
         SELECTA.updatePlaybackInterface("both");
