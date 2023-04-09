@@ -176,6 +176,9 @@ const MODEL =
     // Skip Methods
     resetSkipVotes()
     {
+        // Reset my user vote
+        this.my_user.skip = false;
+        
         // Reset skip votes
         this.users_arr.forEach(user => {
             user.skip = false;

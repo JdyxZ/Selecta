@@ -672,15 +672,18 @@ const SELECTA =
             const meanTime = performance.now() - MODEL.next_song.arrivalTime;
 
             // Set an aux variable with playbackTime
-            const playbackTime = -(MODEL.next_song.playbackTime + meanTime);
+            const playbackTime = -(MODEL.next_song.playbackTime + meanTime) / 1000;
+
+            // Check 
+            if(playbackTime <= 1)
+                return;
 
             // Calculate integer and decimal parts of playbackTime
-            let integerPart = Math.trunc(playbackTime / 1000);
+            let integerPart = Math.trunc(playbackTime);
             const decimalPart = playbackTime - integerPart;
 
-            // Check
-            if(integerPart == 0)
-                return;
+            // Update playback info
+            this.playback_info.textContent = `Skipping in ${Math.round(playbackTime)}s`;
 
             // Start the interval after some miliseconds of difference
             setTimeout(() => {

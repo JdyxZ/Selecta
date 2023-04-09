@@ -337,7 +337,6 @@ const CONTROLLER =
             MODEL.aux_player.src = song.audioStream.url;
             MODEL.aux_player.currentTime = 0;
             MODEL.aux_player.muted = true;
-            MODEL.player.autoplay = true;
             MODEL.aux_player.play();
 
             // Calculate mean time
@@ -387,7 +386,6 @@ const CONTROLLER =
 
         // Mute player
         MODEL.player.muted = true; // To avoid autoplay restrictions
-        MODEL.player.autoplay = true;
 
         // Check
         if(this.stop_current_loading)
@@ -444,7 +442,7 @@ const CONTROLLER =
         MODEL.aux_player.muted = false;
 
         // Remove old and place new event listner 
-        MODEL.aux_player.listener = SELECTA.updatePlaybackProgress.bind(this);
+        MODEL.aux_player.listener = SELECTA.updatePlaybackProgress.bind(SELECTA);
         MODEL.player.stop("timeupdate", MODEL.player.listener);       
         MODEL.aux_player.when("timeupdate", MODEL.aux_player.listener);
 
