@@ -6,7 +6,6 @@ const CONTROLLER =
     loading: true,
     audio_playing: false,
     syncro_diff: 100, // [ms]
-    stop_current_loading: false,
 
     // Debug
     debug: null,
@@ -316,11 +315,20 @@ const CONTROLLER =
             MODEL.current_song = song;
 
             // Set a loading callback
-            MODEL.player.oncanplaythrough = this.playCurrentSong.bind(this);
+            if(this.loading) MODEL.player.oncanplaythrough = this.startSystem.bind(this);
 
-            // Start loading the song
+            // Estimate song time
+            const loadingTime = performance.now() - MODEL.current_song.arrivalTime;
+            const time = (MODEL.current_song.playbackTime + loadingTime) / 1000;  // [s]
+
+            // Start loading and playing the song
+            MODEL.player.autoplay = true;
+            MODEL.player.muted = true; // To avoid autoplay restrictions
             MODEL.player.src = song.audioStream.url;
-            MODEL.player.currentTime = song.playbackTime / 1000;
+            MODEL.player.currentTime = time;
+
+            // Force update visuals
+            SELECTA.updatePlaybackInterface("current");
         }
         // Schedule the next song
         else if (song.playbackTime < 0)
@@ -336,13 +344,17 @@ const CONTROLLER =
 
             // Initialize aux player to start prelaoding the song
             MODEL.aux_player = new Audio();
+
+            // Estimate song time
+            const loadingTime = (performance.now() - MODEL.next_song.arrivalTime) + MODEL.next_song.playbackTime;
+            const time = loadingTime / 1000; // [s]
             
             // Start preloading the song 
+            MODEL.aux_player.autoplay = true;
+            MODEL.aux_player.muted = true; // To avoid autoplay restrictions
             MODEL.aux_player.src = song.audioStream.url;
-            MODEL.aux_player.currentTime = 0;
-            MODEL.aux_player.muted = true;
-            MODEL.aux_player.play();
-
+            MODEL.aux_player.currentTime = time;
+   
             // Calculate mean time
             const meanTime = performance.now() - song.arrivalTime;
 
@@ -379,7 +391,7 @@ const CONTROLLER =
 
     /***************** AUXILIAR METHODS *****************/
 
-    playCurrentSong: async function()
+    startSystem: function()
     {
         // Check
         if(MODEL.player.readyState != 4)
@@ -387,63 +399,15 @@ const CONTROLLER =
 
         // Deactive callback to avoid bugs
         MODEL.player.oncanplaythrough = null;
-
-        // Mute player
-        MODEL.player.muted = true; // To avoid autoplay restrictions
-
-        // Check
-        if(this.stop_current_loading)
-        {
-            this.stop_current_loading = false;
-            return;
-        }
-
-        // Estimate song time
-        const loadingTime = performance.now() - MODEL.current_song.arrivalTime;
-        const time = (MODEL.current_song.playbackTime + loadingTime) / 1000;  // [s]
-
-        // Set player time
-        MODEL.player.currentTime = time;
-
-        // Await audio playback
-        await MODEL.player.play();
-
-        // Force update visuals
-        SELECTA.updatePlaybackInterface("current");
         
-        // Check if we are loading the audio for first time
-        if(this.loading)
-        {
-            // Notify the user the app is ready to run
-            SELECTA.loadingOver();
-        }
-        else
-        {
-            // Restore volume
-            MODEL.player.muted = false;
-        }
+        // Notify the user the app is ready to run
+        SELECTA.loadingOver();
     },
     
     playNextSong: function()
     {
-        // Set stop current loading flag to true to avoid conflict with current loading pipeline
-        this.stop_current_loading = true;
-
-        // Deactive callback to avoid bugs
-        MODEL.aux_player.oncanplaythrough = null;
-
-        // Estimate song time
-        const loadingTime = (performance.now() - MODEL.next_song.arrivalTime) + MODEL.next_song.playbackTime;
-        const time = loadingTime / 1000; // [s]
-
-        // Set song time
-        MODEL.aux_player.currentTime = time; 
-
         // Pause old player
         MODEL.player.pause();
-
-        // Restore volume
-        MODEL.aux_player.muted = false;
 
         // Remove old and place new event listner 
         MODEL.aux_player.listener = SELECTA.updatePlaybackProgress.bind(SELECTA);
@@ -470,13 +434,6 @@ const CONTROLLER =
         SELECTA.updatePlaybackInterface("both");
         SELECTA.updatePlaybackInfo();
         SELECTA.updateSkipButton();
-
-        // Set stop current loading flag to false to enable current loading pipeline again
-        this.stop_current_loading = false;
-
-        // Send test message
-        const message = new Message(MODEL.my_user.id, "TEST", MODEL.player.currentTime * 1000, Date.now());
-        CLIENT.sendMessage(message);
     }
 
 }
