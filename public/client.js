@@ -140,7 +140,7 @@ var CLIENT =
     {
         // Log
         console.log("New ROOM message received\n");
-        console.table(message.content);
+        // console.table(message.content);
 
         // Unpack message data
         const room = message.content;
@@ -153,7 +153,7 @@ var CLIENT =
     {
         // Log
         console.log("New YOUR_INFO message received\n");
-        console.table(message.content);
+        // console.table(message.content);
 
         // Unpack message data
         const users = message.content
@@ -181,7 +181,7 @@ var CLIENT =
     {
         // Log
         console.log("New USER_JOIN message received\n");
-        console.table(message.content);
+        // console.table(message.content);
 
         // Unpack message data
         const user_data = message.content;
@@ -283,7 +283,7 @@ var CLIENT =
     {
         // Log
         console.log("New PLAY_SONG message received\n");
-        console.table(message.content);
+        // console.table(message.content);
 
         // Unpack message data
         const song = message.content.song;

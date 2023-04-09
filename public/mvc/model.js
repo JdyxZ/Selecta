@@ -9,7 +9,7 @@ const MODEL =
     my_votes: [],
     
     // Room data
-    current_room: null,
+    current_room: {active_users: [], num_active_users: 0},
     users_obj: {},
     users_arr: [],
     suggestions: {},
@@ -63,6 +63,7 @@ const MODEL =
     {
         this.users_obj[user.id] = user;
         this.users_arr.push(user);
+        this.current_room.active_users.push(user.id);
         this.current_room.num_active_users++;
     },
 
@@ -70,6 +71,7 @@ const MODEL =
     {
         users.forEach(user => this.users_obj[user.id] = user);
         this.users_arr = this.users_arr.concat(users);
+        this.current_room.active_users.concat(users.map(user => user.id));
         this.current_room.num_active_users += users.length;
     },
 

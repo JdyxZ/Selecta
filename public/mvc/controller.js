@@ -24,7 +24,7 @@ const CONTROLLER =
     setRoom: function(room)
     {
         // Save new room data
-        MODEL.current_room = room;
+        MODEL.current_room = MODEL.current_room.concat(room);
 
         // Save suggestions
         MODEL.suggestions = MODEL.suggestions.concat(room.suggestions); 
@@ -40,6 +40,10 @@ const CONTROLLER =
         MODEL.my_suggestion = user.suggestion;
         MODEL.my_votes = user.votes;
         MODEL.my_song = user.song;
+
+        // Update active users
+        MODEL.current_room.active_users.push(user.id);
+        MODEL.current_room.num_active_users++;
 
         // Animation
         MODEL.my_user.animation = 'idle.skanim'
@@ -469,6 +473,10 @@ const CONTROLLER =
 
         // Set stop current loading flag to false to enable current loading pipeline again
         this.stop_current_loading = false;
+
+        // Send test message
+        const message = new Message(MODEL.my_user.id, "TEST", MODEL.player.currentTime * 1000, Date.now());
+        CLIENT.sendMessage(message);
     }
 
 }

@@ -688,8 +688,17 @@ const SELECTA =
             // Start the interval after some miliseconds of difference
             setTimeout(() => {
 
+                // Update integer part
+                integerPart--;
+
+                // Update playback info
+                this.playback_info.textContent = `Skipping in ${Math.round(integerPart)}s`;
+
                 // Set a countdown
                 MODEL.intervals.skipping = setInterval(() => {
+
+                    // Update integer part
+                    integerPart--;
 
                     // Check
                     if(integerPart < 0)
@@ -697,9 +706,6 @@ const SELECTA =
 
                     // Update playback info
                     this.playback_info.textContent = `Skipping in ${integerPart}s`;
-
-                    // Update integer part
-                    integerPart--;
                         
                 }, 1000);
 
@@ -731,8 +737,11 @@ const SELECTA =
         // Show current number of votes
         else if(CONTROLLER.audio_playing)
         {
-           // Update playback info
-           this.playback_info.textContent = `${100 * MODEL.current_room.skip_counter / MODEL.current_room.num_active_users}% of skipping`;  
+            // Calculate percent
+            const percent = Math.round(100 * MODEL.current_room.skip_counter / MODEL.current_room.num_active_users);
+            
+            // Update playback info
+            this.playback_info.textContent = `${percent}% of skipping`;  
         }
     },
 

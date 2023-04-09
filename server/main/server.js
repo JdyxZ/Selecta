@@ -424,12 +424,14 @@ var SERVER =
     onTest: function(message)
     {
         // Estimate latency 
+        const playbackTime = message.content;
         const arrivalTime = message.time;
         const latency = Date.now() - arrivalTime;
 
         // Show
         const room = WORLD.getRoom(1);
-        console.log(latency, room.playback_time);
+        console.log(`Client playback time: ${playbackTime + latency}`);
+        console.log(`Server playback time: ${room.playback_time}`);
 
         // Output status
         return ["OK", false];
@@ -487,6 +489,9 @@ var SERVER =
 
     chooseNextSongs: async function(roomID)
     {
+        // Set a reference time to calculate the delay
+        const chooseTime = performance.now();
+        
         // Get room data
         const room = WORLD.getRoom(roomID); 
         const sortedSuggestions = room.getSortedSuggestions(); // Most Voted Suggestion
@@ -559,6 +564,9 @@ var SERVER =
         // Assign url info
         nextVideoData.audioStream = nextAudioStream[1];
 
+        // Assign chooseTime to the video
+        nextVideoData.chooseTime = chooseTime;
+
         // Create new instances of the class Song with songs data
         const next_song = new Song(nextVideoData); 
         const future_song = new Song(futureVideoData);
@@ -574,11 +582,11 @@ var SERVER =
         // Update room data
         WORLD.resetSkipVotes(room);
         WORLD.removeSuggestion(room, user, next_song);
+        room.next_song = next_song;
+        room.future_song = future_song;
         room.skipping = true;
         room.skip_counter = 0;
         room.skipping_time = room.playback_time;
-        room.next_song = next_song;
-        room.future_song = future_song;
 
         // If the playback timer is not active, play the song
         if(room.timers.playSong == null)
@@ -597,7 +605,7 @@ var SERVER =
         this.sendRoomMessage(future_playback_message, room.id, []);
     },
 
-    skipSong: function(roomID)
+    skipSong: async function(roomID)
     {
         // Get room
         const room = WORLD.getRoom(roomID);
@@ -661,7 +669,8 @@ var SERVER =
         }
         else if (song === room.next_song)
         {
-            if(room.skipping) playbackTime = room.playback_time - (room.skipping_time + WORLD.loading_duration);
+            const delay = performance.now() - song.chooseTime;
+            if(room.skipping) playbackTime = room.playback_time - (room.skipping_time + WORLD.loading_duration - delay);
             else playbackTime = "next";
         }
         else
