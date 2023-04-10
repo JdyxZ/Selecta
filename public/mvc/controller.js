@@ -323,6 +323,7 @@ const CONTROLLER =
 
             // Start loading and playing the song
             MODEL.player.autoplay = true;
+            MODEL.player.volume = SELECTA.sliders.music_volume.value;
             MODEL.player.muted = true; // To avoid autoplay restrictions
             MODEL.player.src = song.audioStream.url;
             MODEL.player.currentTime = time;
@@ -342,6 +343,12 @@ const CONTROLLER =
             SELECTA.updatePlaybackInfo();
             SELECTA.updateSkipButton();
 
+            // Remove suggestion
+            const user = MODEL.users_obj[MODEL.suggestions[MODEL.current_song.ID].userID];
+            const songID = MODEL.current_song.ID;
+            MODEL.removeSuggestion(user, songID);
+            MODEL.removeSong(user, songID);
+
             // Initialize aux player to start prelaoding the song
             MODEL.aux_player = new Audio();
 
@@ -351,6 +358,7 @@ const CONTROLLER =
             
             // Start preloading the song 
             MODEL.aux_player.autoplay = true;
+            MODEL.player.volume = SELECTA.sliders.music_volume.value;
             MODEL.aux_player.muted = true; // To avoid autoplay restrictions
             MODEL.aux_player.src = song.audioStream.url;
             MODEL.aux_player.currentTime = time;

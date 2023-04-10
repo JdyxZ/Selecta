@@ -3,6 +3,7 @@
 // External modules
 const {google} = require('googleapis');
 const ytdl = require('ytdl-core');
+const needle = require('needle');
 
 // Our modules
 const API_CREDENTIALS = require('../config/API_credentials.js');
@@ -13,33 +14,124 @@ const {isString, isArray} = require('../../public/framework/javascript.js');
 const YOUTUBE = 
 {
     // Client
-    Youtube: null,
+    privateClient: null,
+    publicClient: null,
+
+    // Keys
+    private_key: API_CREDENTIALS.google.private,
+    public_keys: API_CREDENTIALS.google.public,
+    current_public_key: 0,
+
+    // Quota
+    quotaExceeded: false,
+
+    // Debug
+    debug: null,
 
     // Init
     init: async function()
     {
-        this.Youtube = await google.youtube({
-            version: "v3",
-            auth: API_CREDENTIALS.google.private
-        });
+        this.privateClient = await this.getClient(this.private_key);
+        this.publicClient = await this.getClient(this.public_keys[this.current_public_key]);
     },
 
-    // API methods
-    search: async function(query)
+    // Get client
+    getClient: function(key)
     {
         try
         {
+            return google.youtube({
+                version: "v3",
+                auth: key
+            });
+        }
+        catch(error)
+        {
+            console.error(error);
+            return null;
+        }
+    },
+
+    // Set new public key
+    setNewPublicKey: async function()
+    {
+        if (this.current_public_key + 1 >= this.public_keys.length)
+        {
+            this.quotaExceeded = true;
+            console.log(`ERROR --> Youtube Utils Error: Clients have run out of public keys`);
+            const error_message = "Youtube DATA API max quota has been reached. You can no longer use the built-in methods of the API";
+            return ["ERROR", error_message];
+        }
+        else
+        {
+            console.log(`EVENT --> Youtube API status: The key ${this.current_public_key} has reached the quota limit, swapping to the key ${this.current_public_key + 1}`);
+            this.current_public_key++;
+            this.publicClient = await this.getClient(this.public_keys[this.current_public_key]);
+            return ["OK", null];
+        }
+        
+    },
+
+    // Error manager
+    errorHandler: function(error, action, params)
+    {
+        if(params.type === "public" && error.errors && error.errors.getObjectIndex({reason: "quotaExceeded"}) != -1)
+        {
+            // Try to set new public key
+            const check = this.setNewPublicKey();
+
+            // Check
+            if(check[0] === "ERROR") return check;
+
+            // Otherwise return the result of the action
+            const method = this.actionMap[action].bind(this);
+
+            // Call the method
+            return method(...params.values());
+        }
+        else if(params.type === "private" && error.errors && error.errors.getObjectIndex({reason: "quotaExceeded"}) != -1)
+        {
+            const error_message = "ERROR --> Youtube Utils Error: Private api key has reached max quota limit. Youtube methods won't be no longer available during the next 24 hours.";
+            return ["ERROR", error_message];
+        }
+        else if(error.errors)
+        {
+            // Build error message
+            const error_description = `\n\nAction: ${action} \nParams: ${JSON.stringify(params)} \nErrors: \n${JSON.stringify(error.errors, null, 4)}`;
+            const error_message = `\nERROR --> Youtube Utils Error: ${error_description.indent(4)}\n\n`;
+
+            // Output error
+            return ["ERROR", error_message];
+        }
+        else
+        {
+            // Build error message
+            const error_message = `ERROR --> Youtube Utils Error: \nAction: ${action} \nParams: ${JSON.stringify(params)} \nErrors: ${error}`;
+
+            // Output error
+            return ["ERROR", error_message];
+        }
+    },
+
+    // API methods
+    search: async function(query, type)
+    {
+        try
+        {
+            // Get proper client
+            const Youtube = type === "public" ? this.publicClient : type === "private" ? this.privateClient : null;
+
             // Checks
-            if(!this.Youtube) throw "YOUTUBE_NULL_CLIENT";
-            if(!isString(query)) throw "YOUTUBE_INVALID_INPUT"
+            if(!Youtube) throw "YOUTUBE_NULL_CLIENT";
+            if(!isString(query) || !query || !query.trim()) throw "YOUTUBE_INVALID_INPUT";
 
             // Execute
-            const response = await this.Youtube.search.list({
+            const response = await Youtube.search.list({
                 part: ["snippet", "id"],
                 q: query,
                 type: "video",
                 order: "relevance",
-                maxResults: 25,
+                maxResults: 50,
                 relevanceLanguage: "ES",
             });
 
@@ -65,33 +157,27 @@ const YOUTUBE =
             });
 
             // Output
-            return data;
+            return ["OK", data];
         } 
-        catch(err)
-        {
-            if(err.errors)
-            {
-                console.error(`Youtube Utils Error --> Error upon searching for ${query}`, err.errors);
-                return null;
-            }
-            else
-            {
-                console.error(`Youtube Utils Error --> "${err}" upon searching for ${query}`);
-                return null;
-            }
+        catch(error)
+        {         
+            return this.errorHandler(error, "search", {query, type});
         }
     },
 
-    getVideosInfo: async function(videoIDs)
+    getVideosInfo: async function(videoIDs, type)
     {
         try
         {
+            // Get proper client
+            const Youtube = type === "public" ? this.publicClient : type === "private" ? this.privateClient : null;
+
             // Checks
-            if(!this.Youtube) throw "YOUTUBE_NULL_CLIENT";
-            if(!isString(videoIDs) && !isArray(videoIDs)) throw "YOUTUBE_INVALID_INPUT"
+            if(!Youtube) throw "YOUTUBE_NULL_CLIENT";
+            if(!isString(videoIDs) && !isArray(videoIDs) || !videoIDs) throw "YOUTUBE_INVALID_INPUT"
 
             // Execute
-            const response = await this.Youtube.videos.list({
+            const response = await Youtube.videos.list({
                 part: ["id", "snippet", "contentDetails", "status", "statistics", "player"],
                 id: videoIDs
             });
@@ -124,45 +210,27 @@ const YOUTUBE =
             });
     
             // Output
-            return data;
+            return ["OK", data];
         } 
-        catch(err)
+        catch(error)
         {
-            if(err.errors)
-            {
-                console.error(`Youtube Utils Error --> Error upon fetching info of the videos ${videoIDs}`, err.errors);
-                return [null];
-            }
-            else
-            {
-                console.error(`Youtube Utils Error ---> "${err}" upon fetching info of the videos ${videoIDs}`);
-                return [null];
-            }
+            return this.errorHandler(error, "get_videos_info", {videoIDs, type});
         }
     },
 
-    checkVideosInfo: function(videos)
-    {
-        for(const video of videos)
-        {
-            if(video === undefined) return "YOUTUBE_CHECK_INVALID_VIDEOID";
-            if(video === null) return "YOUTUBE_CHECK_SOMETHING_WRONG_HAPPENED";
-            if(video.live) return "YOUTUBE_CHECK_LIVE_VIDEO";   
-        }
-
-        return "OK";
-    },
-
-    getChannelsInfo: async function(channelIDs)
+    getChannelsInfo: async function(channelIDs, type)
     {
         try
         {
+            // Get proper client
+            const Youtube = type === "public" ? this.publicClient : type === "private" ? this.privateClient : null;
+
             // Checks
-            if(!this.Youtube) throw "YOUTUBE_NULL_CLIENT";
-            if(!isString(channelIDs) && !isArray(channelIDs)) throw "YOUTUBE_INVALID_INPUT"
+            if(!Youtube) throw "YOUTUBE_NULL_CLIENT";
+            if(!isString(channelIDs) && !isArray(channelIDs) || !channelIDs) throw "YOUTUBE_INVALID_INPUT"
 
             // Execute
-            const response = await this.Youtube.channels.list({
+            const response = await Youtube.channels.list({
                 part: ["id", "snippet", "statistics"],
                 id: channelIDs
             });
@@ -190,33 +258,27 @@ const YOUTUBE =
             });
     
             // Output
-            return data;
+            return ["OK", data];
         } 
-        catch(err)
+        catch(error)
         {
-            if(err.errors)
-            {
-                console.error(`Youtube Utils Error --> Error upon fetching info of the channels ${channelIDs}`, err.errors);
-                return [null];
-            }
-            else
-            {
-                console.error(`Youtube Utils Error --> "${err}" upon fetching info of the channels ${channelIDs}`);
-                return [null];
-            }
+            return this.errorHandler(error, "get_channels_info", {channelIDs, type});
         }
     },
 
-    getPlaylistsInfo: async function(playlistIDs)
+    getPlaylistsInfo: async function(playlistIDs, type)
     {
         try
         {
+            // Get proper client
+            const Youtube = type === "public" ? this.publicClient : type === "private" ? this.privateClient : null;
+
             // Checks
-            if(!this.Youtube) throw "YOUTUBE_NULL_CLIENT";
-            if(!isString(playlistIDs) && !isArray(playlistIDs)) throw "YOUTUBE_INVALID_INPUT"
+            if(!Youtube) throw "YOUTUBE_NULL_CLIENT";
+            if(!isString(playlistIDs) && !isArray(playlistIDs) || !playlistIDs) throw "YOUTUBE_INVALID_INPUT"
 
             // Execute
-            const response = await this.Youtube.playlists.list({
+            const response = await Youtube.playlists.list({
                 part: ["contentDetails", "id", "player", "snippet", "status"],
                 id: playlistIDs
             });
@@ -241,33 +303,27 @@ const YOUTUBE =
             });
     
             // Output
-            return data;
+            return ["OK", data];
         } 
-        catch(err)
+        catch(error)
         {
-            if(err.errors)
-            {
-                console.error(`Youtube Utils Error --> Error upon fetching info of the playlists ${playlistIDs}`, err.errors);
-                return [null];
-            }
-            else
-            {
-                console.error(`Youtube Utils Error --> "${err}" upon fetching info of the playlists ${playlistIDs}`);
-                return [null];
-            }
+            return this.errorHandler(error, "get_playlists_info", {playlistIDs, type});
         }
     },
 
-    getPlaylistItems: async function(playlistID)
+    getPlaylistItems: async function(playlistID, type)
     {
         try
         {
+            // Get proper client
+            const Youtube = type === "public" ? this.publicClient : type === "private" ? this.privateClient : null;
+
             // Checks
-            if(!this.Youtube) throw "YOUTUBE_NULL_CLIENT";
-            if(!isString(playlistID)) throw "YOUTUBE_INVALID_INPUT"
+            if(!Youtube) throw "YOUTUBE_NULL_CLIENT";
+            if(!isString(playlistID) || !playlistID) throw "YOUTUBE_INVALID_INPUT"
 
             // Execute
-            const response = await this.Youtube.playlistItems.list({
+            const response = await Youtube.playlistItems.list({
                 part: ["snippet", "contentDetails", "id", "status"],
                 playlistId: playlistID,
                 maxResults: 50
@@ -294,21 +350,60 @@ const YOUTUBE =
             });
     
             // Output
-            return data;
+            return ["OK", data];
         } 
-        catch(err)
+        catch(error)
         {
-            if(err.errors)
-            {
-                console.error(`Youtube Utils Error --> Error upon fetching info of the playlist ${playlistID}`, err.errors);
-                return null;
-            }
-            else
-            {
-                console.error(`Youtube Utils Error ---> "${err}" upon fetching items of the playlist ${playlistID}`);
-                return null;
-            }
+            return this.errorHandler(error, "get_playlist_items", {playlistID, type});
         }
+    },
+
+    getVideosFullInfo: async function(videoIDs, type)
+    {
+        // Fetch video data with Youtube API
+        const [videosStatus, videosData] = await this.getVideosInfo(videoIDs, type);
+
+        // Check
+        if(videosStatus === "ERROR") return [videosStatus, videosData];
+
+        // Get IDs of the channels of the videos
+        const channelsIDs = videosData.map(video => video.publisherChannel.ID);
+        
+        // Fetch channel data of the videos with Youtube API
+        const [channelsStatus, channelsData] = await this.getChannelsInfo(channelsIDs, type);
+
+        // Check
+        if(channelsStatus === "ERROR") return [channelsStatus, channelsData];
+
+        // Assign channel data to each video
+        videosData.forEach(video => video.publisherChannel = channelsData.getObject({ID: video.publisherChannel.ID}));
+
+        // Return info
+        return ["OK", videosData];
+    },
+
+    searchFull: async function(query, type)
+    {
+        // Search videos with the API
+        const [searchStatus, searchData] = await this.search(query, type);
+
+        // Check
+        if(searchStatus === "ERROR") return [searchStatus, searchData];
+
+        // Get IDs of the videos
+        const videoIDs = searchData.map(video => video.ID);
+
+        // Get full video data of the results of the search
+        const [videosStatus, videosData] = await this.getVideosFullInfo(videoIDs, type);
+
+        // Check
+        if(videosStatus === "ERROR") return [videosStatus, videosData];
+
+        // Filter search result
+        const filteredVideos = videosData.filter(this.videoFilter);
+
+        // Return info
+        return ["OK", filteredVideos];
     },
 
     fetchAudioStreams: async function(videoID)
@@ -328,12 +423,56 @@ const YOUTUBE =
 
             return ["OK", audio_info];
         }
-        catch(err)
+        catch(error)
         {
             return ["ERROR", err];
         }
+    },
+
+    // Auxiliar methods
+    videoFilter: function(video)
+    {
+        // Checks
+        if(video.live) return false; 
+        if(!video.duration.totalMiliseconds.isRanged([60 * 1000, 36000 * 1000])) return false;
+        return true;
+    },
+
+    checkVideo: async function(videoID)
+    {
+        // Check videoID
+        if(videoID == undefined) return "YOUTUBE_CHECK_INVALID_VIDEO";
+
+        // Validate ID
+        const validID = await ytdl.validateID(videoID)
+        if(!validID) return  "YOUTUBE_CHECK_INVALID_VIDEO_ID";
+
+        // Get video duration and live properties
+        const videoInfo = await ytdl.getInfo(videoID);
+        const duration = videoInfo.videoDetails.lengthSeconds;
+        const live = videoInfo.videoDetails.isLiveContent;
+
+        // Validate duration and live
+        if(live) return "YOUTUBE_CHECK_LIVE_VIDEO";   
+        if(duration.isRanged([60, 36000])) return "YOUTUBE_INVALID_VIDEO_DURATION";
+
+        // Return OK
+        return "OK";
     }
     
+};
+
+// Define Action <-> Method map inside YOUTUBE object
+YOUTUBE.actionMap =
+{
+    "search": YOUTUBE.search,
+    "get_videos_info": YOUTUBE.getVideosInfo,
+    "get_channels_info": YOUTUBE.getChannelsInfo,
+    "get_playlists_info": YOUTUBE.getPlaylistsInfo,
+    "get_playlist_items": YOUTUBE.getPlaylistItems,
+    "get_videos_full_info": YOUTUBE.getVideosFullInfo,
+    "search_full": YOUTUBE.searchFull,
+    "get_audio_stream": YOUTUBE.getAudioStream
 };
 
 module.exports = YOUTUBE;

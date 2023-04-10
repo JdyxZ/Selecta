@@ -1,0 +1,75 @@
+Date : 2023-04-10 12:07:39
+Directory : c:\University\FOURTH YEAR\ECV\Selecta\server
+Total : 35 files,  2812 codes, 622 comments, 817 blanks, all 4251 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| JavaScript |         18 |      2,252 |        540 |        607 |      3,399 |
+| HTML       |         15 |        449 |         64 |        147 |        660 |
+| SQL        |          2 |        111 |         18 |         63 |        192 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++-------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                | files      | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                   |         35 |      2,812 |        622 |        817 |      4,251 |
+| database                                                                            |          2 |        351 |         82 |         84 |        517 |
+| main                                                                                |          2 |        569 |        198 |        194 |        961 |
+| model                                                                               |          1 |        434 |         60 |        103 |        597 |
+| passport                                                                            |          3 |        263 |         65 |         63 |        391 |
+| routes                                                                              |          5 |        216 |         40 |         63 |        319 |
+| routes (Files)                                                                      |          4 |        195 |         31 |         55 |        281 |
+| routes\proxy                                                                        |          1 |         21 |          9 |          8 |         38 |
+| testing                                                                             |          2 |        101 |         20 |         61 |        182 |
+| utils                                                                               |          5 |        429 |         93 |        102 |        624 |
+| views                                                                               |         15 |        449 |         64 |        147 |        660 |
+| views (Files)                                                                       |          4 |        116 |         23 |         62 |        201 |
+| views\partials                                                                      |         11 |        333 |         41 |         85 |        459 |
+| views\partials (Files)                                                              |          4 |        167 |         18 |         52 |        237 |
+| views\partials\interfaces                                                           |          7 |        166 |         23 |         33 |        222 |
++-------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                            | language   | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| c:\University\FOURTH YEAR\ECV\Selecta\server\database\database.js                   | JavaScript |        309 |         77 |         71 |        457 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\database\init.sql                      | SQL        |         42 |          5 |         13 |         60 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\main\main.js                           | JavaScript |         71 |         37 |         38 |        146 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\main\server.js                         | JavaScript |        498 |        161 |        156 |        815 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\model\model.js                         | JavaScript |        434 |         60 |        103 |        597 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\passport\serializer.js                 | JavaScript |         11 |          8 |          7 |         26 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\passport\strategies.js                 | JavaScript |         69 |         20 |         18 |        107 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\passport\verifications.js              | JavaScript |        183 |         37 |         38 |        258 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\routes\app.js                          | JavaScript |         23 |          4 |          8 |         35 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\routes\authenticate.js                 | JavaScript |         64 |         11 |         17 |         92 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\routes\error.js                        | JavaScript |         24 |         11 |         12 |         47 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\routes\proxy\youtube.js                | JavaScript |         21 |          9 |          8 |         38 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\routes\utils.js                        | JavaScript |         84 |          5 |         18 |        107 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\testing\tests.js                       | JavaScript |         32 |          7 |         11 |         50 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\testing\tests.sql                      | SQL        |         69 |         13 |         50 |        132 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\utils\crypto.js                        | JavaScript |         34 |          2 |          7 |         43 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\utils\globals.js                       | JavaScript |         24 |          8 |          8 |         40 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\utils\locker.js                        | JavaScript |         53 |         11 |         15 |         79 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\utils\update.js                        | JavaScript |         28 |         12 |         11 |         51 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\utils\youtube.js                       | JavaScript |        290 |         60 |         61 |        411 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\views\error.ejs                        | HTML       |         23 |          2 |          6 |         31 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\views\login.ejs                        | HTML       |         32 |          4 |         15 |         51 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\views\partials\footer.ejs              | HTML       |         46 |          4 |         14 |         64 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\views\partials\header.ejs              | HTML       |         34 |          6 |         19 |         59 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\views\partials\interfaces\loading.ejs  | HTML       |          9 |          0 |          0 |          9 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\views\partials\interfaces\logout.ejs   | HTML       |          5 |          0 |          1 |          6 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\views\partials\interfaces\menu.ejs     | HTML       |         24 |         10 |         11 |         45 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\views\partials\interfaces\player.ejs   | HTML       |         30 |          0 |          0 |         30 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\views\partials\interfaces\search.ejs   | HTML       |         20 |          4 |          8 |         32 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\views\partials\interfaces\settings.ejs | HTML       |         58 |          5 |          7 |         70 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\views\partials\interfaces\vote.ejs     | HTML       |         20 |          4 |          6 |         30 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\views\partials\oauth.ejs               | HTML       |         18 |          7 |          9 |         34 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\views\partials\templates.ejs           | HTML       |         69 |          1 |         10 |         80 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\views\selecta.ejs                      | HTML       |         23 |         13 |         24 |         60 |
+| c:\University\FOURTH YEAR\ECV\Selecta\server\views\signup.ejs                       | HTML       |         38 |          4 |         17 |         59 |
+| Total                                                                               |            |      2,812 |        622 |        817 |      4,251 |
++-------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+

@@ -2,10 +2,9 @@
 var CLIENT =
 {
     // Client data
-    server_protoccol: null,
+    server_protocol: null,
     server_port: null,
     server_address: null,
-    protocol: null,
     socket: null,
     debug: null,
     
@@ -13,12 +12,12 @@ var CLIENT =
     init: async function()
     {
         // Fetch server settings
-        const response = await this.fetchServerResources();
+        const settings = await this.fetchServerSettings();
 
         // Set server settings        
-        this.server_protocol = response.settings.protocol;
-        this.server_address = response.settings.address;
-        this.server_port = response.settings.port;
+        this.server_protocol = settings.protocol;
+        this.server_address = settings.address;
+        this.server_port = settings.port;
 
         // New WebSocket instance
         this.socket = new WebSocket(`${this.server_protocol == "secure" ? "wss://" : "ws://"}${this.server_address}:${this.server_port}`);
@@ -27,46 +26,29 @@ var CLIENT =
         this.socket.onmessage = this.onMessage.bind(this);
         this.socket.onopen = this.onOpen.bind(this);
         this.socket.onclose = this.onClose.bind(this);
-
-        // Set Youtube DATA API keys
-        YOUTUBE.keys = response.keys;
-
-        // Init Youtube DATA API
-        await YOUTUBE.init();
     },
 
-    fetchServerResources: async function ()
+    fetchServerSettings: async function ()
     {
         try
         {
-            // URLs
-            const server_settings_url = "/server_settings";
-            const youtube_keys_url = "/youtube_keys";
+            // URL
+            const url = "/server_settings";
 
-            // Fetch resources from url    
-            const server_settings = await fetch(server_settings_url, {method: "GET"}); 
-            const youtube_keys = await fetch(youtube_keys_url, {method: "GET"});
+            // Fetch image from url    
+            const response = await fetch(url, {method: "GET"}); 
         
-            // Check responses
-            if (server_settings.status !== 200) {
-                console.log(`HTTP-Error ${server_settings.status} upon fetching url ${server_settings_url} `);
-                throw "Bad response";
-            };
-
-            if (youtube_keys.status !== 200) {
-                console.log(`HTTP-Error ${youtube_keys.status} upon fetching url ${youtube_keys_url} `);
+            // Check response
+            if (response.status !== 200) {
+                console.log(`HTTP-Error ${response.status} upon fetching url ${url} `);
                 throw "Bad response";
             };
                 
-            // Convert responses into response json
-            const response = 
-            {
-                settings: await server_settings.json(),
-                keys: await youtube_keys.json()
-            }
+            // Convert response into json
+            const settings = await response.json()
 
             // Return settings
-            return response;
+            return settings;
         }
         catch(error)
         {
@@ -332,7 +314,7 @@ var CLIENT =
     {
         // Send message to user
         this.socket.send(JSON.stringify(message));
-    },
+    }
 }
 
 // Before reloading page, close connection with the WebSocket Server

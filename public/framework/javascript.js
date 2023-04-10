@@ -35,6 +35,17 @@ Number.prototype.format = function()
 	return num.toFixed(1).replace(/\.0$/, '') + units[i];
 }
 
+Number.prototype.isRanged = function(range)
+{
+	if(!isArray(range) || !range.contains(Number) || range.length != 2)
+	{
+		console.error("ERROR --> Invalid range in method isRanged");
+		return null;
+	} 
+	
+	return range[0] <= this && this <= range[1];
+}
+
 /***************** STRING *****************/
 
 String.prototype.toArray = function()
@@ -75,6 +86,11 @@ String.prototype.removeLineBreaks = function()
 String.prototype.toNumber = function()
 {
 	return Number(this);
+}
+
+String.prototype.indent = function(num_tab_spaces)
+{
+	return this.replace(/^/gm, ' '.repeat(num_tab_spaces));
 }
 
 /***************** DATE *****************/
@@ -366,6 +382,46 @@ setArrayProperty("containsStrict", function(elements)
 	return true;
 });
 
+setArrayProperty("filterMap", function(filter, map) {
+
+	// Checks
+	if(!isFunction(filter) || !isFunction(map)) 
+	{
+		console.error("ERROR --> Invalid input parameters in filterMap function");
+		return null;
+	}
+
+	// Declare a new array to return as the result
+	let array = [];
+	
+	// Iterate through the array
+	for(element of this)
+	{
+		// Filter element
+		const filter_result = filter(element);	
+
+		// Check 
+		if(!isBoolean(filter_result)) throw "INVALID_FILTER_RESULT";
+		
+		// Filter
+		if(filter_result)
+		{
+			// Map element
+			const map_result = map(element);
+			
+			// Assign element
+			array = [...array, map_result];
+		}
+		else
+		{
+			continue;
+		}
+	}
+
+	// Output
+	return array;
+});
+
 setArrayProperty("remove", function(elements) { 
 
 	// Checks
@@ -504,11 +560,6 @@ function getKeyFromValue(arr, value)
 	
 };
 
-function outOfRange(value, range)
-{
-	return value < range[0] || value > range[1];
-};
-
 function isNumber(x)
 {
 	return typeof(x) === 'number';
@@ -588,6 +639,6 @@ function loadImage(HTMLImage, path)
 
 if(typeof(window) == "undefined")
 {
- 	module.exports = {getKeyFromValue, isNumber, isString, isBoolean, isArray, isFunction, isObject, outOfRange, joinTime, getBiggestTime, loadImage};
+ 	module.exports = {getKeyFromValue, isNumber, isString, isBoolean, isArray, isFunction, isObject, joinTime, getBiggestTime, loadImage};
 }
  

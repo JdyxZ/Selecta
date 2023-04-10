@@ -8,23 +8,33 @@ const {isArray} = require("../../public/framework/javascript.js");
 const {Song} = require('../model/model.js');
 const ytdl = require('ytdl-core');
 
-async function test()
+async function init()
 {
     // Init database and youtube API connection
     await DATABASE.init();
     await YOUTUBE.init();
+}
 
-    // await YOUTUBE.getVideosInfo("hola");
-    await fetchVideoStream("ntCZjb_AAWE")
+async function test()
+{
+    // Init
+    await init();
+
+    // await fetchVideoStream("ntCZjb_AAWE")
+    // const result = await YOUTUBE.search("hola", "public");
+    const result = await YOUTUBE.getVideosInfo("YuHoTbQv02k", "public");
+    console.log(result); 
+    
+    // fetchVideoStream("ntCZjb_AAWE");
 }
 
 async function fetchVideoStream(videoID)
 {
     try
     {
-        const info = await ytdl.getInfo("YuHoTbQv02k");
+        const info = await ytdl.getInfo(videoID);
         const audio_info = ytdl.chooseFormat(info.formats, {quality: 'highestaudio', filter: 'audioonly'});
-        console.log(audio_info);
+        console.log(info.videoDetails);
     }
     catch(err)
     {
@@ -32,5 +42,6 @@ async function fetchVideoStream(videoID)
     }
 }
 
+// Calls
 test();
 

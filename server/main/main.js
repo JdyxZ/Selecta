@@ -79,6 +79,7 @@ async function main()
     app.use(require("../routes/app"));
     app.use(require("../routes/authenticate"));
     app.use(require("../routes/utils"));
+    app.use(require("../routes/proxy"));
 
     // Default request folder
     app.use(express.static(path.join(__dirname, '../../public')));

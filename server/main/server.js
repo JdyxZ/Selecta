@@ -261,20 +261,19 @@ var SERVER =
         // Log
         console.log(`EVENT --> User ${user.name} has sent a SUGGEST message`);
 
-        // Fetch song data
-        let videoData = await YOUTUBE.getVideosInfo(new_songID);
-        
         // Do some checks
-        const check = YOUTUBE.checkVideosInfo(videoData);
-        if(check != "OK") return [check, true];
+        const check = await YOUTUBE.checkVideo(new_songID);
+        if(check !== "OK") return [check, true];
         if(suggestion != undefined && suggestion.userID != sender_id) return ["SUGGEST_SONG_ALREADY_SUGGESTED", true];
 
-        // Get first video
-        videoData = videoData[0];
+        // Fetch video data
+        const [status, result] = await YOUTUBE.getVideosFullInfo(new_songID, "private");
 
-        // Fetch channel's song data from Youtube API
-        const channelData = (await YOUTUBE.getChannelsInfo(videoData.publisherChannel.ID))[0];
-        if(channelData) videoData.publisherChannel = channelData;
+        // Check again
+        if(check === "ERROR") return [check, true];
+
+        // Unwrap video data
+        const [videoData] = result;
 
         // Get & Create song data
         const oldSong = WORLD.getSong(user_room, old_songID);
@@ -526,43 +525,31 @@ var SERVER =
         }
 
         // Fetch songs data with Youtube API
-        const videosData = await YOUTUBE.getVideosInfo([next_songID, future_songID]);
+        const [videosStatus, videosData] = await YOUTUBE.getVideosFullInfo([next_songID, future_songID], "private");
+
+        // Check process status
+        if(videosStatus === "ERROR")
+        {
+            console.log(videosData);
+            return;
+        }
 
         // Assign song data
         const nextVideoData = videosData.getObject({ID: next_songID});
         const futureVideoData = videosData.getObject({ID: future_songID});
 
-        // Check song data
-        const check = YOUTUBE.checkVideosInfo([nextVideoData, futureVideoData]);
-        if(check != "OK")
-        {
-            console.log(`ERROR ---> YOUTUBE.checkVideoInfo: ${check}`);
-            return;
-        }
-
-        // Get publisher IDs
-        const nextPublisherID = nextVideoData.publisherChannel.ID;
-        const futurePublisherID = futureVideoData.publisherChannel.ID;
-        
-        // Fetch channel data of the songs with Youtube API
-        const channelsData = await YOUTUBE.getChannelsInfo([nextPublisherID, futurePublisherID]);
-
-        // Assign channel data
-        nextVideoData.publisherChannel = channelsData.getObject({ID: nextPublisherID});
-        futureVideoData.publisherChannel = channelsData.getObject({ID: futurePublisherID});
-
         // Fetch audioStream with Youtube Downloading module
-        const nextAudioStream = await YOUTUBE.fetchAudioStreams(next_songID);
+        const [status, result] = await YOUTUBE.fetchAudioStreams(next_songID);
 
         // Check
-        if(nextAudioStream[0] == "ERROR")
+        if(status == "ERROR")
         {
-            console.log(`ERROR ---> YOUTUBE.fetchAudioStreams: ${nextAudioStream[1]}`);
+            console.log(`ERROR ---> YOUTUBE.fetchAudioStreams: ${result}`);
             return;
         }
         
         // Assign url info
-        nextVideoData.audioStream = nextAudioStream[1];
+        nextVideoData.audioStream = result;
 
         // Assign chooseTime to the video
         nextVideoData.chooseTime = chooseTime;
@@ -631,13 +618,12 @@ var SERVER =
             const room = WORLD.getRoom(roomID);
 
             // Get playlist items
-            const playlist_items = await YOUTUBE.getPlaylistItems(room.playlist);
+            const [status, playlist_items] = await YOUTUBE.getPlaylistItems(room.playlist, "private");
 
             // Check
-            if(!playlist_items)
+            if(status === "ERROR")
             {
-                if(playlist_items === undefined) console.log(`ERROR ---> The playlist ${room.playlist} does not exist or does not have no item yet`);
-                if(playlist_items === null) console.log(`ERROR ---> Something went wrong upon fetching default room playlist items`);
+                console.log(playlist_items);
                 return;
             }
 

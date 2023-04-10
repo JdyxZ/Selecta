@@ -1,0 +1,74 @@
+Date : 2023-04-10 12:07:12
+Directory : c:\University\FOURTH YEAR\ECV\Selecta\public
+Total : 35 files,  30234 codes, 8060 comments, 5780 blanks, all 44074 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| JavaScript |         19 |     28,099 |      8,019 |      5,317 |     41,435 |
+| CSS        |         16 |      2,135 |         41 |        463 |      2,639 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++-----------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                    | files      | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                       |         35 |     30,234 |      8,060 |      5,780 |     44,074 |
+| . (Files)                                                                               |          1 |        214 |         73 |         58 |        345 |
+| framework                                                                               |          2 |        571 |        182 |        170 |        923 |
+| mvc                                                                                     |          3 |        677 |        189 |        209 |      1,075 |
+| utils                                                                                   |          1 |        317 |         41 |         47 |        405 |
+| views                                                                                   |         28 |     28,455 |      7,575 |      5,296 |     41,326 |
+| views\css                                                                               |         15 |      1,410 |         38 |        222 |      1,670 |
+| views\css (Files)                                                                       |          5 |        274 |         10 |         40 |        324 |
+| views\css\partials                                                                      |         10 |      1,136 |         28 |        182 |      1,346 |
+| views\css\partials (Files)                                                              |          3 |        412 |         13 |         78 |        503 |
+| views\css\partials\interfaces                                                           |          7 |        724 |         15 |        104 |        843 |
+| views\js                                                                                |          3 |        547 |        178 |        176 |        901 |
+| views\libs                                                                              |         10 |     26,498 |      7,359 |      4,898 |     38,755 |
+| views\libs (Files)                                                                      |          8 |     25,685 |      7,282 |      4,635 |     37,602 |
+| views\libs\flags                                                                        |          2 |        813 |         77 |        263 |      1,153 |
++-----------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-----------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                                | language   | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| c:\University\FOURTH YEAR\ECV\Selecta\public\client.js                                  | JavaScript |        214 |         73 |         58 |        345 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\framework\html.js                          | JavaScript |        162 |        115 |         48 |        325 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\framework\javascript.js                    | JavaScript |        409 |         67 |        122 |        598 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\mvc\controller.js                          | JavaScript |        296 |         70 |         81 |        447 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\mvc\model.js                               | JavaScript |        164 |         47 |         51 |        262 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\mvc\view.js                                | JavaScript |        217 |         72 |         77 |        366 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\utils\youtube.js                           | JavaScript |        317 |         41 |         47 |        405 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\views\css\app.css                          | CSS        |         52 |          4 |         10 |         66 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\views\css\error.css                        | CSS        |         53 |          0 |          8 |         61 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\views\css\login.css                        | CSS        |         40 |          1 |          5 |         46 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\views\css\partials\auth.css                | CSS        |         87 |          3 |         12 |        102 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\views\css\partials\auth_providers.css      | CSS        |         52 |          1 |          9 |         62 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\views\css\partials\interfaces\loading.css  | CSS        |         46 |          1 |          6 |         53 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\views\css\partials\interfaces\logout.css   | CSS        |         30 |          1 |          3 |         34 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\views\css\partials\interfaces\menu.css     | CSS        |         31 |          1 |          5 |         37 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\views\css\partials\interfaces\player.css   | CSS        |        174 |          4 |         27 |        205 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\views\css\partials\interfaces\search.css   | CSS        |        145 |          1 |         19 |        165 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\views\css\partials\interfaces\settings.css | CSS        |        153 |          6 |         25 |        184 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\views\css\partials\interfaces\vote.css     | CSS        |        145 |          1 |         19 |        165 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\views\css\partials\templates.css           | CSS        |        273 |          9 |         57 |        339 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\views\css\selecta.css                      | CSS        |         89 |          4 |         12 |        105 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\views\css\signup.css                       | CSS        |         40 |          1 |          5 |         46 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\views\js\login.js                          | JavaScript |         15 |          2 |          5 |         22 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\views\js\selecta.js                        | JavaScript |        515 |        174 |        166 |        855 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\views\js\signup.js                         | JavaScript |         17 |          2 |          5 |         24 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\views\libs\collada.js                      | JavaScript |      2,387 |        259 |        466 |      3,112 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\views\libs\ejs.js                          | JavaScript |      1,052 |        499 |        170 |      1,721 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\views\libs\flags\country-flag.css          | CSS        |        725 |          3 |        241 |        969 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\views\libs\flags\country-flag.js           | JavaScript |         88 |         74 |         22 |        184 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\views\libs\gl-matrix-min.js                | JavaScript |          1 |         27 |          0 |         28 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\views\libs\gl-matrix.js                    | JavaScript |      2,079 |      1,819 |        418 |      4,316 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\views\libs\litegl.js                       | JavaScript |      9,863 |      2,997 |      1,792 |     14,652 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\views\libs\rendeer.js                      | JavaScript |      9,877 |      1,540 |      1,700 |     13,117 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\views\libs\walkArea.js                     | JavaScript |        129 |          6 |         22 |        157 |
+| c:\University\FOURTH YEAR\ECV\Selecta\public\views\libs\wbin.js                         | JavaScript |        297 |        135 |         67 |        499 |
+| Total                                                                                   |            |     30,234 |      8,060 |      5,780 |     44,074 |
++-----------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+

@@ -4,7 +4,6 @@
 const express = require('express');
 const router = express.Router();
 const url = require('url');
-const needle = require('needle');
 
 // Our modules
 const {WORLD} = require("../model/model.js");
@@ -12,9 +11,8 @@ const SERVER = require("../main/server.js");
 const DATABASE = require("../database/database.js");
 const LOCKER = require("../utils/locker.js");
 const SERVER_SETTINGS = require("../config/server_settings.js");
-const API_CREDENTIALS = require("../config/api_credentials.js");
 const YOUTUBE = require("../utils/youtube.js");
-require("../../public/framework/javascript.js");
+const {isString, isArray, isObject} = require("../../public/framework/javascript.js");
 
 // Util routes
 router.get('/get_world', function(req, res){ // Model info
@@ -107,32 +105,57 @@ router.get("/server_settings", (req, res, next) => {
     res.json(SERVER_SETTINGS);
 });
 
-// Youtube 
-router.get("/youtube_keys", (req, res, next) => {
-    res.json(API_CREDENTIALS.google.public);
-});
-
-router.get("/youtubeGetAudioStreams", async (req, res, next) =>
+// Youtube API
+router.get("/youtube", async (req, res, next) =>
 {
     // Unpack params
     const params = url.parse(req.url, true).query;
 
-    // Process request
-    const result = await YOUTUBE.fetchAudioStreams(params.videoID);
+    // Unwrap params
+    const action = params.action;
+    const query = params.query ? JSON.parse(params.query) : undefined;
+    const videoIDs = params.videoIDs ? JSON.parse(params.videoIDs) : undefined;
+    const channelIDs = params.channelIDs ? JSON.parse(params.channelIDs) : undefined;
+    const playlistIDs = params.playlistIDs ? JSON.parse(params.playlistIDs) : undefined;
+    const videoID = params.videoID ? JSON.parse(params.videoID) : undefined;
+    const playlistID = params.playlistID ? JSON.parse(params.playlistID) : undefined;
 
+    // Process action
+    let result;
+    switch(action)
+    {
+        case("search"):
+            result = await YOUTUBE.search(query, "public");
+            break;
+        case("get_videos_info"):
+            result = await YOUTUBE.getVideosInfo(videoIDs, "public");
+            break;
+        case("get_channels_info"):
+            result = await YOUTUBE.getChannelsInfo(channelIDs, "public");
+            break;
+        case("get_playlists_info"):
+            result = await YOUTUBE.getPlaylistsInfo(playlistIDs, "public");
+            break;
+        case("get_playlist_items"):
+            result = await YOUTUBE.getPlaylistItems(playlistID, "public");
+            break;
+        case("get_videos_full_info"):
+            result = await YOUTUBE.getVideosFullInfo(videoIDs, "public");
+            break;
+        case("search_full"):
+            result = await YOUTUBE.searchFull(query, "public");
+            break;
+        case("get_audio_stream"):
+            result = await YOUTUBE.getAudioStream(videoID, "public");
+            break;
+        default:
+            result = ["ERROR", "Youtube Utils API: You must send a valid action"];  
+            break; 
+    }
+    
     // Respond
-    res.json(result);    
+    res.json(result);
 });
-
-// Proxy
-router.get("/proxy", async (req, res, next) => 
-{
-    const apiRes = await needle('get', `https://yt3.ggpht.com/y8aH22sg9A1XUuDvu74oK_Zv1Q5ygJxn-Z4auUT_XOGxC_Zj5B1W43WVhwiEXuGTq9tIEW9MjrY=s240-c-k-c0x00ffffff-no-rj`)
-    const data = apiRes.body
-    res.status(200).end(data);
-});
-
-
 
 // Export module
 module.exports = router;

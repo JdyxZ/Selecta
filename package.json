@@ -6,6 +6,7 @@
   "scripts": {
     "tests": "nodemon server/testing/tests.js",
     "server": "nodemon server/main/main.js",
+    "tests_debug": "nodemon --inspect=127.0.0.1:9230 --inspect-brk server/testing/tests.js",
     "server_debug": "nodemon --inspect=127.0.0.1:9230 --inspect-brk server/main/main.js"
   },
   "repository": {

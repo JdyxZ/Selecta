@@ -111,9 +111,6 @@ const SELECTA =
         // Init sliders
         this.initSliders();
 
-        // Update MODEL state
-        this.updateModel();
-
         // Init other resources
         CONTROLLER.init();
         await CLIENT.init();
@@ -174,11 +171,6 @@ const SELECTA =
         });
     },
 
-    updateModel: function()
-    {
-        MODEL.player.volume = this.sliders.music_volume.value;
-    },
-
     onKeyDown: function(event)
     {
         if(this.tagName == "INPUT")
@@ -204,8 +196,9 @@ const SELECTA =
 
     start: function()
     {
-        // Restore volume
+        // Restore playback
         MODEL.player.muted = false;
+        MODEL.player.play();
 
         // Set loading status to false
         CONTROLLER.loading = false;
@@ -304,7 +297,7 @@ const SELECTA =
             if(video.description) videoDescription.textContent = video.description.resumeByChars(200);
 
             // Fill video template with channel data
-            if(video.publisherChannel.thumbnails) channelThumbnail.src = video.publisherChannel.thumbnails.medium.url;
+            if(video.publisherChannel.thumbnails) channelThumbnail.src = `/proxy?url=${video.publisherChannel.thumbnails.medium.url}`;
             if(video.publisherChannel.title) channelTitle.textContent = video.publisherChannel.title;
             if(video.publisherChannel.subscriberCount) channelSubs.textContent = video.publisherChannel.subscriberCount.toNumber().format();
             if(video.publisherChannel.viewCount) channelViews.textContent = video.publisherChannel.viewCount.toNumber().format();
@@ -343,31 +336,11 @@ const SELECTA =
         this.search_result.replaceChildren(...suggested_videos);
 
         // Search videos related to the query
-        const search = await YOUTUBE.search(query);
+        const videos = await YOUTUBE.searchFull(query);
 
-        // Check errors
-        if(search == null) return;
-
-        // Map videosIDs
-        const videosIDs = search.map(video => video.ID);
-
-        // Get more information about the searched videos
-        let videos = await YOUTUBE.getVideosInfo(videosIDs);
-
-        // Check errors
-        if(videos == null) return;
-
-        // Get IDs of the channels of the videos
-        const channelsIDs = videos.map(video => video.publisherChannel.ID);
-
-        // Get info about the channels
-        const channels = await YOUTUBE.getChannelsInfo(channelsIDs);
-
-        // Check errors
-        if(channels == null) return;
-
-        // Append info about the channels to the videos
-        videos.forEach(video => video.publisherChannel = channels.getObject({ID: video.publisherChannel.ID}));
+        // Check
+        if(videos === null)
+            return;
 
         // Parse videos to HTML containers
         let videosHTML = this.parseVideosToHTML(videos);
