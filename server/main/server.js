@@ -89,7 +89,7 @@ var SERVER =
         catch (error) 
         {
             // Log error
-            console.log("ERROR --> Error upon processing received message \n", error);
+            console.log("ERROR --> Error upon processing received message \n", isArray(error) ? error[0] : error);
             
             // Build error message
             let error_message;
@@ -326,6 +326,7 @@ var SERVER =
         console.log(`EVENT --> User ${user.name} has sent a VOTE message`);
 
         // Do some checks
+        debugger;
         if(suggestion == undefined) return ["VOTE_SONG_DOES_NOT_BELONG_TO_THE_ROOM", true];   
         if(suggestion.userID == sender_id) return ["VOTE_SONG_BELONGS_TO_THE_USER", true];
 
@@ -568,7 +569,7 @@ var SERVER =
 
         // Update room data
         WORLD.resetSkipVotes(room);
-        WORLD.removeSuggestion(room, user, next_song);
+        WORLD.removeSuggestion(room, user, next_songID);
         room.next_song = next_song;
         room.future_song = future_song;
         room.skipping = true;

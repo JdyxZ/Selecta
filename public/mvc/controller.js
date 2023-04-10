@@ -55,7 +55,7 @@ const CONTROLLER =
 
         // Force update visuals
         if(MODEL.my_song)
-            SELECTA.updateSuggestionInterface();
+            SELECTA.initSuggestionInterface();
     },
 
     createAsset: function(user_asset,user_position,user_rotation,id)
@@ -338,23 +338,24 @@ const CONTROLLER =
             MODEL.next_song = song;
             MODEL.current_room.skipping = true;
 
-            // Force update visuals
-            SELECTA.updatePlaybackInterface("next");
-            SELECTA.updatePlaybackInfo();
-            SELECTA.updateSkipButton();
-
             // Get suggestion
-            const suggestion = MODEL.suggestions[MODEL.current_song.ID];
+            const suggestion = MODEL.suggestions[MODEL.next_song.ID];
 
             // Remove suggestion
             if(suggestion)
             {
                 const userID = suggestion.userID;
-                const user = MODEL.my_user == userID ? MODEL.my_user : MODEL.users_obj[userID];
-                const songID = MODEL.current_song.ID;
-                MODEL.removeSuggestion(user, songID);
-                MODEL.removeSong(user, songID);
+                const user = MODEL.my_user.id == userID ? MODEL.my_user : MODEL.users_obj[userID];
+                MODEL.removeSuggestion(user, song.ID);
+                MODEL.removeSong(user, song);
             }
+
+            // Force update visuals
+            SELECTA.updateSuggestionInterface(song.ID);
+            SELECTA.updateVotesInterface();
+            SELECTA.updatePlaybackInterface("next");
+            SELECTA.updatePlaybackInfo();
+            SELECTA.updateSkipButton();
 
             // Initialize aux player to start prelaoding the song
             MODEL.aux_player = new Audio();

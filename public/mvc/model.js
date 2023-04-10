@@ -211,11 +211,18 @@ const MODEL =
     removeSong: function(user, song)
     {
         // Check
-        if(!song)
+        if(!song || !song.ID)
+            return;
+
+        // Get index of the song
+        const index = this.songs.getObjectIndex({ID: song.ID});
+
+        // Check
+        if(!~index)
             return;
             
         // Remove
-        this.songs.remove(song);
+        this.songs.splice(index, 1);
         user.song = null;
 
         // Remove from local user

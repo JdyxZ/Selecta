@@ -449,12 +449,12 @@ const YOUTUBE =
 
         // Get video duration and live properties
         const videoInfo = await ytdl.getInfo(videoID);
-        const duration = videoInfo.videoDetails.lengthSeconds;
+        const duration = videoInfo.videoDetails.lengthSeconds.toNumber();
         const live = videoInfo.videoDetails.isLiveContent;
 
         // Validate duration and live
         if(live) return "YOUTUBE_CHECK_LIVE_VIDEO";   
-        if(duration.isRanged([60, 36000])) return "YOUTUBE_INVALID_VIDEO_DURATION";
+        if(!duration.isRanged([60, 36000])) return "YOUTUBE_INVALID_VIDEO_DURATION";
 
         // Return OK
         return "OK";

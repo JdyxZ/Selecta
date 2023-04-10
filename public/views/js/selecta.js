@@ -543,7 +543,7 @@ const SELECTA =
         CONTROLLER.sendSkip();
     },
 
-    updateSuggestionInterface: function()
+    initSuggestionInterface: function()
     {
         // Remove old search
         this.search_result.removeChildren();
@@ -570,6 +570,20 @@ const SELECTA =
             // Show container
             video.show();
         });
+    },
+
+    updateSuggestionInterface: function(songID)
+    {
+        // Get suggestion node
+        const node = this.search_result.querySelector(`[data-id=${songID}]`)
+
+        // Check
+        if(!node)
+            return;
+        
+        // Update
+        const suggestionIcon = node.get(".title-wrapper .suggestion img");
+        suggestionIcon.src = "media/interface/img_suggest_off.png";
     },
 
     updateVotesInterface: function()

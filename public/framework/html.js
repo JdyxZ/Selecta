@@ -3,34 +3,49 @@
 /***************** DOCUMENT *****************/
 
 Document.prototype.get = function(selector)	{
-
-	// Get query
-	const query = this.querySelector(selector);
-
-	if(query == null)
+	try
 	{
-		console.error(`WARNING: Selector '${selector}' has not been found in the DOM. Returning an empty div`);
-		return this.createElement("div");
+		// Get query
+		const query = this.querySelector(selector);
+
+		if(query == null)
+		{
+			console.error(`WARNING: Selector '${selector}' has not been found in the DOM. Returning an empty div`);
+			return this.createElement("div");
+		}
+		else
+		{
+			return query;
+		}
 	}
-	else
+	catch(error)
 	{
-		return query;
+		console.error(error);
+		return this.createElement("div");
 	}
 };
 
 Document.prototype.getAll = function(selector)
 {
-	// Get query
-	const query = this.querySelectorAll(selector);
+	try
+	{
+		// Get query
+		const query = this.querySelectorAll(selector);
 
-	if(query == null)
-	{
-		console.error(`WARNING: Selector '${selector}' has not been found in the DOM. Returning an empty div`);
-		return this.createElement("div");
+		if(query == null)
+		{
+			console.error(`WARNING: Selector '${selector}' has not been found in the DOM. Returning an empty div`);
+			return this.createElement("div");
+		}
+		else
+		{
+			return query;
+		}
 	}
-	else
+	catch(error)
 	{
-		return query;
+		console.error(error);
+		return this.createElement("div");
 	}
 };
 
