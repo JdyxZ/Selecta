@@ -406,7 +406,6 @@ var WORLD = {
 
     addSuggestion: function(room, user, songID)
     {
-        debugger;
         // Build suggestion instance
         const suggestion = new Suggestion(songID, user.id, 0);
 
@@ -421,7 +420,7 @@ var WORLD = {
         const suggestion = room.getSuggestion(songID);
 
         // Check
-        if(suggestion == undefined) return;
+        if(room == undefined || user == undefined || suggestion == undefined) return;
 
         // Remove votes
         this.removeSuggestionVotes(room, suggestion);
@@ -486,7 +485,7 @@ var WORLD = {
     addSong: function(room, user, song)
     {
         // Check
-        if(!song)
+        if(!song || room == undefined || user == undefined)
             return;
 
         // Add 
@@ -497,8 +496,10 @@ var WORLD = {
     removeSong: function(room, user, song)
     {
         // Check
-        if(!song)
+        if(!song || !song.ID || room == undefined || user == undefined)
             return;
+
+        debugger;
 
         // Remove
         delete room.songs[song.ID];
