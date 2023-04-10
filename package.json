@@ -21,7 +21,6 @@
   },
   "homepage": "https://github.com/JdyxZ/Selecta#readme",
   "dependencies": {
-    "apicache": "^1.6.3",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
     "connect-flash": "^0.1.1",
