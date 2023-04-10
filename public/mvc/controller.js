@@ -344,7 +344,8 @@ const CONTROLLER =
             SELECTA.updateSkipButton();
 
             // Remove suggestion
-            const user = MODEL.users_obj[MODEL.suggestions[MODEL.current_song.ID].userID];
+            const userID = MODEL.suggestions[MODEL.current_song.ID].userID;
+            const user = MODEL.my_user == userID ? MODEL.my_user : MODEL.users_obj[userID];
             const songID = MODEL.current_song.ID;
             MODEL.removeSuggestion(user, songID);
             MODEL.removeSong(user, songID);

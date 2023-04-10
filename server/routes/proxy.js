@@ -17,7 +17,7 @@ router.get('/proxy', async (req, res) => {
         // Request resource
         const response = await needle('get', url);
 
-        // Pipe request
+        // Pipe response
         res.send(response.body);
     } 
     catch (error) 
