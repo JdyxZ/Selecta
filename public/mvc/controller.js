@@ -343,12 +343,18 @@ const CONTROLLER =
             SELECTA.updatePlaybackInfo();
             SELECTA.updateSkipButton();
 
+            // Get suggestion
+            const suggestion = MODEL.suggestions[MODEL.current_song.ID];
+
             // Remove suggestion
-            const userID = MODEL.suggestions[MODEL.current_song.ID].userID;
-            const user = MODEL.my_user == userID ? MODEL.my_user : MODEL.users_obj[userID];
-            const songID = MODEL.current_song.ID;
-            MODEL.removeSuggestion(user, songID);
-            MODEL.removeSong(user, songID);
+            if(suggestion)
+            {
+                const userID = suggestion.userID;
+                const user = MODEL.my_user == userID ? MODEL.my_user : MODEL.users_obj[userID];
+                const songID = MODEL.current_song.ID;
+                MODEL.removeSuggestion(user, songID);
+                MODEL.removeSong(user, songID);
+            }
 
             // Initialize aux player to start prelaoding the song
             MODEL.aux_player = new Audio();
