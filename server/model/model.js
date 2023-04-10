@@ -406,6 +406,7 @@ var WORLD = {
 
     addSuggestion: function(room, user, songID)
     {
+        debugger;
         // Build suggestion instance
         const suggestion = new Suggestion(songID, user.id, 0);
 
