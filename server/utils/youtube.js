@@ -425,7 +425,7 @@ const YOUTUBE =
         }
         catch(error)
         {
-            return ["ERROR", err];
+            return ["ERROR", error];
         }
     },
 
