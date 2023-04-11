@@ -586,13 +586,16 @@ const SELECTA =
         CONTROLLER.sendSkip();
     },
 
-    initSuggestionInterface: function()
+    initSuggestionInterface: async function()
     {
         // Remove old search
         this.search_result.removeChildren();
 
+        // Fetch videos info
+        const videos = MODEL.current_room.playlist_items ? await YOUTUBE.getFullVideosInfo(MODEL.current_room.playlist_items) : [undefined];
+
         // Parse videos to HTML containers
-        const videosHTML = this.parseVideosToHTML([...MODEL.current_room.playlist_items, MODEL.my_song]);
+        const videosHTML = this.parseVideosToHTML([MODEL.my_song, ...videos]);
 
         // Append video containers to the search results
         this.search_result.appendChildren(videosHTML);
