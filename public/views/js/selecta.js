@@ -616,6 +616,9 @@ const SELECTA =
             // Show container
             video.show();
         });
+
+        // Update MODEL with the current search results
+        MODEL.current_search = videos;
     },
 
     updateSuggestionInterface: function(songID)
