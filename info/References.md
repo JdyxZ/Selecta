@@ -14,5 +14,7 @@ Mutate an array within forEach clause: https://stackoverflow.com/questions/24812
 Javascript Player: https://www.youtube.com/watch?v=QTHRWGn_sJw 
 Slider CSS: https://www.w3schools.com/howto/howto_js_rangeslider.asp
 Remove an event listener of a bound function: https://stackoverflow.com/questions/11565471/removing-event-listener-which-was-added-with-bind 
+Flag Lib: https://github.com/luciopaiva/country-flags 
+Spink Kit: https://github.com/tobiasahlin/SpinKit 
 
 # Sr.OjeteSucio

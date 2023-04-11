@@ -169,7 +169,7 @@ Room.prototype.removeActiveUser = function(user)
 
 Room.prototype.toJSON = function()
 {
-    const{ id, name, objects, exits, default_model, suggestions, songs, skipping, skip_counter} = this;
+    const{ id, name, objects, exits, default_model, suggestions, songs, skipping, skip_counter, playlist_items} = this;
 
     const room_json =
     {
@@ -181,7 +181,8 @@ Room.prototype.toJSON = function()
         suggestions,
         songs,
         skipping,
-        skip_counter
+        skip_counter,
+        playlist_items
     }
 
     // Output JSON

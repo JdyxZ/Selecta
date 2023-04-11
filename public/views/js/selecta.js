@@ -91,6 +91,7 @@ const SELECTA =
 
     // Templates
     videoTemplate: document.get("#Selecta .video"),
+    loadingTemplate: document.get("#Selecta .sk-chase"),
 
     // Control varibles
     muted: false,
@@ -102,8 +103,8 @@ const SELECTA =
     init: async function()
     {
         // Set CSS variables
-        document.documentElement.style.setProperty('--screen_width', this.available_width + "px");
-        document.documentElement.style.setProperty('--screen_height', this.available_height + "px");
+        document.setProperty('--screen_width', this.available_width + "px");
+        document.setProperty('--screen_height', this.available_height + "px");
 
         // Add listeners
         this.addEventListeners();
@@ -254,7 +255,7 @@ const SELECTA =
         for(const video of videos)
         {
             // Check
-            if(video.publisherChannel == null) continue;
+            if(!video || video.publisherChannel == null) continue;
             
             // Clone video template
             const videoHTML = this.videoTemplate.clone();
@@ -317,7 +318,42 @@ const SELECTA =
 
         // Output
         return videosHTML;
-    },      
+    },
+    
+    turnSearchAnimation: function(action)
+    {
+        if(action === "on")
+        {
+            // Reset search result
+            this.search_result.removeChildren();
+
+            // Get a loading template clone
+            const loadingAnimation = this.loadingTemplate.clone();
+
+            // Append loading animation to the search result container
+            this.search_result.append(loadingAnimation);
+
+            // Set search result CSS
+            this.search_result.className = "loading";
+
+            // Set loading animation CSS
+            loadingAnimation.setProperty("--sk-size", "3rem");
+            loadingAnimation.setProperty("--sk-color", "#8d8d8d");
+            loadingAnimation.setProperty("background-color", "#202020");
+
+            // Display the loading animation
+            loadingAnimation.show();
+        }
+        else if (action === "off")
+        {
+            // Reset search result
+            this.search_result.removeChildren();
+
+            // Set search result CSS
+            this.search_result.className = "";
+
+        }
+    },
 
     youtubeSearch: async function(query)
     {
@@ -325,15 +361,14 @@ const SELECTA =
         if(this.searching || query === this.lastQuery)
             return;
 
+        // Update control state
+        this.searching = true;
+
+        // Turn on loading animation
+        this.turnSearchAnimation("on");
+
         // Reset error prompt
         this.search_error_prompt.innerHTML = ""
-
-        // Get suggested HTML elements
-        const suggested_videos = [];
-        if(MODEL.my_song) suggested_videos.push(this.search_result.get(`[data-id=${MODEL.my_song.ID}]`));
-        
-        // Remove previous search elements except suggested ones
-        this.search_result.replaceChildren(...suggested_videos);
 
         // Search videos related to the query
         const videos = await YOUTUBE.searchFull(query);
@@ -362,13 +397,21 @@ const SELECTA =
             video.show();
         });
 
+        // Get suggested HTML elements
+        const suggested_videos = [];
+        if(MODEL.my_song) suggested_videos.push(this.search_result.get(`[data-id=${MODEL.my_song.ID}]`));
+
+        // Turn off loading animation
+        this.turnSearchAnimation("off");
+
         // Append video containers to the search results
-        this.search_result.appendChildren(videosHTML);
+        this.search_result.appendChildren([...suggested_videos, ...videosHTML]);
 
         // Update MODEL with the current search results
         MODEL.current_search = videos;
 
-        // Register query
+        // Update control state
+        this.searching = false;
         this.lastQuery = query;
     },
 
@@ -549,7 +592,7 @@ const SELECTA =
         this.search_result.removeChildren();
 
         // Parse videos to HTML containers
-        const videosHTML = this.parseVideosToHTML([MODEL.my_song]);
+        const videosHTML = this.parseVideosToHTML([...MODEL.current_room.playlist_items, MODEL.my_song]);
 
         // Append video containers to the search results
         this.search_result.appendChildren(videosHTML);

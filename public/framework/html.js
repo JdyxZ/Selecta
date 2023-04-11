@@ -49,6 +49,21 @@ Document.prototype.getAll = function(selector)
 	}
 };
 
+Document.prototype.setProperty = function(key, value)
+{
+	document.documentElement.style.setProperty(key, value);
+}
+
+Document.prototype.removeProperty = function(key)
+{
+	document.documentElement.style.removeProperty(key);
+}
+
+Document.prototype.getPropertyValue = function(key)
+{
+	document.documentElement.style.getPropertyValue(key);
+}
+
 Document.prototype.when = function(event, callback)	{
 	document.addEventListener(event, callback);
 };
@@ -159,6 +174,21 @@ HTMLElement.prototype.getAll = function(selector)
 	}
 
 };
+
+HTMLElement.prototype.setProperty = function(key, value)
+{
+	this.style.setProperty(key, value);
+}
+
+HTMLElement.prototype.removeProperty = function(key)
+{
+	this.style.removeProperty(key);
+}
+
+HTMLElement.prototype.getPropertyValue = function(key)
+{
+	this.style.getPropertyValue(key);
+}
 
 HTMLElement.prototype.getName = function()
 {

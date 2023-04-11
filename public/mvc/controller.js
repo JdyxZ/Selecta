@@ -30,6 +30,10 @@ const CONTROLLER =
 
         // Save songs
         MODEL.songs = MODEL.songs.concat(room.songs.values());
+
+        // Force update visuals
+        // if(MODEL.current_room.playlist_items && MODEL.my_song)
+            // SELECTA.initSuggestionInterface();
     },
 
     setMyUser: async function(user)
@@ -54,8 +58,8 @@ const CONTROLLER =
         }
 
         // Force update visuals
-        if(MODEL.my_song)
-            SELECTA.initSuggestionInterface();
+        // if(MODEL.current_room.playlist_items && MODEL.my_song)
+            // SELECTA.initSuggestionInterface();
     },
 
     createAsset: function(user_asset,user_position,user_rotation,id)
@@ -339,7 +343,7 @@ const CONTROLLER =
             MODEL.current_room.skipping = true;
 
             // Get suggestion
-            const suggestion = MODEL.suggestions[MODEL.next_song.ID];
+            const suggestion = MODEL.suggestions[song.ID];
 
             // Remove suggestion
             if(suggestion)

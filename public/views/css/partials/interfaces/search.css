@@ -124,6 +124,7 @@
     border: 1px solid black;
     font-size: 16px;
     padding: 1px 5px 1px 5px;
+    outline:0;
 }
 
 #Selecta #search_interface #search_bar #image
@@ -148,6 +149,13 @@
     padding: 2rem 0 2rem 5%;
     overflow-y: auto;
     overflow-x: hidden;
+}
+
+#Selecta #search_interface #search_result.loading
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #Selecta #search_interface #error_prompt
