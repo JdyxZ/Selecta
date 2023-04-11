@@ -1,5 +1,11 @@
 # Selecta
 
+## Launch application
+
+```js
+npm run server
+```
+
 ## Features
 
 ### Log in / Sign up
