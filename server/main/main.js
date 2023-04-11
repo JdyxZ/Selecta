@@ -52,7 +52,7 @@ async function main()
     app.set('server_protocol', SERVER_SETTINGS.protocol);
     app.set('server_address', SERVER_SETTINGS.address);
     app.set('server_port', SERVER_SETTINGS.port);
-    app.set('server_prefix', SERVER_SETTINGS.server_prefix);
+    app.set('server_prefix', SERVER_SETTINGS.prefix);
     app.set('appName', SERVER_SETTINGS.app_name);
     app.set('appRoute', SERVER_SETTINGS.app_route);
 

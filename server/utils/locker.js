@@ -22,7 +22,7 @@ var LOCKER =
               return next();
           }
             
-          return res.redirect(`${SERVER_SETTINGS.prefix}/login`);
+          return res.redirect("/login");
     },
 
     isSessionNotAvailable: function(req, res, next)
@@ -48,7 +48,7 @@ var LOCKER =
             return next();
         }
 
-        return res.redirect(`${SERVER_SETTINGS.prefix}/${SERVER_SETTINGS.app_route}`);
+        return res.redirect(`/${SERVER_SETTINGS.app_route}`);
     },
 
     checkConnection: function(user_id)

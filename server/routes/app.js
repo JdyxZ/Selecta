@@ -10,7 +10,7 @@ const SERVER_SETTINGS = require("../config/server_settings.js");
 
 // App routes
 router.get('/', LOCKER.isSessionNotAvailable, (req, res) => {
-    res.redirect(`${SERVER_SETTINGS.prefix}/login`);
+    res.redirect("/login");
 });
 
 router.get('/login', LOCKER.isSessionNotAvailable, (req, res) => { 
@@ -24,7 +24,7 @@ router.get('/signup', LOCKER.isSessionNotAvailable, (req, res) => {
 router.get('/logout', LOCKER.isSessionAvailable, (req, res, next) => {
     req.logout(function(err) {
         if (err) return next(err);
-        res.redirect(`${SERVER_SETTINGS.prefix}/login`);
+        res.redirect("/login");
     });
 });
 
